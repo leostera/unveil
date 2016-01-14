@@ -1,4 +1,5 @@
 import React from 'react';
+import CSSTransitionGroup from 'react-addons-css-transition-group';
 
 import marked from 'marked';
 

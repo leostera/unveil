@@ -12,6 +12,24 @@ body
 @import "octocat"
 
 #unveil
-  @import "search-bar"
-  @import "page"
+  .slide
+    margin: 2em
+    padding: 2em
+    background: rgba(0,0,0,0.1)
+    border-radius: 3px
 
+.slide-appear
+  opacity: 0.00
+
+.slide-enter
+  opacity: 0.00
+  -webkit-transition: opacity .5s ease-in
+
+.slide-enter.slide-enter-active
+  opacity: 1
+
+.slide-leave
+  -webkit-transition: opacity .5s ease-in
+
+.slide-leave.slide-leave-active
+  opacity: 0.00

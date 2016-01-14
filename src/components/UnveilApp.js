@@ -2,6 +2,7 @@ import { Observable } from 'rxjs';
 import '../lib/Rx.History';
 
 import React from 'react';
+import CSSTransitionGroup from 'react-addons-css-transition-group';
 
 import createHistory from 'history/lib/createHashHistory';
 let history = createHistory({
@@ -52,7 +53,17 @@ export default React.createClass({
   },
 
   render: function () {
-    return (<div>{this.state.current}</div>);
+    return (<div>
+        <CSSTransitionGroup
+          transitionName="slide"
+          transitionEnterTimeout={250}
+          transitionLeaveTimeout={250}
+          transitionAppearTimeout={250}
+          transitionAppear={true}
+          >
+          {this.state.current}
+        </CSSTransitionGroup>
+      </div>);
   }
 
 });
