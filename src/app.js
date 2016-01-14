@@ -6,12 +6,13 @@ import Slide from './components/Slide';
 React.render( (
   <UnveilApp>
     <Slide key="intro">
-      <Slide key="hello"> # Hello World </Slide>
+      <Slide key="first"> # Hello World </Slide>
       <Slide key="second"> # Second Slide</Slide>
+      <Slide key="third"> # Second Slide</Slide>
     </Slide>
     <Slide key="outro">
-      <Slide key="bye"> # Bye World </Slide>
-      <Slide key="fourth"> # Fourth Slide</Slide>
+      <Slide key="fourth"> # Bye World </Slide>
+      <Slide key="fifth"> # Fourth Slide</Slide>
     </Slide>
   </UnveilApp>
 ), document.getElementById('unveil'));

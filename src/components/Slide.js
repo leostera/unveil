@@ -4,42 +4,23 @@ import marked from 'marked';
 
 export default React.createClass({
 
-  subslides: [],
-
   componentWillMount: function () {
-    this.subslides = this.getChildren().filter(this.isSlide);
     let content;
-    if(this.hasSubSlides()) {
-      // @todo: take slide id/name from url
-      // @todo: just take the slide's content
-      content = this.getSubSlide(0);
+    if(Array.isArray(this.props.children)) {
+      content = this.props.children;
     } else {
-      content = this.getChildren();
+      let markup = marked(this.props.children);
+      content = <div dangerouslySetInnerHTML={{__html: markup }} />
     }
     this.setState({content})
   },
 
   render: function () {
     return (
-      <section>
+      <section id={this.key} className="slide">
         {this.state.content}
       </section>
     );
-  },
-
-  getChildren: function () {
-    let c = this.props.children;
-    return Array.isArray(c) ? c : [c];
-  },
-
-  getSubSlide: function (i) {
-    return this.subslides[i];
-  },
-
-  hasSubSlides: function () {
-    return this.subslides.length > 0;
-  },
-
-  isSlide: (el) => (el.type && el.type.displayName && el.type.displayName === "Slide")
+  }
 
 });

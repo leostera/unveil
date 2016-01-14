@@ -11,7 +11,9 @@ let history = createHistory({
 
 export default React.createClass({
 
-  cleanUpPath:  path => {
+  slides: [],
+
+  cleanUpPath: path => {
     if (path[0] === "/") {
       path = path.slice(1)
     }
@@ -23,29 +25,33 @@ export default React.createClass({
       .pluck("pathname")
       .map(this.cleanUpPath)
       .distinctUntilChanged()
+      .map(this.pathToRoute)
+      .map(this.lookupRoute)
       .subscribe(this.route);
   },
 
-  route: function (path) {
-    const [slide, subslide] = path.split("/");
-    //@todo: make a mixin to get children's always as list
-    let children = this.props.children
-      .filter(this.byName(slide));
-
-    if(children.length > 1) {
-      throw Error("There can't be two Slides with the same key");
-    }
-
-    let current = children[0];
-    if(subslide && Array.isArray(current.props.children) ) {
-      current = children[0].props.children.filter(this.byName(subslide));
-    }
-
-    this.setState({current});
+  pathToRoute: (path) => {
+    const [key, subKey] = path.split("/");
+    return {key, subKey};
   },
 
-  byName: (slide) => {
-    return (child) => (child.key === slide);
+  lookupRoute: function (route) {
+    let byKey = (key) => {
+      return (slide) => (slide.key === key)
+    };
+    let toChildren = (slide) => (slide.props.children)
+    let children = this.props.children.filter(byKey(route.key))
+      .map(toChildren)
+      .reduce( (a,b) => a.concat(b) )
+
+    if(route.subKey)
+      return children.filter(byKey(route.subKey));
+    else
+      return children[0];
+  },
+
+  route: function (element) {
+    this.setState({current: element});
   },
 
   render: function () {
