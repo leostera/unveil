@@ -1,28 +1,30 @@
+import { Observable } from 'rxjs';
+import fromHistory from '../lib/Rx.History';
+Observable.fromHistory = fromHistory;
+
 import React from 'react';
 import createHistory from 'history/lib/createHashHistory';
 
-import SearchBar from './SearchBar';
-import Results   from './Results';
-
-import { Command } from '../actions/Command';
-
 let history = createHistory();
 
-class UnveilApp extends React.Component {
+export default React.createClass({
 
-  componentWillMount () {
-    Command.getIndex().subscribe();
-  }
+  componentWillMount: function () {
+    Observable.fromHistory(history)
+      .pluck("pathname")
+      .subscribe(this.setPath);
+  },
 
-  render () {
+  setPath: function (path) {
+    this.setState({path});
+  },
+
+  render: function () {
     return (
       <div>
-        <SearchBar history={history}/>
-        <Results   history={history}/>
+        Hello {this.state.path}
       </div>
     );
   }
 
-}
-
-export default UnveilApp;
+});
