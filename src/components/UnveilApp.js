@@ -1,6 +1,5 @@
 import { Observable } from 'rxjs';
-import fromHistory from '../lib/Rx.History';
-Observable.fromHistory = fromHistory;
+import '../lib/Rx.History';
 
 import React from 'react';
 
@@ -10,8 +9,6 @@ let history = createHistory({
 });
 
 export default React.createClass({
-
-  slides: [],
 
   cleanUpPath: path => {
     if (path[0] === "/") {
