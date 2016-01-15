@@ -7,9 +7,9 @@ export default React.createClass({
   componentWillMount: function () {
     let content = this.props.children;
     if(this.props.markdown && !Array.isArray(this.props.children)) {
-      content = marked(this.props.children);
+      content = marked(this.props.children).trim();
     }
-    this.setState({content: content.trim()})
+    this.setState({content: content})
   },
 
   render: function () {
