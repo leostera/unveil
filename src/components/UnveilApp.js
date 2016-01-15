@@ -43,32 +43,42 @@ export default React.createClass({
 
   onKey: function (code) {
     let transitionTo;
-    let index = 0;
-    let top;
+    let top = this.getTopLevelSlideFor(this.state.current[0]);
+    let index = this.props.children.indexOf(top);
+    let next;
+    let slide;
     switch (code) {
       case KEY_LEFT: //look for previous top-level slide
-        top = this.getTopLevelSlideFor(this.state.current)
-        index = this.props.children.indexOf(top);
-        let previous = this.props.children[index-1];
-        if(previous !== undefined)
-          transitionTo = previous.key;
+        slide = this.props.children[index-1];
+        if(slide)
+          next = slide.key
         break;
 
       case KEY_RIGHT: //look for next top-level slide
-        top = this.getTopLevelSlideFor(this.state.current)
-        index = this.props.children.indexOf(top);
-        let next = this.props.children[index+1];
-        if(next !== undefined)
-          transitionTo = next.key;
+        slide = this.props.children[index+1];
+        if(slide)
+          next = slide.key
         break;
 
       case KEY_DOWN: //look for next sub-level slide
+        //unfortunately we don't know who's our parent
+        //so we have to do this shit
+        index = top.props.children.indexOf(this.state.current);
+        slide = top.props.children[index+1];
+        if(slide)
+          next = top.key+"/"+slide.key
         break;
 
       case KEY_UP: //look for previous sub-level slide
+        index = top.props.children.indexOf(this.state.current);
+        slide = top.props.children[index-1];
+        if(slide)
+          next = top.key+"/"+slide.key
         break;
     }
-    transitionTo && history.push(transitionTo);
+    if(next !== undefined) {
+      history.push(next);
+    }
   },
 
   getTopLevelSlideFor: function (slide) {
