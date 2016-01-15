@@ -47,7 +47,10 @@ export default React.createClass({
    * in:  "hello/world"
    * out: ["hello", "world"]
    */
-  toKeypair: (path) => (path.split("/")),
+  toKeypair: (path) => {
+    const [a,b] = path.split("/");
+    return [a || 0, b || 0].compact();
+  },
 
   /**
    * in:  ["hello", "world"]
@@ -73,11 +76,12 @@ export default React.createClass({
     };
 
     let byKey = (el, index) => {
-      return el.name===key && [index, getChildren(el)];
+      return el.props.name===key && [index, getChildren(el)];
     };
 
-    if(Number.isInteger(n))
+    if(Number.isInteger(n)) {
       return [n, getChildren(list[n])];
+    }
     else
       return list.map(byKey).flatten().compact();
   },

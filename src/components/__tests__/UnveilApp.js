@@ -12,15 +12,15 @@ const history = require('../../helpers/History').default;
 
 let fixture = () => (
     <UnveilApp>
-        <slide key="0">
-            <slide key="0">First</slide>
+        <slide name="return-of-the-jedi">
+            <slide name="luke">Luke</slide>
         </slide>
-        <slide key="1">
-            <slide key="0">
-                Second
+        <slide name="pulp-fiction">
+            <slide name="vinnie-vincent">
+              Vincent Vega
             </slide>
-            <slide key="1">
-                Third
+            <slide name="jules">
+              Jules effing Winnfield
             </slide>
         </slide>
     </UnveilApp>
@@ -28,30 +28,37 @@ let fixture = () => (
 
 describe('UnveilApp', () => {
 
-    it('renders the first slide', () => {
-        let unveil = TestUtils.renderIntoDocument(fixture());
-        let unveilNode = ReactDOM.findDOMNode(unveil);
-        expect(unveilNode.textContent).toEqual('First');
-    }),
+  it('renders the first slide', () => {
+    let unveil = TestUtils.renderIntoDocument(fixture());
+    let unveilNode = ReactDOM.findDOMNode(unveil);
+    expect(unveilNode.textContent).toEqual('Luke');
+  }),
 
-    it('renders the first subslide', () => {
-        let unveil = TestUtils.renderIntoDocument(fixture());
-        let unveilNode = ReactDOM.findDOMNode(unveil);
-        expect(unveilNode.textContent).toEqual('First');
-    }),
+  it('renders the first subslide', () => {
+    let unveil = TestUtils.renderIntoDocument(fixture());
+    let unveilNode = ReactDOM.findDOMNode(unveil);
+    expect(unveilNode.textContent).toEqual('Luke');
+  }),
 
-    it('renders slide according to path', () => {
-        history.push('/1');
-        let unveil = TestUtils.renderIntoDocument(fixture());
-        let unveilNode = ReactDOM.findDOMNode(unveil);
-        expect(unveilNode.textContent).toEqual('Second');
-    }),
+  it('renders slide according to path', () => {
+    history.push('/1');
+    let unveil = TestUtils.renderIntoDocument(fixture());
+    let unveilNode = ReactDOM.findDOMNode(unveil);
+    expect(unveilNode.textContent).toEqual('Vincent Vega');
+  }),
 
-    it('renders subslide according to path', () => {
-        history.push('/1/1');
-        let unveil = TestUtils.renderIntoDocument(fixture());
-        let unveilNode = ReactDOM.findDOMNode(unveil);
-        expect(unveilNode.textContent).toEqual('Third');
-    });
+  it('renders subslide according to path', () => {
+    history.push('/1/1');
+    let unveil = TestUtils.renderIntoDocument(fixture());
+    let unveilNode = ReactDOM.findDOMNode(unveil);
+    expect(unveilNode.textContent).toEqual('Jules effing Winnfield');
+  }),
+
+  it('routes by name', () => {
+    history.push('/return-of-the-jedi/luke')
+    let unveil = TestUtils.renderIntoDocument(fixture());
+    let unveilNode = ReactDOM.findDOMNode(unveil);
+    expect(unveilNode.textContent).toEqual('Luke');
+  })
 
 });
