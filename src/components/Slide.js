@@ -4,26 +4,29 @@ import marked from 'marked';
 
 export default React.createClass({
 
-  componentWillMount: function () {
-    let content = this.props.children;
-    if(this.props.markdown && !Array.isArray(this.props.children)) {
-      content = marked(this.props.children).trim();
-    }
-    this.setState({content})
+  defaults: (overrides) => (Object.assign({
+    className: "slide"
+  }, overrides)),
+
+  fromMarkdown: function () {
+    return marked(this.props.children).trim();
+  },
+
+  shouldUseMarkdown: function () {
+    return this.props.markdown && !Array.isArray(this.props.children);
+  },
+
+  options: function () {
+    let opts = {};
+    if(this.shouldUseMarkdown())
+      opts.dangerouslySetInnerHTML = {__html: this.fromMarkdown()};
+    else
+      opts.children = this.props.children;
+    return this.defaults(opts);
   },
 
   render: function () {
-    let opts = {
-      id: this.key,
-      className: "slide"
-    };
-
-    if(this.props.markdown)
-      opts.dangerouslySetInnerHTML = {__html: this.state.content };
-    else
-      opts.children = this.state.content;
-
-    return (<section {...opts} />);
+    return (<section {...this.options()} />);
   }
 
 });
