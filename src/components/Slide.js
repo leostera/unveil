@@ -5,7 +5,7 @@ import marked from 'marked';
 export default React.createClass({
 
   defaults: (overrides) => (Object.assign({
-    className: "slide"
+    className: 'slide'
   }, overrides)),
 
   fromMarkdown: function () {
