@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import '../lib/Rx.History';
+import 'rx-history';
 
 import React from 'react';
 import CSSTransitionGroup from 'react-addons-css-transition-group';
