@@ -9,19 +9,19 @@ const Slide = require('../Slide').default;
 
 describe('Slide', () => {
 
-  it("renders it's content", () => {
+  it('renders it\'s content', () => {
     let slide = TestUtils.renderIntoDocument( (<Slide>Hello</Slide>) );
     let slideNode = ReactDOM.findDOMNode(slide);
     expect(slideNode.textContent).toEqual('Hello');
   });
 
-  it("renders markdown content", () => {
+  it('renders markdown content', () => {
     let slide = TestUtils.renderIntoDocument( (<Slide markdown={true}># Hello</Slide>) );
     let slideNode = ReactDOM.findDOMNode(slide);
     expect(slideNode.textContent).toEqual('Hello');
   });
 
-  it("renders html content", () => {
+  it('renders html content', () => {
     let slide = TestUtils.renderIntoDocument( (<Slide><h1>Hello</h1></Slide>) );
     let slideNode = ReactDOM.findDOMNode(slide);
     expect(slideNode.textContent).toEqual('Hello');
