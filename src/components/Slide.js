@@ -9,7 +9,7 @@ export default React.createClass({
     if(this.props.markdown && !Array.isArray(this.props.children)) {
       content = marked(this.props.children).trim();
     }
-    this.setState({content: content})
+    this.setState({content})
   },
 
   render: function () {
