@@ -1,27 +1,32 @@
 import React from 'react';
-import CSSTransitionGroup from 'react-addons-css-transition-group';
 
 import marked from 'marked';
 
 export default React.createClass({
 
-  componentWillMount: function () {
-    let content;
-    if(Array.isArray(this.props.children)) {
-      content = this.props.children;
-    } else {
-      let markup = marked(this.props.children);
-      content = <div dangerouslySetInnerHTML={{__html: markup }} />
-    }
-    this.setState({content})
+  defaults: (overrides) => (Object.assign({
+    className: 'slide'
+  }, overrides)),
+
+  fromMarkdown: function () {
+    return marked(this.props.children).trim();
+  },
+
+  shouldUseMarkdown: function () {
+    return this.props.markdown && !Array.isArray(this.props.children);
+  },
+
+  options: function () {
+    let opts = {};
+    if(this.shouldUseMarkdown())
+      opts.dangerouslySetInnerHTML = {__html: this.fromMarkdown()};
+    else
+      opts.children = this.props.children;
+    return this.defaults(opts);
   },
 
   render: function () {
-    return (
-      <section id={this.key} className="slide">
-        {this.state.content}
-      </section>
-    );
+    return (<section {...this.options()} />);
   }
 
 });

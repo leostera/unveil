@@ -16,7 +16,7 @@ ReactDOM.render( (
 - List all files, even hidden:
 
 \`ls -a\`
-          `}
+         `}
       </Slide>
 
       <Slide key="second"> # Second Slide</Slide>

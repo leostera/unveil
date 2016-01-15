@@ -24,15 +24,13 @@ export default React.createClass({
     return path.trim().replace(' ','-');
   },
 
-  componentWillMount: function () {
-    Observable.fromEvent(document, "keyup")
-      .pluck("keyCode")
-      .filter(this.isKeyAllowed)
-      .subscribe(this.onKey);
+  emptyPath: path => (path.length > 0),
 
+  componentWillMount: function () {
     Observable.fromHistory(history)
       .pluck("pathname")
       .map(this.cleanUpPath)
+      .filter(this.emptyPath)
       .distinctUntilChanged()
       .map(this.pathToRoute)
       .map(this.lookupRoute)
