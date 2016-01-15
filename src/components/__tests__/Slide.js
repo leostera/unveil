@@ -21,4 +21,10 @@ describe('Slide', () => {
     expect(slideNode.textContent).toEqual('Hello');
   });
 
+  it("renders html content", () => {
+    let slide = TestUtils.renderIntoDocument( (<Slide><h1>Hello</h1></Slide>) );
+    let slideNode = ReactDOM.findDOMNode(slide);
+    expect(slideNode.textContent).toEqual('Hello');
+  });
+
 });
