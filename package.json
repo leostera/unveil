@@ -37,7 +37,7 @@
   "scripts": {
     "start": "watchify -t [envify --NODE_ENV local] -o build/bundle.js -v -d src/app.js & sass -w ./styles:./build",
     "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > build/bundle.js; sass --update ./styles:./build",
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "browserify": {
     "transform": [
@@ -55,7 +55,9 @@
       "<rootDir>/node_modules/fbjs"
     ],
     "modulePathIgnorePatterns": [
-      "<rootDir>/node_modules/"
+      "<rootDir>/node_modules/",
+      "<rootDir>/build/",
+      "<rootDir>/styles/"
     ]
   }
 }
