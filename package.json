@@ -28,7 +28,7 @@
     "babelify": "^7.2.0",
     "browserify": "^6.2.0",
     "envify": "^3.0.0",
-    "jest-cli": "^0.4.19",
+    "jest-cli": "^0.8.2",
     "babel-jest": "^6.0.1",
     "reactify": "^0.15.2",
     "uglify-js": "~2.4.15",
@@ -37,7 +37,7 @@
   "scripts": {
     "start": "watchify -t [envify --NODE_ENV local] -o build/bundle.js -v -d src/app.js & sass -w ./styles:./build",
     "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > build/bundle.js; sass --update ./styles:./build",
-    "test": "jest"
+    "test": "jest --watch --onlyChanged"
   },
   "browserify": {
     "transform": [
@@ -47,7 +47,7 @@
     ]
   },
   "jest": {
-    "scriptPreprocessor": "node_modules/babel-jest",
+    "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
     "unmockedModulePathPatterns": [
       "<rootDir>/node_modules/react",
       "<rootDir>/node_modules/react-dom",
