@@ -4,16 +4,7 @@ import 'rx-history';
 import React from 'react';
 import CSSTransitionGroup from 'react-addons-css-transition-group';
 
-import createHistory from 'history/lib/createHashHistory';
-let history = createHistory({
-  queryKey: false
-});
-
-const KEY_LEFT  = 37;
-const KEY_UP    = 38;
-const KEY_RIGHT = 39;
-const KEY_DOWN  = 40;
-const KEYS = [KEY_LEFT, KEY_UP, KEY_RIGHT, KEY_DOWN];
+import history from '../helpers/History';
 
 export default React.createClass({
 
@@ -29,62 +20,13 @@ export default React.createClass({
   componentWillMount: function () {
     Observable.fromHistory(history)
       .pluck("pathname")
+      .startWith("/0")
       .map(this.cleanUpPath)
       .filter(this.emptyPath)
       .distinctUntilChanged()
       .map(this.pathToRoute)
       .map(this.lookupRoute)
       .subscribe(this.route);
-  },
-
-  isKeyAllowed: (code) => ( KEYS.indexOf(code) !== -1 ),
-
-  onKey: function (code) {
-    let transitionTo;
-    let top = this.getTopLevelSlideFor(this.state.current[0]);
-    let index = this.props.children.indexOf(top);
-    let next;
-    let slide;
-    switch (code) {
-      case KEY_LEFT: //look for previous top-level slide
-        slide = this.props.children[index-1];
-        if(slide)
-          next = slide.key
-        break;
-
-      case KEY_RIGHT: //look for next top-level slide
-        slide = this.props.children[index+1];
-        if(slide)
-          next = slide.key
-        break;
-
-      case KEY_DOWN: //look for next sub-level slide
-        //unfortunately we don't know who's our parent
-        //so we have to do this shit
-        index = top.props.children.indexOf(this.state.current);
-        slide = top.props.children[index+1];
-        if(slide)
-          next = top.key+"/"+slide.key
-        break;
-
-      case KEY_UP: //look for previous sub-level slide
-        index = top.props.children.indexOf(this.state.current);
-        slide = top.props.children[index-1];
-        if(slide)
-          next = top.key+"/"+slide.key
-        break;
-    }
-    if(next !== undefined) {
-      history.push(next);
-    }
-  },
-
-  getTopLevelSlideFor: function (slide) {
-    return this.props.children.filter( (top) => {
-      return top.props.children.filter( (s) => {
-        return s.key === slide.key;
-      }).length > 0;
-    })[0];
   },
 
   pathToRoute: (path) => {
@@ -96,15 +38,22 @@ export default React.createClass({
     let byKey = (key) => {
       return (slide) => (slide.key === key)
     };
-    let toChildren = (slide) => (slide.props.children)
-    let children = this.props.children.filter(byKey(route.key))
+    let toChildren = (slide) => (slide.props.children);
+    let children = this.props.children;
+    if (!Array.isArray(children)) {
+      children = [children];
+    }
+    children = children.filter(byKey(route.key))
       .map(toChildren)
-      .reduce( (a,b) => a.concat(b) )
+      .reduce( (a,b) => (a.concat(b)), [] );
 
-    if(route.subKey)
+    if (route.subKey) {
       return children.filter(byKey(route.subKey));
-    else
+    } else if (typeof children === "String") {
+      return children;
+    } else {
       return children[0];
+    }
   },
 
   route: function (element) {
@@ -113,16 +62,9 @@ export default React.createClass({
 
   render: function () {
     return (<div>
-      <CSSTransitionGroup
-        transitionName="slide"
-        transitionEnterTimeout={250}
-        transitionLeaveTimeout={250}
-        transitionAppearTimeout={250}
-        transitionAppear={true}
-        >
-        {this.state.current}
-      </CSSTransitionGroup>
+      {this.state.current}
     </div>);
+
   }
 
 });
