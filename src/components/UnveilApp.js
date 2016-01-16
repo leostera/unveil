@@ -85,12 +85,12 @@ export default React.createClass({
     }
   },
 
-  toSlide: function (indeces) {
-    let slide = this.props.children.toList()[indeces[0]];
-    if(indeces.length > 1) {
+  toSlide: function (indices) {
+    let slide = this.props.children.toList()[indices[0]];
+    if(indices.length > 1) {
       let children = slide.props.children;
       if(typeof children !== "string") {
-        slide = children.toList()[indeces[1]];
+        slide = children.toList()[indices[1]];
       }
     }
     return slide;
