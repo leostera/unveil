@@ -28,6 +28,10 @@ let fixture = () => (
       <p> What happens here? </p>
       <code> Some codez </code>
     </Slide>
+    <Slide>
+      <Slide><h1>Heading</h1></Slide>
+      <Slide name="donnie-darko"><h1>Donnie Darko</h1></Slide>
+    </Slide>
   </UnveilApp>
 );
 
