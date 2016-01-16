@@ -33,7 +33,6 @@ export default React.createClass({
   componentWillMount: function () {
     Observable.fromHistory(history)
       .pluck("pathname")
-      .startWith("/0")
       .map(this.cleanUpPath)
       .distinctUntilChanged()
       .map(this.toKeypair)
@@ -67,9 +66,6 @@ export default React.createClass({
     let list = this.props.children.toList();
     let [first, children] = this.pathToIndex(keypair[0], list);
     let second;
-    // children = "hello"
-    // children = [ h1, p ]
-    // children = [ slide1, slide2 ]
     if(this.areSlides(children)) {
       [second] = this.pathToIndex(keypair[1], children.toList());
     }
