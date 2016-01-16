@@ -40,25 +40,11 @@ let fixture = (history) => (
 
 let renderFixture = (history) => TestUtils.renderIntoDocument( fixture(history) );
 
-let checkContentEquals = (node, assertion) => {
-  expect(node.textContent).toEqual(assertion);
-};
-
-let checkContentAfterRoutingEquals = (history, route, assertion) => {
-  history.push(route);
-  checkContentEquals(assertion);
-};
-
-let checkHashAfterRoutingEquals = (history, route, assertion) => {
-  history.push(route);
-  let unlisten = history.listen((location) => {
-    expect(location.pathname).toEqual(assertion);
-  });
-  unlisten();
-};
-
 describe('UnveilApp', () => {
-  let history, elements, node
+  let history, elements, node;
+
+  let checkContentEquals = (content) =>
+    expect(node.textContent).toEqual(content)
 
   beforeEach( () => {
     history = createHistory({ queryKey: false });
@@ -68,70 +54,69 @@ describe('UnveilApp', () => {
 
   afterEach( () => {
     // please destroy elements and node here
+    elements = node = null;
   });
 
-  it('renders the first slide', () => {
-    checkContentEquals(node, 'Luke');
+  describe("Rendering", () => {
+    it('renders html slide', () => {
+      history.push('/2');
+      let children = node.children[0].children;
+      expect(children.length).toEqual(3);
+      expect(children[0].textContent).toEqual('One');
+    });
+
+    it('renders html sub slide', () => {
+      history.push('/3/1');
+      let children = node.children[0].children;
+      expect(children[0].tagName.toLowerCase()).toEqual('h1');
+      expect(children[0].textContent).toEqual('Donnie Darko');
+    });
   });
 
-  it('renders slide according to path', () => {
-    checkContentAfterRoutingEquals(history, '/1', 'Vincent Vega');
-  });
+  describe("Routing", () => {
+    let checkContentOnRoute = (route, content) => {
+      return () => {
+        history.push(route);
+        checkContentEquals(content);
+      }
+    }
 
-  it('renders subslide according to path', () => {
-    checkContentAfterRoutingEquals(history, '/1/1', 'Jules effing Winnfield');
-  });
+    let checkPath = (route, path) => {
+      return () => {
+        history.push(route);
+        let unlisten = history.listen((location) => {
+          expect(location.pathname).toEqual(path);
+        });
+        unlisten();
+      };
+    }
 
-  it('routes by name', () => {
-    checkContentAfterRoutingEquals(history, '/return-of-the-jedi/luke', 'Luke');
-  });
+    let t = (name, path, content) => it(name, checkContentOnRoute(path, content))
 
-  it('routes to html slide', () => {
-    history.push('/2');
-    let children = node.children[0].children;
-    expect(children.length).toEqual(3);
-    expect(children[0].textContent).toEqual('One');
-  });
+    t('routes to first slide', '/', 'Luke')
+    t('routes by index',       '/1', 'Vincent Vega')
+    t('routes by indices',     '/1/1', 'Jules effing Winnfield')
+    t('routes by name',        '/return-of-the-jedi/luke', 'Luke')
 
-  it('routes to html sub slide', () => {
-    history.push('/3/1');
-    let children = node.children[0].children;
-    expect(children[0].tagName.toLowerCase()).toEqual('h1');
-    expect(children[0].textContent).toEqual('Donnie Darko');
-  });
+    describe("Index to Name remapping", () => {
+      let t = (name, path, route) => it(name, checkPath(path, route))
 
-  it('routes from index to name', () => {
-    checkHashAfterRoutingEquals(history, '/0', '/return-of-the-jedi');
-  });
+      t('routes from index to name', '/0', '/return-of-the-jedi')
+      t('routes from index to default subindex name', '/1', '/pulp-fiction/vincent-vega')
+      t('routes from subindex to name', '/3/1', '/3/donnie-darko')
+      t('does not reroute if no nameis available for index', '/2', '/2')
+      t('does not reroute if no name is available for subindex', '/3/0', '/3/0')
+    });
 
-  it('reroutes from index to default subindex name', () => {
-    checkHashAfterRoutingEquals(history, '/1', '/pulp-fiction/vincent-vega');
-  });
+    describe("Fallbacks", () => {
+      let t = (name, path, route) => it(name, checkPath(path, route))
 
-  it('reroutes from subindex to name', () => {
-    checkHashAfterRoutingEquals(history, '/3/1', '/3/donnie-darko');
-  });
+      t('fallbacks to first slide if slide index not found', '/7', '/return-of-the-jedi')
+      t('fallbacks to first slide if slide name not found', '/whatever', '/return-of-the-jedi')
+      t('fallbacks to first subslide if subslide not found', '/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega')
+      t('fallbacks to slide if no subslides', '/2/not-found', '/2')
+    });
 
-  it('does not reroute if no name is available for index', () => {
-    checkHashAfterRoutingEquals(history, '/2', '/2');
-  });
-
-  it('does not reroute if no name is available for subindex', () => {
-    checkHashAfterRoutingEquals(history, '/3/0', '/3/0');
-  });
-
-  it('fallbacks to first slide if slide not found', () => {
-    checkHashAfterRoutingEquals(history, '/7', '/return-of-the-jedi');
-    checkHashAfterRoutingEquals(history, '/whatever', '/return-of-the-jedi');
-  });
-
-  it('fallbacks to first subslide if subslide not found', () => {
-    checkHashAfterRoutingEquals(history, '/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega');
-
-  });
-
-  it('fallbacks to slide if no subslides', () => {
-    checkHashAfterRoutingEquals(history, '/2/not-found', '/2');
   });
 
 });
