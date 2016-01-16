@@ -43,11 +43,10 @@ export default React.createClass({
 
   areSlides: function (children) {
     return children.toList()
-    .map( (slide) => {
-      return Slide.isSlide(slide);
-    })
-      .reduce( (a,b) => a&&b, true);
+      .map(Slide.isSlide)
+      .reduce( (a,b) => (a&&b), true );
   },
+
   /**
    * in:  ["hello", "world"]
    * out: [1, 3]
