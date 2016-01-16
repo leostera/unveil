@@ -52,6 +52,14 @@ export default React.createClass({
     return [a || 0, b || 0].compact();
   },
 
+  isSlide: (e) => (React.isValidElement(e) && e.type.displayName === 'Slide'),
+  areSlides: function (children) {
+    return children.toList()
+    .map( (slide) => {
+      return this.isSlide(slide);
+    })
+      .reduce( (a,b) => a&&b, true);
+  },
   /**
    * in:  ["hello", "world"]
    * out: [1, 3]
@@ -60,8 +68,12 @@ export default React.createClass({
     let list = this.props.children.toList();
     let [first, children] = this.pathToIndex(keypair[0], list);
     let second;
-    if(typeof children !== "string")
+    // children = "hello"
+    // children = [ h1, p ]
+    // children = [ slide1, slide2 ]
+    if(this.areSlides(children)) {
       [second] = this.pathToIndex(keypair[1], children.toList());
+    }
     return [first, second].compact();
   },
 
@@ -76,14 +88,16 @@ export default React.createClass({
     };
 
     let byKey = (el, index) => {
-      return el.props.name===key && [index, getChildren(el)];
+      if(el.props.name===key)
+        return [index, getChildren(el)];
     };
 
     if(Number.isInteger(n)) {
       return [n, getChildren(list[n])];
     }
-    else
+    else {
       return list.map(byKey).flatten().compact();
+    }
   },
 
   toSlide: function (indeces) {

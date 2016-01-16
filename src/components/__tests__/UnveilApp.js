@@ -12,17 +12,22 @@ const history = require('../../helpers/History').default;
 
 let fixture = () => (
     <UnveilApp>
-        <slide name="return-of-the-jedi">
+        <Slide name="return-of-the-jedi">
             Luke
-        </slide>
-        <slide name="pulp-fiction">
-            <slide name="vinnie-vincent">
+        </Slide>
+        <Slide name="pulp-fiction">
+            <Slide name="vinnie-vincent">
               Vincent Vega
-            </slide>
-            <slide name="jules">
+            </Slide>
+            <Slide name="jules">
               Jules effing Winnfield
-            </slide>
-        </slide>
+            </Slide>
+        </Slide>
+        <Slide>
+          <h1>One</h1>
+          <p> What happens here? </p>
+          <code> Some codez </code>
+        </Slide>
     </UnveilApp>
 );
 
@@ -55,6 +60,15 @@ describe('UnveilApp', () => {
   it('routes by name', () => {
     history.push('/return-of-the-jedi/luke')
     checkContentEquals('Luke');
+  })
+
+  it('routes to html slide', () => {
+    history.push('/2');
+    let unveil = TestUtils.renderIntoDocument(fixture());
+    // escape the wrapping div
+    let unveilNode = ReactDOM.findDOMNode(unveil).children[0];
+    expect(unveilNode.children.length).toEqual(3);
+    expect(unveilNode.children[0].textContent).toEqual('One');
   })
 
 });
