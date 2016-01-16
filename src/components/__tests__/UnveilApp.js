@@ -35,40 +35,53 @@ let fixture = () => (
   </UnveilApp>
 );
 
-let checkContentEquals = (text) => {
+let checkContentEquals = (assertion) => {
   let unveil = TestUtils.renderIntoDocument(fixture());
   let unveilNode = ReactDOM.findDOMNode(unveil);
-  expect(unveilNode.textContent).toEqual(text);
+  expect(unveilNode.assertionContent).toEqual(assertion);
+};
+
+let checkContentAfterRoutingEquals = (route, assertion) => {
+  history.push(route);
+  checkContentEquals(assertion);
+};
+
+let getUnveilNodeChildren = () => {
+  let unveil = TestUtils.renderIntoDocument(fixture());
+  // escape the wrapping div
+  return ReactDOM.findDOMNode(unveil).children[0];
 };
 
 describe('UnveilApp', () => {
 
   it('renders the first slide', () => {
     checkContentEquals('Luke');
-  })
+  });
 
   it('renders slide according to path', () => {
-    history.push('/1');
-    checkContentEquals('Vincent Vega');
-  })
+    checkContentAfterRoutingEquals('/1', 'Vincent Vega');
+  });
 
   it('renders subslide according to path', () => {
-    history.push('/1/1');
-    checkContentEquals('Jules effing Winnfield');
-  })
+    checkContentAfterRoutingEquals('1/1', 'Jules effing Winnfield');
+  });
 
   it('routes by name', () => {
-    history.push('/return-of-the-jedi/luke')
-    checkContentEquals('Luke');
-  })
+    checkContentAfterRoutingEquals('/return-of-the-jedi/luke', 'Luke');
+  });
 
   it('routes to html slide', () => {
     history.push('/2');
-    let unveil = TestUtils.renderIntoDocument(fixture());
-    // escape the wrapping div
-    let unveilNode = ReactDOM.findDOMNode(unveil).children[0];
-    expect(unveilNode.children.length).toEqual(3);
-    expect(unveilNode.children[0].textContent).toEqual('One');
-  })
+    let unveilNodeChildren = getUnveilNodeChildren();
+    expect(unveilNodeChildren.children.length).toEqual(3);
+    expect(unveilNodeChildren.children[0].textContent).toEqual('One');
+  });
+
+  it('routes to html sub slide', () => {
+    history.push('/3/1');
+    let unveilNodeChildren = getUnveilNodeChildren();
+    expect(unveilNodeChildren.children[0].tagName.toLowerCase()).toEqual('h1');
+    expect(unveilNodeChildren.children[0].textContent).toEqual('Donnie Darko');
+  });
 
 });
