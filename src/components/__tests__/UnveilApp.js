@@ -40,25 +40,11 @@ let fixture = (history) => (
 
 let renderFixture = (history) => TestUtils.renderIntoDocument( fixture(history) );
 
-let checkContentEquals = (node, assertion) => {
-  expect(node.textContent).toEqual(assertion);
-};
-
-let checkContentAfterRoutingEquals = (history, route, assertion) => {
-  history.push(route);
-  checkContentEquals(assertion);
-};
-
-let checkHashAfterRoutingEquals = (history, route, assertion) => {
-  history.push(route);
-  let unlisten = history.listen((location) => {
-    expect(location.pathname).toEqual(assertion);
-  });
-  unlisten();
-};
 
 describe('UnveilApp', () => {
-  let history, elements, node
+  let history, elements, node;
+
+  let checkContentEquals = (assertion) => {
 
   beforeEach( () => {
     history = createHistory({ queryKey: false });
@@ -68,70 +54,63 @@ describe('UnveilApp', () => {
 
   afterEach( () => {
     // please destroy elements and node here
+    elements = node = null;
   });
 
-  it('renders the first slide', () => {
-    checkContentEquals(node, 'Luke');
+  describe("Rendering", () => {
+    it('renders html slide', () => {
+      history.push('/2');
+      let children = node.children[0].children;
+      expect(children.length).toEqual(3);
+      expect(children[0].textContent).toEqual('One');
+    });
+
+    it('renders html sub slide', () => {
+      history.push('/3/1');
+      let children = node.children[0].children;
+      expect(children[0].tagName.toLowerCase()).toEqual('h1');
+      expect(children[0].textContent).toEqual('Donnie Darko');
+    });
   });
 
-  it('renders slide according to path', () => {
-    checkContentAfterRoutingEquals(history, '/1', 'Vincent Vega');
-  });
+  describe("Routing", () => {
+    let checkContentOnRoute = (route, content) => {
+      return () => {
+        history.push(route);
+        checkContentEquals(content);
+      }
+    }
 
-  it('renders subslide according to path', () => {
-    checkContentAfterRoutingEquals(history, '/1/1', 'Jules effing Winnfield');
-  });
+    let checkPath = (route, path) => {
+      return () => {
+        history.push(route);
+        let unlisten = history.listen((location) => {
+          expect(location.pathname).toEqual(path);
+        });
+        unlisten();
+      };
+    }
 
-  it('routes by name', () => {
-    checkContentAfterRoutingEquals(history, '/return-of-the-jedi/luke', 'Luke');
-  });
+    it('routes to first slide', checkContentOnRoute('/', 'Luke'))
+    it('routes by index',       checkContentOnRoute('/1', 'Vincent Vega'))
+    it('routes by indices',     checkContentOnRoute('/1/1', 'Jules effing Winnfield'))
+    it('routes by name',        checkContentOnRoute('/return-of-the-jedi/luke', 'Luke'))
 
-  it('routes to html slide', () => {
-    history.push('/2');
-    let children = node.children[0].children;
-    expect(children.length).toEqual(3);
-    expect(children[0].textContent).toEqual('One');
-  });
+    describe("Index to Name remapping", () => {
+      it('routes from index to name', checkPath('/0', '/return-of-the-jedi'));
+      it('routes from index to default subindex name', checkPath('/1', '/pulp-fiction/vincent-vega'))
+      it('routes from subindex to name', checkPath('/3/1', '/3/donnie-darko'));
+      it('does not reroute if no nameis available for index', checkPath('/2', '/2'))
+      it('does not reroute if no name is available for subindex', checkPath('/3/0', '/3/0'))
+    });
 
-  it('routes to html sub slide', () => {
-    history.push('/3/1');
-    let children = node.children[0].children;
-    expect(children[0].tagName.toLowerCase()).toEqual('h1');
-    expect(children[0].textContent).toEqual('Donnie Darko');
-  });
+    describe("Fallbacks", () => {
+      it('fallbacks to first slide if slide index not found', checkPath('/7', '/return-of-the-jedi'))
+      it('fallbacks to first slide if slide name not found',  checkPath('/whatever', '/return-of-the-jedi'))
+      it('fallbacks to first subslide if subslide not found', checkPath('/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega'))
+      it('fallbacks to slide if no subslides', checkPath('/2/not-found', '/2'))
+    });
 
-  it('routes from index to name', () => {
-    checkHashAfterRoutingEquals(history, '/0', '/return-of-the-jedi');
-  });
-
-  it('reroutes from index to default subindex name', () => {
-    checkHashAfterRoutingEquals(history, '/1', '/pulp-fiction/vincent-vega');
-  });
-
-  it('reroutes from subindex to name', () => {
-    checkHashAfterRoutingEquals(history, '/3/1', '/3/donnie-darko');
-  });
-
-  it('does not reroute if no name is available for index', () => {
-    checkHashAfterRoutingEquals(history, '/2', '/2');
-  });
-
-  it('does not reroute if no name is available for subindex', () => {
-    checkHashAfterRoutingEquals(history, '/3/0', '/3/0');
-  });
-
-  it('fallbacks to first slide if slide not found', () => {
-    checkHashAfterRoutingEquals(history, '/7', '/return-of-the-jedi');
-    checkHashAfterRoutingEquals(history, '/whatever', '/return-of-the-jedi');
-  });
-
-  it('fallbacks to first subslide if subslide not found', () => {
-    checkHashAfterRoutingEquals(history, '/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega');
-
-  });
-
-  it('fallbacks to slide if no subslides', () => {
-    checkHashAfterRoutingEquals(history, '/2/not-found', '/2');
   });
 
 });
