@@ -4,6 +4,8 @@ import 'rx-history';
 import React from 'react';
 import CSSTransitionGroup from 'react-addons-css-transition-group';
 
+import Slide from './Slide';
+
 import history from '../helpers/History';
 
 import '../lib/Utils';
@@ -39,11 +41,10 @@ export default React.createClass({
     return [a || 0, b || 0].compact();
   },
 
-  isSlide: (e) => (React.isValidElement(e) && e.type.displayName === 'Slide'),
   areSlides: function (children) {
     return children.toList()
     .map( (slide) => {
-      return this.isSlide(slide);
+      return Slide.isSlide(slide);
     })
       .reduce( (a,b) => a&&b, true);
   },
