@@ -12,6 +12,8 @@ import '../lib/Utils';
 
 export default React.createClass({
 
+  history: {},
+
   cleanUpPath: path => {
     if (path[0] === "/") {
       path = path.slice(1)
@@ -22,12 +24,20 @@ export default React.createClass({
   emptyPath: path => (path.length > 0),
 
   componentWillMount: function () {
-    Observable.fromHistory(history)
+    this.history = this.props.history || history;
+
+    let outAction = (action) => {
+      return (e) => e.action !== action;
+    };
+
+    Observable.fromHistory(this.history)
+      .filter(outAction("REPLACE"))
       .pluck("pathname")
       .map(this.cleanUpPath)
       .distinctUntilChanged()
       .map(this.toKeypair)
       .map(this.toIndices)
+      .distinctUntilChanged()
       .do(this.replaceUri)
       .map(this.toSlide)
       .subscribe(this.route);
@@ -58,6 +68,7 @@ export default React.createClass({
     let second;
     if(this.areSlides(children)) {
       [second] = this.pathToIndex(keypair[1], children.toList());
+      //second || (second=0);
     }
     return [first, second].compact();
   },
@@ -117,7 +128,7 @@ export default React.createClass({
         this.getSlideName(subSlide) || indices[1]
       ].compact().join('/');
 
-    history.replace(uri);
+    this.history.replace(uri);
   },
 
   route: function (current) {

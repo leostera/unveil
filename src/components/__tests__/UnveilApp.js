@@ -8,10 +8,10 @@ import TestUtils from 'react-addons-test-utils';
 
 const UnveilApp = require('../UnveilApp').default;
 const Slide = require('../Slide').default;
-const history = require('../../helpers/History').default;
+const createHistory = require('history/lib/createHashHistory');
 
-let fixture = () => (
-  <UnveilApp>
+let fixture = (history) => (
+  <UnveilApp history={history}>
     <Slide key="0" name="return-of-the-jedi">
       Luke
     </Slide>
@@ -38,23 +38,19 @@ let fixture = () => (
   </UnveilApp>
 );
 
-let renderFixture = () => TestUtils.renderIntoDocument( fixture() );
+let renderFixture = (history) => TestUtils.renderIntoDocument( fixture(history) );
 
-let getNode = () => ReactDOM.findDOMNode( renderFixture() ) ;
-let getWrappedChildren = () => getNode().children[0];
-
-let checkContentEquals = (assertion) => {
-  expect(getNode().textContent).toEqual(assertion);
+let checkContentEquals = (node, assertion) => {
+  expect(node.textContent).toEqual(assertion);
 };
 
-let checkContentAfterRoutingEquals = (route, assertion) => {
+let checkContentAfterRoutingEquals = (history, route, assertion) => {
   history.push(route);
   checkContentEquals(assertion);
 };
 
-let checkHashAfterRoutingEquals = (route, assertion) => {
+let checkHashAfterRoutingEquals = (history, route, assertion) => {
   history.push(route);
-  renderFixture();
   let unlisten = history.listen((location) => {
     expect(location.pathname).toEqual(assertion);
   });
@@ -62,55 +58,66 @@ let checkHashAfterRoutingEquals = (route, assertion) => {
 };
 
 describe('UnveilApp', () => {
+  let history, elements, node
+
+  beforeEach( () => {
+    history = createHistory({ queryKey: false });
+    elements = renderFixture(history);
+    node = ReactDOM.findDOMNode(elements);
+  });
+
+  afterEach( () => {
+    // please destroy elements and node here
+  });
 
   it('renders the first slide', () => {
-    checkContentEquals('Luke');
+    checkContentEquals(node, 'Luke');
   });
 
   it('renders slide according to path', () => {
-    checkContentAfterRoutingEquals('/1', 'Vincent Vega');
+    checkContentAfterRoutingEquals(history, '/1', 'Vincent Vega');
   });
 
   it('renders subslide according to path', () => {
-    checkContentAfterRoutingEquals('/1/1', 'Jules effing Winnfield');
+    checkContentAfterRoutingEquals(history, '/1/1', 'Jules effing Winnfield');
   });
 
   it('routes by name', () => {
-    checkContentAfterRoutingEquals('/return-of-the-jedi/luke', 'Luke');
+    checkContentAfterRoutingEquals(history, '/return-of-the-jedi/luke', 'Luke');
   });
 
   it('routes to html slide', () => {
     history.push('/2');
-    let unveilNodeChildren = getWrappedChildren();
-    expect(unveilNodeChildren.children.length).toEqual(3);
-    expect(unveilNodeChildren.children[0].textContent).toEqual('One');
+    let children = node.children[0].children;
+    expect(children.length).toEqual(3);
+    expect(children[0].textContent).toEqual('One');
   });
 
   it('routes to html sub slide', () => {
     history.push('/3/1');
-    let unveilNodeChildren = getWrappedChildren();
-    expect(unveilNodeChildren.children[0].tagName.toLowerCase()).toEqual('h1');
-    expect(unveilNodeChildren.children[0].textContent).toEqual('Donnie Darko');
+    let children = node.children[0].children;
+    expect(children[0].tagName.toLowerCase()).toEqual('h1');
+    expect(children[0].textContent).toEqual('Donnie Darko');
   });
 
   it('routes from index to name', () => {
-    checkHashAfterRoutingEquals('/0', '/return-of-the-jedi');
+    checkHashAfterRoutingEquals(history, '/0', '/return-of-the-jedi');
   });
 
   it('reroutes from index to default subindex name', () => {
-    checkHashAfterRoutingEquals('/1', '/pulp-fiction/vincent-vega');
+    checkHashAfterRoutingEquals(history, '/1', '/pulp-fiction/vincent-vega');
   });
 
   it('reroutes from subindex to name', () => {
-    checkHashAfterRoutingEquals('/3/1', '/3/donnie-darko');
+    checkHashAfterRoutingEquals(history, '/3/1', '/3/donnie-darko');
   });
 
   it('does not reroute if no name is available for index', () => {
-    checkHashAfterRoutingEquals('/2', '/2');
+    checkHashAfterRoutingEquals(history, '/2', '/2');
   });
 
   it('does not reroute if no name is available for subindex', () => {
-    checkHashAfterRoutingEquals('/3/0', '/3/0');
+    checkHashAfterRoutingEquals(history, '/3/0', '/3/0');
   });
 
 });
