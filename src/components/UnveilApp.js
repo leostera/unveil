@@ -6,18 +6,7 @@ import CSSTransitionGroup from 'react-addons-css-transition-group';
 
 import history from '../helpers/History';
 
-// Please kill me with fire
-Object.prototype.toList = function () {
-  return Array.isArray(this) && this || [this];
-};
-
-Array.prototype.flatten = function () {
-  return this.reduce((a,b) => (a.concat(b)), []);
-};
-
-Array.prototype.compact = function () {
-  return this.filter((a) => (a !== null && a !== undefined));
-};
+import '../lib/Utils';
 
 export default React.createClass({
 
