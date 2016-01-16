@@ -64,11 +64,11 @@ export default React.createClass({
    */
   toIndices: function (keypair) {
     let list = this.props.children.toList();
-    let [first, children] = this.pathToIndex(keypair[0], list);
+    let first = this.pathToIndex(keypair[0], list) || 0;
     let second;
-    if(this.areSlides(children)) {
-      [second] = this.pathToIndex(keypair[1], children.toList());
-      //second || (second=0);
+    let slide = this.getSlide(first, list);
+    if(slide && this.areSlides(slide.props.children)) {
+      second = this.pathToIndex(keypair[1], slide.props.children) || 0;
     }
     return [first, second].compact();
   },
@@ -79,21 +79,15 @@ export default React.createClass({
    */
   pathToIndex: (key, list) => {
     let n = Number(key);
-    let getChildren = (element) => {
-      return element.props.children;
-    };
+    if(Number.isInteger(n)) {
+       return n < list.length && n || false;
+    }
 
     let byKey = (el, index) => {
-      if(el.props.name === key)
-        return [index, getChildren(el)];
-    };
+      if(el.props.name === key) return index;
+    }
 
-    if(Number.isInteger(n)) {
-      return [n, getChildren(list[n])];
-    }
-    else {
-      return list.map(byKey).flatten().compact();
-    }
+    return list.map(byKey).compact().pop();
   },
 
   getSlide: function(index, children) {

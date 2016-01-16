@@ -120,4 +120,18 @@ describe('UnveilApp', () => {
     checkHashAfterRoutingEquals(history, '/3/0', '/3/0');
   });
 
+  it('fallbacks to first slide if slide not found', () => {
+    checkHashAfterRoutingEquals(history, '/7', '/return-of-the-jedi');
+    checkHashAfterRoutingEquals(history, '/whatever', '/return-of-the-jedi');
+  });
+
+  it('fallbacks to first subslide if subslide not found', () => {
+    checkHashAfterRoutingEquals(history, '/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega');
+
+  });
+
+  it('fallbacks to slide if no subslides', () => {
+    checkHashAfterRoutingEquals(history, '/2/not-found', '/2');
+  });
+
 });
