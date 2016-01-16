@@ -35,7 +35,6 @@ export default React.createClass({
       .pluck("pathname")
       .startWith("/0")
       .map(this.cleanUpPath)
-      .filter(this.emptyPath)
       .distinctUntilChanged()
       .map(this.toKeypair)
       .map(this.toIndices)
