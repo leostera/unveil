@@ -38,10 +38,13 @@ let fixture = () => (
   </UnveilApp>
 );
 
+let renderFixture = () => TestUtils.renderIntoDocument( fixture() );
+
+let getNode = () => ReactDOM.findDOMNode( renderFixture() ) ;
+let getWrappedChildren = () => getNode().children[0];
+
 let checkContentEquals = (assertion) => {
-  let unveil = TestUtils.renderIntoDocument(fixture());
-  let unveilNode = ReactDOM.findDOMNode(unveil);
-  expect(unveilNode.textContent).toEqual(assertion);
+  expect(getNode().textContent).toEqual(assertion);
 };
 
 let checkContentAfterRoutingEquals = (route, assertion) => {
@@ -49,20 +52,12 @@ let checkContentAfterRoutingEquals = (route, assertion) => {
   checkContentEquals(assertion);
 };
 
-let getUnveilNodeChildren = () => {
-  let unveil = TestUtils.renderIntoDocument(fixture());
-  // escape the wrapping div
-  return ReactDOM.findDOMNode(unveil).children[0];
-};
-
 let checkHashAfterRoutingEquals = (route, assertion) => {
   history.push(route);
-  TestUtils.renderIntoDocument(fixture());
-
+  renderFixture();
   let unlisten = history.listen((location) => {
     expect(location.pathname).toEqual(assertion);
   });
-
   unlisten();
 };
 
@@ -86,33 +81,35 @@ describe('UnveilApp', () => {
 
   it('routes to html slide', () => {
     history.push('/2');
-    let unveilNodeChildren = getUnveilNodeChildren();
+    let unveilNodeChildren = getWrappedChildren();
     expect(unveilNodeChildren.children.length).toEqual(3);
     expect(unveilNodeChildren.children[0].textContent).toEqual('One');
   });
 
   it('routes to html sub slide', () => {
     history.push('/3/1');
-    let unveilNodeChildren = getUnveilNodeChildren();
+    let unveilNodeChildren = getWrappedChildren();
     expect(unveilNodeChildren.children[0].tagName.toLowerCase()).toEqual('h1');
     expect(unveilNodeChildren.children[0].textContent).toEqual('Donnie Darko');
   });
 
-  it('changes indexed uri to name', () => {
-    checkHashAfterRoutingEquals('/1/0', '/pulp-fiction/vincent-vega');
-  });
-
-  it('changes indexed uri to name2', () => {
+  it('routes from index to name', () => {
     checkHashAfterRoutingEquals('/0', '/return-of-the-jedi');
   });
 
-  it('changes indexed uri to name where possible', () => {
-    checkHashAfterRoutingEquals('/3/1', '/3/donnie-darko');
-    checkHashAfterRoutingEquals('/1/2', '/pulp-fiction/2');
+  it('reroutes from index to default subindex name', () => {
+    checkHashAfterRoutingEquals('/1', '/pulp-fiction/vincent-vega');
   });
 
-  it('does not change indexed uri if there is no name', () => {
+  it('reroutes from subindex to name', () => {
+    checkHashAfterRoutingEquals('/3/1', '/3/donnie-darko');
+  });
+
+  it('does not reroute if no name is available for index', () => {
     checkHashAfterRoutingEquals('/2', '/2');
+  });
+
+  it('does not reroute if no name is available for subindex', () => {
     checkHashAfterRoutingEquals('/3/0', '/3/0');
   });
 
