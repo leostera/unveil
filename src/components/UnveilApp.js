@@ -103,7 +103,6 @@ export default React.createClass({
     return (<div>
       {this.state.current}
     </div>);
-
   }
 
 });
