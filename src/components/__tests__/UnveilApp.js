@@ -32,10 +32,6 @@ let fixture = () => (
 );
 
 let checkContentEquals = (text) => {
-  checkContentEqualsWithFixture(text, fixture);
-};
-
-let checkContentEqualsWithFixture = (text, fixture) => {
   let unveil = TestUtils.renderIntoDocument(fixture());
   let unveilNode = ReactDOM.findDOMNode(unveil);
   expect(unveilNode.textContent).toEqual(text);
