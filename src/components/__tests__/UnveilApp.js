@@ -40,11 +40,11 @@ let fixture = (history) => (
 
 let renderFixture = (history) => TestUtils.renderIntoDocument( fixture(history) );
 
-
 describe('UnveilApp', () => {
   let history, elements, node;
 
-  let checkContentEquals = (assertion) => {
+  let checkContentEquals = (content) =>
+    expect(node.textContent).toEqual(content)
 
   beforeEach( () => {
     history = createHistory({ queryKey: false });
@@ -91,24 +91,30 @@ describe('UnveilApp', () => {
       };
     }
 
-    it('routes to first slide', checkContentOnRoute('/', 'Luke'))
-    it('routes by index',       checkContentOnRoute('/1', 'Vincent Vega'))
-    it('routes by indices',     checkContentOnRoute('/1/1', 'Jules effing Winnfield'))
-    it('routes by name',        checkContentOnRoute('/return-of-the-jedi/luke', 'Luke'))
+    let t = (name, path, content) => it(name, checkContentOnRoute(path, content))
+
+    t('routes to first slide', '/', 'Luke')
+    t('routes by index',       '/1', 'Vincent Vega')
+    t('routes by indices',     '/1/1', 'Jules effing Winnfield')
+    t('routes by name',        '/return-of-the-jedi/luke', 'Luke')
 
     describe("Index to Name remapping", () => {
-      it('routes from index to name', checkPath('/0', '/return-of-the-jedi'));
-      it('routes from index to default subindex name', checkPath('/1', '/pulp-fiction/vincent-vega'))
-      it('routes from subindex to name', checkPath('/3/1', '/3/donnie-darko'));
-      it('does not reroute if no nameis available for index', checkPath('/2', '/2'))
-      it('does not reroute if no name is available for subindex', checkPath('/3/0', '/3/0'))
+      let t = (name, path, route) => it(name, checkPath(path, route))
+
+      t('routes from index to name', '/0', '/return-of-the-jedi')
+      t('routes from index to default subindex name', '/1', '/pulp-fiction/vincent-vega')
+      t('routes from subindex to name', '/3/1', '/3/donnie-darko')
+      t('does not reroute if no nameis available for index', '/2', '/2')
+      t('does not reroute if no name is available for subindex', '/3/0', '/3/0')
     });
 
     describe("Fallbacks", () => {
-      it('fallbacks to first slide if slide index not found', checkPath('/7', '/return-of-the-jedi'))
-      it('fallbacks to first slide if slide name not found',  checkPath('/whatever', '/return-of-the-jedi'))
-      it('fallbacks to first subslide if subslide not found', checkPath('/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega'))
-      it('fallbacks to slide if no subslides', checkPath('/2/not-found', '/2'))
+      let t = (name, path, route) => it(name, checkPath(path, route))
+
+      t('fallbacks to first slide if slide index not found', '/7', '/return-of-the-jedi')
+      t('fallbacks to first slide if slide name not found', '/whatever', '/return-of-the-jedi')
+      t('fallbacks to first subslide if subslide not found', '/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega')
+      t('fallbacks to slide if no subslides', '/2/not-found', '/2')
     });
 
   });
