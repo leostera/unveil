@@ -13,7 +13,7 @@ const history = require('../../helpers/History').default;
 let fixture = () => (
     <UnveilApp>
         <slide name="return-of-the-jedi">
-            <slide name="luke">Luke</slide>
+            Luke
         </slide>
         <slide name="pulp-fiction">
             <slide name="vinnie-vincent">
@@ -26,39 +26,35 @@ let fixture = () => (
     </UnveilApp>
 );
 
+let checkContentEquals = (text) => {
+  checkContentEqualsWithFixture(text, fixture);
+};
+
+let checkContentEqualsWithFixture = (text, fixture) => {
+  let unveil = TestUtils.renderIntoDocument(fixture());
+  let unveilNode = ReactDOM.findDOMNode(unveil);
+  expect(unveilNode.textContent).toEqual(text);
+};
+
 describe('UnveilApp', () => {
 
   it('renders the first slide', () => {
-    let unveil = TestUtils.renderIntoDocument(fixture());
-    let unveilNode = ReactDOM.findDOMNode(unveil);
-    expect(unveilNode.textContent).toEqual('Luke');
-  }),
-
-  it('renders the first subslide', () => {
-    let unveil = TestUtils.renderIntoDocument(fixture());
-    let unveilNode = ReactDOM.findDOMNode(unveil);
-    expect(unveilNode.textContent).toEqual('Luke');
-  }),
+    checkContentEquals('Luke');
+  })
 
   it('renders slide according to path', () => {
     history.push('/1');
-    let unveil = TestUtils.renderIntoDocument(fixture());
-    let unveilNode = ReactDOM.findDOMNode(unveil);
-    expect(unveilNode.textContent).toEqual('Vincent Vega');
-  }),
+    checkContentEquals('Vincent Vega');
+  })
 
   it('renders subslide according to path', () => {
     history.push('/1/1');
-    let unveil = TestUtils.renderIntoDocument(fixture());
-    let unveilNode = ReactDOM.findDOMNode(unveil);
-    expect(unveilNode.textContent).toEqual('Jules effing Winnfield');
-  }),
+    checkContentEquals('Jules effing Winnfield');
+  })
 
   it('routes by name', () => {
     history.push('/return-of-the-jedi/luke')
-    let unveil = TestUtils.renderIntoDocument(fixture());
-    let unveilNode = ReactDOM.findDOMNode(unveil);
-    expect(unveilNode.textContent).toEqual('Luke');
+    checkContentEquals('Luke');
   })
 
 });
