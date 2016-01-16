@@ -28,6 +28,7 @@ export default React.createClass({
       .distinctUntilChanged()
       .map(this.toKeypair)
       .map(this.toIndices)
+      .do(this.replaceUri)
       .map(this.toSlide)
       .subscribe(this.route);
   },
@@ -72,7 +73,7 @@ export default React.createClass({
     };
 
     let byKey = (el, index) => {
-      if(el.props.name===key)
+      if(el.props.name === key)
         return [index, getChildren(el)];
     };
 
@@ -84,15 +85,39 @@ export default React.createClass({
     }
   },
 
+  getSlide: function(index, children) {
+    if (typeof children !== "string") {
+      return children.toList()[index];
+    }
+  },
+
   toSlide: function (indices) {
-    let slide = this.props.children.toList()[indices[0]];
+    let slide = this.getSlide(indices[0], this.props.children);
     if(indices.length > 1) {
-      let children = slide.props.children;
-      if(typeof children !== "string") {
-        slide = children.toList()[indices[1]];
+      let subSlide = this.getSlide(indices[1], slide.props.children);
+      if(subSlide) {
+        slide = subSlide
       }
     }
     return slide;
+  },
+
+  getSlideName: function(slide) {
+    if (slide && slide.props.name) {
+      return slide.props.name;
+    }
+  },
+
+  replaceUri: function (indices) {
+    let slide = this.getSlide(indices[0], this.props.children);
+    let subSlide = this.getSlide(indices[1], slide.props.children);
+
+    let uri = '/' + [
+        this.getSlideName(slide) || indices[0],
+        this.getSlideName(subSlide) || indices[1]
+      ].compact().join('/');
+
+    history.replace(uri);
   },
 
   route: function (current) {

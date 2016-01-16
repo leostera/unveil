@@ -12,10 +12,10 @@ const history = require('../../helpers/History').default;
 
 let fixture = () => (
   <UnveilApp>
-    <Slide name="return-of-the-jedi">
+    <Slide key="0" name="return-of-the-jedi">
       Luke
     </Slide>
-    <Slide name="pulp-fiction">
+    <Slide key="1" name="pulp-fiction">
       <Slide name="vincent-vega">
         Vincent Vega
       </Slide>
@@ -26,12 +26,12 @@ let fixture = () => (
         Marsellus Wallace
       </Slide>
     </Slide>
-    <Slide>
+    <Slide key="2">
       <h1>One</h1>
       <p> What happens here? </p>
       <code> Some codez </code>
     </Slide>
-    <Slide>
+    <Slide key="3">
       <Slide><h1>Heading</h1></Slide>
       <Slide name="donnie-darko"><h1>Donnie Darko</h1></Slide>
     </Slide>
@@ -57,7 +57,13 @@ let getUnveilNodeChildren = () => {
 
 let checkHashAfterRoutingEquals = (route, assertion) => {
   history.push(route);
-  expect(window.location.hash).toEqual(assertion);
+  TestUtils.renderIntoDocument(fixture());
+
+  let unlisten = history.listen((location) => {
+    expect(location.pathname).toEqual(assertion);
+  });
+
+  unlisten();
 };
 
 describe('UnveilApp', () => {
@@ -71,7 +77,7 @@ describe('UnveilApp', () => {
   });
 
   it('renders subslide according to path', () => {
-    checkContentAfterRoutingEquals('1/1', 'Jules effing Winnfield');
+    checkContentAfterRoutingEquals('/1/1', 'Jules effing Winnfield');
   });
 
   it('routes by name', () => {
@@ -93,21 +99,21 @@ describe('UnveilApp', () => {
   });
 
   it('changes indexed uri to name', () => {
-    checkHashAfterRoutingEquals('1/0', '#/pulp-fiction/vincent-vega');
-    checkHashAfterRoutingEquals('0', '#/return-of-the-jedi');
+    checkHashAfterRoutingEquals('/1/0', '/pulp-fiction/vincent-vega');
+  });
+
+  it('changes indexed uri to name2', () => {
+    checkHashAfterRoutingEquals('/0', '/return-of-the-jedi');
   });
 
   it('changes indexed uri to name where possible', () => {
-    checkHashAfterRoutingEquals('3/1', '#/3/donnie-darko');
-    checkHashAfterRoutingEquals('1/2', '#/pulp-fiction/2');
+    checkHashAfterRoutingEquals('/3/1', '/3/donnie-darko');
+    checkHashAfterRoutingEquals('/1/2', '/pulp-fiction/2');
   });
 
   it('does not change indexed uri if there is no name', () => {
-    history.push('2');
-    expect(window.location.hash).toEqual('#/2');
-
-    history.push('2/0');
-    expect(window.location.hash).toEqual('#/2/0');
+    checkHashAfterRoutingEquals('/2', '/2');
+    checkHashAfterRoutingEquals('/3/0', '/3/0');
   });
 
 });
