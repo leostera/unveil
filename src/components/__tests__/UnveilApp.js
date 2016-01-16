@@ -11,24 +11,24 @@ const Slide = require('../Slide').default;
 const history = require('../../helpers/History').default;
 
 let fixture = () => (
-    <UnveilApp>
-        <Slide name="return-of-the-jedi">
-            Luke
-        </Slide>
-        <Slide name="pulp-fiction">
-            <Slide name="vinnie-vincent">
-              Vincent Vega
-            </Slide>
-            <Slide name="jules">
-              Jules effing Winnfield
-            </Slide>
-        </Slide>
-        <Slide>
-          <h1>One</h1>
-          <p> What happens here? </p>
-          <code> Some codez </code>
-        </Slide>
-    </UnveilApp>
+  <UnveilApp>
+    <Slide name="return-of-the-jedi">
+      Luke
+    </Slide>
+    <Slide name="pulp-fiction">
+      <Slide name="vinnie-vincent">
+        Vincent Vega
+      </Slide>
+      <Slide name="jules">
+        Jules effing Winnfield
+      </Slide>
+    </Slide>
+    <Slide>
+      <h1>One</h1>
+      <p> What happens here? </p>
+      <code> Some codez </code>
+    </Slide>
+  </UnveilApp>
 );
 
 let checkContentEquals = (text) => {
