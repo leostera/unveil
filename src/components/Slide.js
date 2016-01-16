@@ -4,6 +4,12 @@ import marked from 'marked';
 
 export default React.createClass({
 
+  statics: {
+    isSlide: function (e) {
+      return React.isValidElement(e) && e.type.displayName === 'Slide';
+    }
+  },
+
   defaults: (overrides) => (Object.assign({
     className: 'slide'
   }, overrides)),

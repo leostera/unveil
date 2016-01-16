@@ -4,16 +4,11 @@ import 'rx-history';
 import React from 'react';
 import CSSTransitionGroup from 'react-addons-css-transition-group';
 
-import createHistory from 'history/lib/createHashHistory';
-let history = createHistory({
-  queryKey: false
-});
+import Slide from './Slide';
 
-const KEY_LEFT  = 37;
-const KEY_UP    = 38;
-const KEY_RIGHT = 39;
-const KEY_DOWN  = 40;
-const KEYS = [KEY_LEFT, KEY_UP, KEY_RIGHT, KEY_DOWN];
+import history from '../helpers/History';
+
+import '../lib/Utils';
 
 export default React.createClass({
 
@@ -30,99 +25,85 @@ export default React.createClass({
     Observable.fromHistory(history)
       .pluck("pathname")
       .map(this.cleanUpPath)
-      .filter(this.emptyPath)
       .distinctUntilChanged()
-      .map(this.pathToRoute)
-      .map(this.lookupRoute)
+      .map(this.toKeypair)
+      .map(this.toIndices)
+      .map(this.toSlide)
       .subscribe(this.route);
   },
 
-  isKeyAllowed: (code) => ( KEYS.indexOf(code) !== -1 ),
+  /**
+   * in:  "hello/world"
+   * out: ["hello", "world"]
+   */
+  toKeypair: (path) => {
+    const [a,b] = path.split("/");
+    return [a || 0, b || 0].compact();
+  },
 
-  onKey: function (code) {
-    let transitionTo;
-    let top = this.getTopLevelSlideFor(this.state.current[0]);
-    let index = this.props.children.indexOf(top);
-    let next;
-    let slide;
-    switch (code) {
-      case KEY_LEFT: //look for previous top-level slide
-        slide = this.props.children[index-1];
-        if(slide)
-          next = slide.key
-        break;
+  areSlides: function (children) {
+    return children.toList()
+      .map(Slide.isSlide)
+      .reduce( (a,b) => (a&&b), true );
+  },
 
-      case KEY_RIGHT: //look for next top-level slide
-        slide = this.props.children[index+1];
-        if(slide)
-          next = slide.key
-        break;
-
-      case KEY_DOWN: //look for next sub-level slide
-        //unfortunately we don't know who's our parent
-        //so we have to do this shit
-        index = top.props.children.indexOf(this.state.current);
-        slide = top.props.children[index+1];
-        if(slide)
-          next = top.key+"/"+slide.key
-        break;
-
-      case KEY_UP: //look for previous sub-level slide
-        index = top.props.children.indexOf(this.state.current);
-        slide = top.props.children[index-1];
-        if(slide)
-          next = top.key+"/"+slide.key
-        break;
+  /**
+   * in:  ["hello", "world"]
+   * out: [1, 3]
+   */
+  toIndices: function (keypair) {
+    let list = this.props.children.toList();
+    let [first, children] = this.pathToIndex(keypair[0], list);
+    let second;
+    if(this.areSlides(children)) {
+      [second] = this.pathToIndex(keypair[1], children.toList());
     }
-    if(next !== undefined) {
-      history.push(next);
-    }
+    return [first, second].compact();
   },
 
-  getTopLevelSlideFor: function (slide) {
-    return this.props.children.filter( (top) => {
-      return top.props.children.filter( (s) => {
-        return s.key === slide.key;
-      }).length > 0;
-    })[0];
-  },
-
-  pathToRoute: (path) => {
-    const [key, subKey] = path.split("/");
-    return {key, subKey};
-  },
-
-  lookupRoute: function (route) {
-    let byKey = (key) => {
-      return (slide) => (slide.key === key)
+  /*
+   * Looks up a slide in a list of slides either by
+   * index or by named key
+   */
+  pathToIndex: (key, list) => {
+    let n = Number(key);
+    let getChildren = (element) => {
+      return element.props.children;
     };
-    let toChildren = (slide) => (slide.props.children)
-    let children = this.props.children.filter(byKey(route.key))
-      .map(toChildren)
-      .reduce( (a,b) => a.concat(b) )
 
-    if(route.subKey)
-      return children.filter(byKey(route.subKey));
-    else
-      return children[0];
+    let byKey = (el, index) => {
+      if(el.props.name===key)
+        return [index, getChildren(el)];
+    };
+
+    if(Number.isInteger(n)) {
+      return [n, getChildren(list[n])];
+    }
+    else {
+      return list.map(byKey).flatten().compact();
+    }
   },
 
-  route: function (element) {
-    this.setState({current: element});
+  toSlide: function (indices) {
+    let slide = this.props.children.toList()[indices[0]];
+    if(indices.length > 1) {
+      let children = slide.props.children;
+      if(typeof children !== "string") {
+        slide = children.toList()[indices[1]];
+      }
+    }
+    return slide;
+  },
+
+  route: function (current) {
+    this.setState({current});
   },
 
   render: function () {
     return (<div>
-      <CSSTransitionGroup
-        transitionName="slide"
-        transitionEnterTimeout={250}
-        transitionLeaveTimeout={250}
-        transitionAppearTimeout={250}
-        transitionAppear={true}
-        >
-        {this.state.current}
-      </CSSTransitionGroup>
+      {this.state.current}
     </div>);
+
   }
 
 });

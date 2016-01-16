@@ -28,7 +28,7 @@
     "babelify": "^7.2.0",
     "browserify": "^6.2.0",
     "envify": "^3.0.0",
-    "jest-cli": "^0.4.19",
+    "jest-cli": "^0.8.2",
     "babel-jest": "^6.0.1",
     "reactify": "^0.15.2",
     "uglify-js": "~2.4.15",
@@ -47,12 +47,9 @@
     ]
   },
   "jest": {
-    "scriptPreprocessor": "node_modules/babel-jest",
+    "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
     "unmockedModulePathPatterns": [
-      "<rootDir>/node_modules/react",
-      "<rootDir>/node_modules/react-dom",
-      "<rootDir>/node_modules/react-addons-test-utils",
-      "<rootDir>/node_modules/fbjs"
+      "<rootDir>/node_modules"
     ],
     "modulePathIgnorePatterns": [
       "<rootDir>/node_modules/",

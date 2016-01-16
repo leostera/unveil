@@ -6,25 +6,22 @@ import Slide from './components/Slide';
 
 ReactDOM.render( (
   <UnveilApp>
-    <Slide key="intro">
-      <Slide key="first">
+    <Slide name="star-wars">
+      <Slide name="episode-1" markdown={true}>
         {`
-# ls
+# Star Wars
 
-> List directory contents.
-
-- List all files, even hidden:
-
-\`ls -a\`
+Turmoil has engulfed the Galactic Republic. The taxation of trade routes to outlying star systems is in dispute.
+Hoping to resolve the matter with a blockade of deadly battleships, the greedy Trade Federation has stopped all shipping to the small planet of Naboo.
+While the congress of the Republic endlessly debates this alarming chain of events, the Supreme Chancellor has secretly dispatched two Jedi Knights, the guardians of peace and justice in the galaxy, to settle the conflict....
          `}
       </Slide>
-
-      <Slide key="second"> # Second Slide</Slide>
-      <Slide key="third"> # Second Slide</Slide>
+      <Slide name="second"> # Second Slide</Slide>
+      <Slide name="third"> # Second Slide</Slide>
     </Slide>
-    <Slide key="outro">
-      <Slide key="fourth"> # Bye World </Slide>
-      <Slide key="fifth"> # Fourth Slide</Slide>
+    <Slide name="outro">
+      <Slide name="fourth"> # Bye World </Slide>
+      <Slide name="fifth"> # Fourth Slide</Slide>
     </Slide>
   </UnveilApp>
 ), document.getElementById('unveil'));
