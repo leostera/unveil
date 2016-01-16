@@ -12,6 +12,8 @@ import '../lib/Utils';
 
 export default React.createClass({
 
+  history: {},
+
   cleanUpPath: path => {
     if (path[0] === "/") {
       path = path.slice(1)
@@ -22,12 +24,20 @@ export default React.createClass({
   emptyPath: path => (path.length > 0),
 
   componentWillMount: function () {
-    Observable.fromHistory(history)
+    this.history = this.props.history || history;
+
+    let outAction = (action) => {
+      return (e) => e.action !== action;
+    };
+
+    Observable.fromHistory(this.history)
+      .filter(outAction("REPLACE"))
       .pluck("pathname")
       .map(this.cleanUpPath)
       .distinctUntilChanged()
       .map(this.toKeypair)
       .map(this.toIndices)
+      .distinctUntilChanged()
       .do(this.replaceUri)
       .map(this.toSlide)
       .subscribe(this.route);
@@ -54,10 +64,11 @@ export default React.createClass({
    */
   toIndices: function (keypair) {
     let list = this.props.children.toList();
-    let [first, children] = this.pathToIndex(keypair[0], list);
+    let first = this.pathToIndex(keypair[0], list) || 0;
     let second;
-    if(this.areSlides(children)) {
-      [second] = this.pathToIndex(keypair[1], children.toList());
+    let slide = this.getSlide(first, list);
+    if(slide && this.areSlides(slide.props.children)) {
+      second = this.pathToIndex(keypair[1], slide.props.children) || 0;
     }
     return [first, second].compact();
   },
@@ -68,21 +79,15 @@ export default React.createClass({
    */
   pathToIndex: (key, list) => {
     let n = Number(key);
-    let getChildren = (element) => {
-      return element.props.children;
-    };
+    if(Number.isInteger(n)) {
+       return n < list.length && n || false;
+    }
 
     let byKey = (el, index) => {
-      if(el.props.name === key)
-        return [index, getChildren(el)];
-    };
+      if(el.props.name === key) return index;
+    }
 
-    if(Number.isInteger(n)) {
-      return [n, getChildren(list[n])];
-    }
-    else {
-      return list.map(byKey).flatten().compact();
-    }
+    return list.map(byKey).compact().pop();
   },
 
   getSlide: function(index, children) {
@@ -117,7 +122,7 @@ export default React.createClass({
         this.getSlideName(subSlide) || indices[1]
       ].compact().join('/');
 
-    history.replace(uri);
+    this.history.replace(uri);
   },
 
   route: function (current) {
