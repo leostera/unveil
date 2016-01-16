@@ -16,11 +16,14 @@ let fixture = () => (
       Luke
     </Slide>
     <Slide name="pulp-fiction">
-      <Slide name="vinnie-vincent">
+      <Slide name="vincent-vega">
         Vincent Vega
       </Slide>
       <Slide name="jules">
         Jules effing Winnfield
+      </Slide>
+      <Slide>
+        Marsellus Wallace
       </Slide>
     </Slide>
     <Slide>
@@ -38,7 +41,7 @@ let fixture = () => (
 let checkContentEquals = (assertion) => {
   let unveil = TestUtils.renderIntoDocument(fixture());
   let unveilNode = ReactDOM.findDOMNode(unveil);
-  expect(unveilNode.assertionContent).toEqual(assertion);
+  expect(unveilNode.textContent).toEqual(assertion);
 };
 
 let checkContentAfterRoutingEquals = (route, assertion) => {
@@ -50,6 +53,11 @@ let getUnveilNodeChildren = () => {
   let unveil = TestUtils.renderIntoDocument(fixture());
   // escape the wrapping div
   return ReactDOM.findDOMNode(unveil).children[0];
+};
+
+let checkHashAfterRoutingEquals = (route, assertion) => {
+  history.push(route);
+  expect(window.location.hash).toEqual(assertion);
 };
 
 describe('UnveilApp', () => {
@@ -82,6 +90,24 @@ describe('UnveilApp', () => {
     let unveilNodeChildren = getUnveilNodeChildren();
     expect(unveilNodeChildren.children[0].tagName.toLowerCase()).toEqual('h1');
     expect(unveilNodeChildren.children[0].textContent).toEqual('Donnie Darko');
+  });
+
+  it('changes indexed uri to name', () => {
+    checkHashAfterRoutingEquals('1/0', '#/pulp-fiction/vincent-vega');
+    checkHashAfterRoutingEquals('0', '#/return-of-the-jedi');
+  });
+
+  it('changes indexed uri to name where possible', () => {
+    checkHashAfterRoutingEquals('3/1', '#/3/donnie-darko');
+    checkHashAfterRoutingEquals('1/2', '#/pulp-fiction/2');
+  });
+
+  it('does not change indexed uri if there is no name', () => {
+    history.push('2');
+    expect(window.location.hash).toEqual('#/2');
+
+    history.push('2/0');
+    expect(window.location.hash).toEqual('#/2/0');
   });
 
 });
