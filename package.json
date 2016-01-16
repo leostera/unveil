@@ -1,7 +1,21 @@
 {
   "name": "unveil",
   "description": "Next-gen presentation framework",
+  "keywords": [
+    "presentation",
+    "slides",
+    "unveil",
+    "reveal",
+    "present",
+    "react",
+    "reactive",
+    "rx"
+  ],
   "author": "Leandro Ostera <leandro@ostera.io>",
+  "contributors": [{
+    "name": "Iris Schaffer",
+    "email": "irisschaffer@gmx.net"
+  }],
   "repository": "https://github.com/ostera/unveil.js",
   "bugs": {
     "url": "https://github.com/ostera/unveil.js/issues"
