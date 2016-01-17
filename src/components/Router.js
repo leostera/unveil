@@ -1,6 +1,8 @@
 import { Observable, Subject } from 'rxjs';
 import 'rx-history';
 
+import '../lib/Utils';
+
 // We pass in a Routes Map
 // This performs routing on N-dimensions
 //
@@ -27,138 +29,147 @@ let Path = {
   isEmpty: path => (path.length > 0),
 };
 
+let start = function () {
+  let outAction = (action) => {
+    return (e) => e.action !== action;
+  };
+
+  // @todo: split this into two streams after map(toList)
+  //
+  //  1. if there's some indices,
+  //     map them to paths,
+  //     replaceUri
+  //
+  //  2. if there's some paths,
+  //     map them to indices,
+  //     build state,
+  //     emit
+  Observable.fromHistory(this.history)
+    .filter(outAction("REPLACE"))
+    .do( (c) => console.log("before pluck", c) )
+    .pluck("pathname")
+    .do( (c) => console.log("before cleanUp", c) )
+    .map(Path.cleanUp)
+    .do( (c) => console.log("before dUc", c) )
+    .distinctUntilChanged()
+    .do( (c) => console.log("before toList", c) )
+    .map(toList)
+    .do( (c) => console.log("before dUc2", c) )
+    .distinctUntilChanged()
+    .do( (c) => console.log("before toIndices", c) )
+    .map(this.toIndices.bind(this))
+    .do( (c) => console.log("before emitState", c) )
+    .do(this.emitState.bind(this))
+    .do( (c) => console.log("before toPaths", c) )
+    .map(this.toPaths.bind(this))
+    .do( (c) => console.log("before replaceUri", c) )
+    .subscribe(this.replaceUri.bind(this));
+    //.map(this.toDirections)
+}
+
+/*
+ * navigate.0.next => right
+ * navigate.1.next => down
+ * navigate.2.next => in
+ * navigate.3.next => nextFragment
+ *
+ * navigate.jump(0,2,3)
+ * navigate.0.first
+ * navigate.0.last
+ *
+ * State:
+ *  {
+ *    current: [n, m, ...], // indices
+ *    directions: [
+ *      { next: true, previous: true },
+ *      { next: true, previous: true },
+ *      ...
+ *    ]
+ *  }
+ */
+let emitState = function (state) {
+  console.log(this.emitter);
+  //this.emitter.onNext({
+  //current: state //this is just the indices
+  //});
+}
+
+/**
+ * in:  "hello/world"
+ * out: ["hello", "world"]
+ */
+let toList = (path) => {
+  return path.split("/").compact().map((key) => {
+    let n = Number(key);
+    return Number.isNaN(n) && key || n;
+  });
+}
+
+// Recursively go through lists checking
+// if the key passes the filter,
+// and map that with the mapper
+// Return an array of thingies
+//
+// ["pulp", "vincent"], [..]
+// jjj
+let walk = (key, list, filter, mapper) => {
+  if (key.length < 1 && list) return mapper(list[0]);
+  if (key.length < 1 || !list) return;
+  return list.filter(filter(key[0]))
+    .map( (entry) => [
+      mapper(entry),
+      walk(key.slice(1), entry.children, filter, mapper)
+    ]).flatten().compact();
+}
+
+/**
+ * in:  ["hello", 0]
+ * out: [0, 0]
+ */
+let toIndices = function (keys) {
+  let filter = (key) => {
+    return (entry) => (entry.name === key || entry.index === key)
+  }
+  let mapper = (entry) => entry.index
+  let indices = walk(keys, this.map, filter, mapper);
+  return indices.length > 0 && indices || [0];
+}
+
+let toPaths = function (keys) {
+  let filter = (key) => {
+    return (entry) => (entry.name === key || entry.index === key)
+  }
+  let mapper = (entry) => (entry.name || entry.index)
+  return walk(keys, this.map, filter, mapper);
+}
+
+let replaceUri = function (keys) {
+  console.log("replaceUri", keys);
+  this.history.replace( "/"+keys.join("/") )
+}
+
 let __Router = {
-  started: false,
   history: false,
   map:     false,
   emitter: new Subject(),
-
-  start: function () {
-    let outAction = (action) => {
-      return (e) => e.action !== action;
-    };
-
-    // @todo: split this into two streams after map(toList)
-    //
-    //  1. if there's some indices,
-    //     map them to paths,
-    //     replaceUri
-    //
-    //  2. if there's some paths,
-    //     map them to indices,
-    //     build state,
-    //     emit
-    //
-    let history = Observable.fromHistory(this.history);
-      .filter(outAction("REPLACE"))
-      .pluck("pathname")
-      .map(Path.cleanUp)
-      .distinctUntilChanged()
-      .map(this.toList)
-      .map(this.toIndices)
-      .map(this.toDirections)
-      .do(this.emitState)
-      .distinctUntilChanged()
-      .do(this.replaceUri);
-
-    this.started = true;
-  }
-
-  /*
-   * navigate.0.next => right
-   * navigate.1.next => down
-   * navigate.2.next => in
-   * navigate.3.next => nextFragment
-   *
-   * navigate.jump(0,2,3)
-   * navigate.0.first
-   * navigate.0.last
-   *
-   * State:
-   *  {
-   *    current: [n, m, ...], // indices
-   *    directions: [
-   *      { next: true, previous: true },
-   *      { next: true, previous: true },
-   *      ...
-   *    ]
-   *  }
-   */
-  emitState: function (state) {
-    this.emitter.onNext(state);
-  }
-
-  /**
-   * in:  "hello/world"
-   * out: ["hello", "world"]
-   */
-  toList: (path) => (path.split("/")),
-
-  /**
-   * in:  ["hello", "world"]
-   * out: [1, 3]
-   */
-  toIndices: function (keys) {
-    let first = this.pathToIndex(keys[0], this.map) || 0;
-    let second;
-    let entry = this.findEntry(first, this.map);
-    if(entry && entry.children) {
-      second = this.pathToIndex(keys[1], entry.children) || 0;
-    }
-    return [first, second].compact();
-  },
-
-  /*
-   * Looks up a slide in a list of slides either by
-   * index or by named key
-   */
-  pathToIndex: (key, list) => {
-    let n = Number(key);
-    if(Number.isInteger(n)) {
-       return n < list.length && n || false;
-    }
-
-    let byKey = (el, index) => {
-      if(el.props.name === key) return index;
-    }
-
-    return list.map(byKey).compact().pop();
-  },
-
-  findIndex: function (index) {
-    return this.map[index];
-  },
-
-  indexToName: function (index) {
-    return this.findIndex(index).name;
-  },
-
-  buildUri: function (indices) {
-    indices.map(this.indexToName)
-  },
-
-  replaceUri: function (indices) {
-    this.history.replace(this.buildUri(indices));
-  },
+  start,
+  emitState,
+  toIndices,
+  toPaths,
+  replaceUri
 };
 
 // Public Router interface
 // the actual Router is always hidden
 let Router = {
 
-  configure:  function (opts) {
-    opts.map || (__Router.map == opts.map);
+  configure: function (opts) {
+    __Router.map = opts.map;
+    __Router.history = opts.history;
     return this;
   },
 
   start: function () {
-    if(!__Router.started)
-      throw new Error("Router already started");
-    if(!__Router.history)
-      throw new Error("Router needs a History");
-    if(!__Router.map)
-      throw new Error("Router needs a Routes Map");
-
     __Router.start();
     return this;
   },

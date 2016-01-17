@@ -1,4 +1,5 @@
 jest.dontMock('../Presenter');
+jest.dontMock('../Router');
 
 import React from 'react';
 import ReactDOM from 'react-dom';

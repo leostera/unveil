@@ -7,7 +7,7 @@ import Slide from './Slide';
 // import Presenter from './Presenter';
 
 import Router from './Router';
-// import history from '../helpers/History';
+import history from '../helpers/History';
 
 import '../lib/Utils';
 
@@ -35,8 +35,10 @@ export default React.createClass({
   componentWillMount: function () {
     this.map = this.buildMap(this.props.children);
 
-    //this.history = history;
-    this.router = Router.configure({ map }).start();
+    this.router = Router.configure({
+      map: this.map,
+      history
+    }).start();
 
     Observable.fromRouter(this.router)
       .subscribe(this.updateState);

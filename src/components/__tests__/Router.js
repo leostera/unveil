@@ -3,14 +3,57 @@ jest.dontMock('../Router');
 const Router = require('../Router').default;
 const createHistory = require('history/lib/createHashHistory');
 
-let fixture = {
-};
+let fixture = () => [
+  {
+    index: 0,
+    name: "return-of-the-jedi"
+  },
+  {
+    index: 1,
+    name: "pulp-fiction",
+    children: [
+      {
+        index: 0,
+        name: "vincent-vega"
+      },
+      {
+        index: 1,
+        name: "jules"
+      },
+      {
+        index: 2,
+        name: false
+      },
+    ]
+  },
+  {
+    index: 2,
+    name: false
+  },
+  {
+    index: 3,
+    name: false,
+    children: [
+      {
+        index: 0,
+        name: false
+      },
+      {
+        index: 1,
+        name: 'donnie-darko'
+      }
+    ]
+  }
+]
 
 describe('Router', () => {
   let history;
 
   beforeEach( () => {
     history = createHistory({ queryKey: false });
+    Router
+      .configure({history, map: fixture()})
+      .start();
   });
 
   afterEach( () => {
@@ -33,8 +76,9 @@ describe('Router', () => {
     t('routes from index to name', '/0', '/return-of-the-jedi')
     t('routes from index to default subindex name', '/1', '/pulp-fiction/vincent-vega')
     t('routes from subindex to name', '/3/1', '/3/donnie-darko')
-    t('does not reroute if no nameis available for index', '/2', '/2')
+    t('does not reroute if no name is available for index', '/2', '/2')
     t('does not reroute if no name is available for subindex', '/3/0', '/3/0')
+    ;
   });
 
   describe("Fallbacks", () => {
