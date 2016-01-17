@@ -16,51 +16,94 @@ import 'rx-history';
 //
 // @todo: Listen to history changes and produce new states
 // that components can listen to to update themselves
-//
+
+let fromRouter = (router) => {
+  return router.asObservable();
+};
+Observable.fromRouter = fromRouter;
+
 let Path = {
   cleanUp: path => (path.trim()),
   isEmpty: path => (path.length > 0),
 };
 
-let Router = {
+let __Router = {
+  started: false,
+  history: false,
+  map:     false,
+  emitter: new Subject(),
 
-  initialize: function () {
+  start: function () {
     let outAction = (action) => {
       return (e) => e.action !== action;
     };
 
-    Observable.fromHistory(this.history)
+    // @todo: split this into two streams after map(toList)
+    //
+    //  1. if there's some indices,
+    //     map them to paths,
+    //     replaceUri
+    //
+    //  2. if there's some paths,
+    //     map them to indices,
+    //     build state,
+    //     emit
+    //
+    let history = Observable.fromHistory(this.history);
       .filter(outAction("REPLACE"))
       .pluck("pathname")
       .map(Path.cleanUp)
       .distinctUntilChanged()
-      .map(this.toKeypair)
+      .map(this.toList)
       .map(this.toIndices)
+      .map(this.toDirections)
+      .do(this.emitState)
       .distinctUntilChanged()
-      .do(this.replaceUri)
-      .subscribe(this.route);
-  },
+      .do(this.replaceUri);
+
+    this.started = true;
+  }
+
+  /*
+   * navigate.0.next => right
+   * navigate.1.next => down
+   * navigate.2.next => in
+   * navigate.3.next => nextFragment
+   *
+   * navigate.jump(0,2,3)
+   * navigate.0.first
+   * navigate.0.last
+   *
+   * State:
+   *  {
+   *    current: [n, m, ...], // indices
+   *    directions: [
+   *      { next: true, previous: true },
+   *      { next: true, previous: true },
+   *      ...
+   *    ]
+   *  }
+   */
+  emitState: function (state) {
+    this.emitter.onNext(state);
+  }
 
   /**
    * in:  "hello/world"
    * out: ["hello", "world"]
    */
-  toKeypair: (path) => {
-    const [a,b] = path.split("/");
-    return [a || 0, b || 0].compact();
-  },
+  toList: (path) => (path.split("/")),
 
   /**
    * in:  ["hello", "world"]
    * out: [1, 3]
    */
-  toIndices: function (keypair) {
-    let list = this.props.children.toList();
-    let first = this.pathToIndex(keypair[0], list) || 0;
+  toIndices: function (keys) {
+    let first = this.pathToIndex(keys[0], this.map) || 0;
     let second;
-    let slide = this.getSlide(first, list);
-    if(slide && this.areSlides(slide.props.children)) {
-      second = this.pathToIndex(keypair[1], slide.props.children) || 0;
+    let entry = this.findEntry(first, this.map);
+    if(entry && entry.children) {
+      second = this.pathToIndex(keys[1], entry.children) || 0;
     }
     return [first, second].compact();
   },
@@ -82,21 +125,47 @@ let Router = {
     return list.map(byKey).compact().pop();
   },
 
-  replaceUri: function (indices) {
-    let slide = this.getSlide(indices[0], this.props.children);
-    let subSlide = this.getSlide(indices[1], slide.props.children);
-
-    let uri = '/' + [
-        this.getSlideName(slide) || indices[0],
-        this.getSlideName(subSlide) || indices[1]
-      ].compact().join('/');
-
-    this.history.replace(uri);
+  findIndex: function (index) {
+    return this.map[index];
   },
 
-  updateState: function (current) {
-    //this should emit the updateState
-  }
+  indexToName: function (index) {
+    return this.findIndex(index).name;
+  },
+
+  buildUri: function (indices) {
+    indices.map(this.indexToName)
+  },
+
+  replaceUri: function (indices) {
+    this.history.replace(this.buildUri(indices));
+  },
+};
+
+// Public Router interface
+// the actual Router is always hidden
+let Router = {
+
+  configure:  function (opts) {
+    opts.map || (__Router.map == opts.map);
+    return this;
+  },
+
+  start: function () {
+    if(!__Router.started)
+      throw new Error("Router already started");
+    if(!__Router.history)
+      throw new Error("Router needs a History");
+    if(!__Router.map)
+      throw new Error("Router needs a Routes Map");
+
+    __Router.start();
+    return this;
+  },
+
+  asObservable: function () {
+    return __Router.emitter.asObservable();
+  },
 
 };
 

@@ -80,9 +80,6 @@ describe('UnveilApp', () => {
   });
 
   it("creates the right map", () => {
-    let map = mapFixture();
-    console.log(elements.map, map);
-    expect(elements.map).toEqual(map);
+    expect(elements.map).toEqual(mapFixture());
   });
-
 });

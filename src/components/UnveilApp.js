@@ -1,4 +1,4 @@
-// import { Observable } from 'rxjs';
+ import { Observable } from 'rxjs';
 
 import React from 'react';
 // import CSSTransitionGroup from 'react-addons-css-transition-group';
@@ -6,13 +6,16 @@ import React from 'react';
 import Slide from './Slide';
 // import Presenter from './Presenter';
 
-// import Router from './Router';
+import Router from './Router';
 // import history from '../helpers/History';
 
 import '../lib/Utils';
 
 export default React.createClass({
 
+  /*
+   * Recursively build a route map from all the slides.
+   */
   buildMap: function (nodes) {
     return nodes.map( (slide, index) => {
       if(Slide.isSlide(slide)) {
@@ -33,25 +36,16 @@ export default React.createClass({
     this.map = this.buildMap(this.props.children);
 
     //this.history = history;
-    //this.router = Router.fromMap(map);
+    this.router = Router.configure({ map }).start();
 
-    //let isNewState = (e) => e.type === "state.new"
-
-    //Observable.fromRouter(this.router)
-    //  .filter(isNewState)
-    //  .subscribe(this.update);
+    Observable.fromRouter(this.router)
+      .subscribe(this.updateState);
   },
 
-  //update: function (e) {
-  //  // e.data = {
-  //  //  indices: [n,m],
-  //  //  availableRoutes: {
-  //  //    next: true,
-  //  //    previous: false, up: true
-  //  //  }
-  //  // }
-  //  this.setState({ currentSlide: this.getSlide(indices) });
-  //},
+  updateState: function (e) {
+    console.log(e);
+    //this.setState({ currentSlide: this.getSlide(indices) });
+  },
 
   //navigate: function (direction) {
   //  // Router.onNext("navigate.up");
