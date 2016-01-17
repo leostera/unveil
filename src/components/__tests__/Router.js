@@ -1,5 +1,7 @@
 jest.dontMock('../Router');
 
+import { Observable } from 'rxjs';
+
 const Router = require('../Router').default;
 const createHistory = require('history/lib/createHashHistory');
 
@@ -88,6 +90,17 @@ describe('Router', () => {
     t('fallbacks to first slide if slide name not found', '/whatever', '/return-of-the-jedi')
     t('fallbacks to first subslide if subslide not found', '/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega')
     t('fallbacks to slide if no subslides', '/2/not-found', '/2')
+  });
+
+  describe("Obversability", () => {
+    it("pushes new states to subscribers", () => {
+      history.push('/3/1');
+      Observable.fromRouter(Router)
+        .subscribe( (state) => {
+          console.log("receiving state!", state);
+          expect(state.current).toEqual([3,1]);
+        });
+    });
   });
 
 });

@@ -45,7 +45,7 @@ export default React.createClass({
   },
 
   updateState: function (e) {
-    console.log(e);
+    console.log("updateState", e);
     //this.setState({ currentSlide: this.getSlide(indices) });
   },
 

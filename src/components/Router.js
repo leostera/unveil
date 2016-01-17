@@ -20,7 +20,7 @@ import '../lib/Utils';
 // that components can listen to to update themselves
 
 let fromRouter = (router) => {
-  return router.asObservable();
+  return __Router.emitter;
 };
 Observable.fromRouter = fromRouter;
 
@@ -46,23 +46,14 @@ let start = function () {
   //     emit
   Observable.fromHistory(this.history)
     .filter(outAction("REPLACE"))
-    .do( (c) => console.log("before pluck", c) )
     .pluck("pathname")
-    .do( (c) => console.log("before cleanUp", c) )
     .map(Path.cleanUp)
-    .do( (c) => console.log("before dUc", c) )
     .distinctUntilChanged()
-    .do( (c) => console.log("before toList", c) )
     .map(toList)
-    .do( (c) => console.log("before dUc2", c) )
     .distinctUntilChanged()
-    .do( (c) => console.log("before toIndices", c) )
     .map(this.toIndices.bind(this))
-    .do( (c) => console.log("before emitState", c) )
     .do(this.emitState.bind(this))
-    .do( (c) => console.log("before toPaths", c) )
     .map(this.toPaths.bind(this))
-    .do( (c) => console.log("before replaceUri", c) )
     .subscribe(this.replaceUri.bind(this));
     //.map(this.toDirections)
 }
@@ -88,10 +79,9 @@ let start = function () {
  *  }
  */
 let emitState = function (state) {
-  console.log(this.emitter);
-  //this.emitter.onNext({
-  //current: state //this is just the indices
-  //});
+  this.emitter.next({
+    current: state //this is just the indices
+  });
 }
 
 /**
@@ -144,7 +134,6 @@ let toPaths = function (keys) {
 }
 
 let replaceUri = function (keys) {
-  console.log("replaceUri", keys);
   this.history.replace( "/"+keys.join("/") )
 }
 
@@ -175,7 +164,7 @@ let Router = {
   },
 
   asObservable: function () {
-    return __Router.emitter.asObservable();
+    return __Router.emitter;
   },
 
 };
