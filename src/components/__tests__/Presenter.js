@@ -15,15 +15,11 @@ let renderFixture = (slide) => TestUtils.renderIntoDocument( fixture(slide) );
 describe('Presenter', () => {
   let elements, node;
 
-  let checkContentEquals = (content) =>
-    expect(node.textContent).toEqual(content)
 
   beforeEach( () => {
   });
 
   afterEach( () => {
-    // please destroy elements and node here
-    elements = node = null;
   });
 
   it('renders html slide', () => {

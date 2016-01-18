@@ -1,4 +1,4 @@
- import { Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 
 import React from 'react';
 
@@ -46,13 +46,27 @@ export default React.createClass({
       .subscribe(this.updateState);
   },
 
-  updateState: function (s) {
-    console.log(s);
-    this.setState({ currentSlide: this.getSlide(s.indices) });
+  getFirstSlide: function() {
+    console.log("getFirstSlide state", this.state);
+
+    return this.props.children[0];
   },
 
-  /*** @todo: doesn't work. */
+  getInitialState: function() {
+    return {
+      currentSlide: this.getFirstSlide()
+    };
+  },
+
+  updateState: function (s) {
+    console.log("updating state", this.state);
+
+    this.setState({ currentSlide: this.getSlide(s) });
+  },
+
   getSlide: function (indices) {
+    console.log("getSlide state", this.state);
+
     let slide = this.slides[indices[0]];
     if(indices.length > 1 )
       return slide.props.children[indices[1]];
@@ -61,13 +75,16 @@ export default React.createClass({
   },
 
   areSlides: function (children) {
+    console.log("areSlides state", this.state);
+
     return children.toList()
       .map(Slide.isSlide)
       .reduce( (a,b) => (a&&b), true );
   },
 
   render: function () {
-    return (<div> {this.state.currentSlide} </div>);
+    console.log("render state", this.state.currentSlide);
+    return (<div>{this.state.currentSlide}</div>);
   }
 
 });
