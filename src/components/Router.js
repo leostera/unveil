@@ -40,7 +40,7 @@ let start = function () {
   //     map them to indices,
   //     build state,
   //     emit
-  Observable.fromHistory(this.history)
+  this.subscription = Observable.fromHistory(this.history)
     .filter(outAction("REPLACE"))
     .pluck("pathname")
     .map(Path.cleanUp)
@@ -50,8 +50,13 @@ let start = function () {
     .map(this.toIndices.bind(this))
     .do(this.emitState.bind(this))
     .map(this.toPaths.bind(this))
+    .distinctUntilChanged()
     .subscribe(this.replaceUri.bind(this));
     //.map(this.toDirections)
+}
+
+let jump = function(target) {
+  this.history.push('/' + target.join('/'));
 }
 
 
@@ -149,7 +154,7 @@ let toPaths = function (keys) {
  * @param keys [] Array of path-parts
  */
 let replaceUri = function (keys) {
-  this.history.replace( "/" + keys.join("/") )
+  this.history.replace( "/" + keys.join("/") );
 }
 
 let __Router = {
@@ -157,6 +162,7 @@ let __Router = {
   map:     false,
   subject: new Subject(),
   start,
+  jump,
   emitState,
   toIndices,
   toPaths,
@@ -175,6 +181,15 @@ let Router = {
 
   start: function () {
     __Router.start();
+    return this;
+  },
+
+  stop: function() {
+    __Router.subscription.complete();
+  },
+
+  jump: function(target) {
+    __Router.jump(target);
     return this;
   },
 
