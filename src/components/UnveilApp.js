@@ -32,6 +32,7 @@ export default React.createClass({
   },
 
   componentWillMount: function () {
+    this.slides = this.props.children;
     this.map = this.buildMap(this.props.children);
     this.history = this.props.history || history;
 
@@ -41,19 +42,18 @@ export default React.createClass({
     }).start();
 
     Observable.fromRouter(this.router)
+      .startWith([0,0])
       .subscribe(this.updateState);
   },
 
   updateState: function (s) {
+    console.log(s);
     this.setState({ currentSlide: this.getSlide(s.indices) });
   },
 
-  getInitialState: function () {
-    return { currentSlide: this.getSlide([0]) };
-  },
-
+  /*** @todo: doesn't work. */
   getSlide: function (indices) {
-    let slide = this.props.children[indices[0]];
+    let slide = this.slides[indices[0]];
     if(indices.length > 1 )
       return slide.props.children[indices[1]];
     else
