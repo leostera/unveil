@@ -45,13 +45,17 @@ export default React.createClass({
       .subscribe(this.updateState);
   },
 
-  getFirstSlide: function() {
-    return this.props.children[0];
-  },
-
   getInitialState: function() {
+    let getFirstChildIfSlides = (slide) => {
+      if (!this.areSlides(slide.props.children)) {
+        return slide;
+      } else {
+        getFirstChildIfSlides(slide.props.children[0]);
+      }
+    };
+
     return {
-      currentSlide: this.getFirstSlide()
+      currentSlide: getFirstChildIfSlides(this.props.children[0])
     };
   },
 
