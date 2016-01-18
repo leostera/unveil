@@ -48,6 +48,7 @@ let start = function () {
     .map(toList)
     .distinctUntilChanged()
     .map(this.toIndices.bind(this))
+    .do(this.saveState.bind(this))
     .do(this.emitState.bind(this))
     .map(this.toPaths.bind(this))
     .distinctUntilChanged()
@@ -55,10 +56,30 @@ let start = function () {
     //.map(this.toDirections)
 }
 
-let jump = function(target) {
-  this.history.push('/' + target.join('/'));
+let buildUri = function (path) {
+  return '/' + path.join('/');
 }
 
+/**
+ * @todo: Add tests to see if these are even valid.
+ * @param target Where to route to
+ */
+let jump = function (target) {
+  console.log("jumping to", target);
+  this.history.push(buildUri(target));
+}
+
+let nextState = (state, nav) => {
+  return nav.map((a, i) => state[i] + a)
+}
+
+let navigate = function (target) {
+  this.jump(nextState(this.state, target));
+}
+
+let saveState = function (state) {
+  this.state = state;
+}
 
 /**
  * Adds a bit of documentation to Router
@@ -150,19 +171,22 @@ let toPaths = function (keys) {
 }
 
 /**
- * Replaces the history uri by joining keys with '/'
+ * Replaces history with path built with keys
  * @param keys [] Array of path-parts
  */
 let replaceUri = function (keys) {
-  this.history.replace( "/" + keys.join("/") );
+  this.history.replace(buildUri(keys));
 }
 
 let __Router = {
   history: false,
   map:     false,
   subject: new Subject(),
+  state: {},
   start,
   jump,
+  navigate,
+  saveState,
   emitState,
   toIndices,
   toPaths,
@@ -190,6 +214,11 @@ let Router = {
 
   jump: function(target) {
     __Router.jump(target);
+    return this;
+  },
+
+  navigate: function(target) {
+    __Router.navigate(target);
     return this;
   },
 

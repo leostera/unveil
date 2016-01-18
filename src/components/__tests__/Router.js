@@ -101,18 +101,18 @@ describe('Router', () => {
   });
 
   /**
-   * @todo resolve stupid fucking idiot hack
-   * @param path what do I even know
-   * @param done I hate life.
+   * @todo resolve this hack!
    * @see https://github.com/rackt/history/blob/master/modules/__tests__/describeBasename.js#L27-L34
    */
   let checkPath = (path, done) => {
+    console.log("new test");
     let index = 0;
-    let checks = ['/return-of-the-jedi', path];
+    let checks = ['/return-of-the-jedi'].concat(path.toList());
     unlisten = history.listen((location) => {
-      expect(location.pathname).toEqual(checks[index++]);
+      console.log(location, checks);
+      expect(location.pathname).toEqual(checks[index]);
 
-      if (index === 1) done();
+      if (index === 20) done();
     });
   }
 
@@ -143,7 +143,7 @@ describe('Router', () => {
     t('fallbacks to slide if no subslides', '/2/not-found', '/2')
   });
 
-  describe('Obversability', () => {
+  describe('Observerability', () => {
     it('pushes new states to subscribers', (done) => {
       let subscription = Observable.fromRouter(Router)
         .subscribe( (state) => {
@@ -157,31 +157,31 @@ describe('Router', () => {
   });
   
   describe('Navigation', () => {
-    let t = (name, path, res, method) => it(name, (done) => {
-      checkPath(res, done);
-      method('/' + path.join('/'));
+    let j = (name, target, res) => it(name, (done) => {
+      checkPath(result, done);
+      Router.jump(target);
     });
 
-    let j = (name, path, res) => t(name, path, res, Router.jump);
-    let n = function(name, nav, path, res) {
-      history.push(path);
-      t(name, nav, res, Router.navigate);
-    };
+    let n = (name, nav, start, result) => it(name, (done) => {
+      checkPath([start, start, result, result], done);
+      history.push(start);
+      Router.navigate(nav);
+    });
 
 
-    j('jumps to a specified path', [4, 1], '/4/1');
+    //j('jumps to a specified path', [4, 1], '/4/1');
 
-    //n('navigates right from slide', [1], '6', '7');
-    //n('navigates left from slide', [-1], '7', '6');
-    //n('stays on same when not moved', [0], '6', '6');
-    //n('stays on same when moved illegally', [-1], '0', '0');
-    //n('ignores subslide navigation on main slide', [0, -2], '6', '6');
-    //n('resets subslide index on main slide change', [1], '4/1', '5/0');
-    //
-    //n('navigates up from subslide', [0, -1], '4/1', '4/0');
-    //n('navigates down from subslide', [0, 1], '4/0', '4/1');
-    //n('navigates from last subslide to next main', [0, 1], '3/1', '4/0');
-    //n('navigates from first subslide to previous main', [0, -1], '4/0', '3/1');
+    n('navigates right from slide', [1], '/6', '/7');
+    n('navigates left from slide', [-1], '/7', '/6');
+    //n('stays on same when not moved', [0], '/6', '/6');
+    //n('stays on same when moved illegally', [-1], '/0', '/0');
+    //n('ignores subslide navigation on main slide', [0, -2], '/6', '/6');
+    //n('resets subslide index on main slide change', [1], '/4/1', '/4/0');
+
+    //n('navigates up from subslide', [0, -1], '/4/1', '/4/0');
+    //n('navigates down from subslide', [0, 1], '/4/0', '/4/1');
+    //n('navigates from last subslide to next main', [0, 1], '/3/1', '/4/0');
+    //n('navigates from first subslide to previous main', [0, -1], '/4/0', '/3/1');
   });
 
 });
