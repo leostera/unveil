@@ -15,9 +15,12 @@ import '../lib/Utils';
 // event that we act upon by checking if the direction
 // is available, looking up the route in the map
 // and performing a history change
+<<<<<<< b393fe99c605c65328ec6ec74fd98b46cb0be43b
 //
 // @todo: Listen to history changes and produce new states
 // that components can listen to to update themselves
+=======
+>>>>>>> Adds a bit of documentation to Router
 
 let fromRouter = (router) => {
   return __Router.emitter;
@@ -58,7 +61,11 @@ let start = function () {
     //.map(this.toDirections)
 }
 
+<<<<<<< b393fe99c605c65328ec6ec74fd98b46cb0be43b
 /*
+=======
+/**
+>>>>>>> Adds a bit of documentation to Router
  * navigate.0.next => right
  * navigate.1.next => down
  * navigate.2.next => in
@@ -95,6 +102,7 @@ let toList = (path) => {
   });
 }
 
+<<<<<<< b393fe99c605c65328ec6ec74fd98b46cb0be43b
 // Recursively go through lists checking
 // if the key passes the filter,
 // and map that with the mapper
@@ -109,6 +117,29 @@ let walk = (key, list, filter, mapper) => {
     .map( (entry) => [
       mapper(entry),
       walk(key.slice(1), entry.children, filter, mapper)
+=======
+/**
+ * Recursively goes through lists, checking if
+ * the key passes the filter, and map that
+ * with the mapper
+ * @param keys [] Array of keys related to the
+ *                levels of the list
+ * @param list [] (Nested) array of routes
+ * @param filter function Filter method used
+ *                        for finding the right
+ *                        route per level
+ * @param mapper function Mapper method returning
+ * @returns [] Array of mapped entries for each
+ *             level of the routing
+ */
+let walk = (keys, list, filter, mapper) => {
+  if (keys.length < 1 && list) return mapper(list[0]);
+  if (keys.length < 1 || !list) return;
+  return list.filter(filter(keys[0]))
+    .map( (entry) => [
+      mapper(entry),
+      walk(keys.slice(1), entry.children, filter, mapper)
+>>>>>>> Adds a bit of documentation to Router
     ]).flatten().compact();
 }
 
@@ -119,12 +150,18 @@ let walk = (key, list, filter, mapper) => {
 let toIndices = function (keys) {
   let filter = (key) => {
     return (entry) => (entry.name === key || entry.index === key)
+<<<<<<< b393fe99c605c65328ec6ec74fd98b46cb0be43b
   }
   let mapper = (entry) => entry.index
+=======
+  };
+  let mapper = (entry) => entry.index;
+>>>>>>> Adds a bit of documentation to Router
   let indices = walk(keys, this.map, filter, mapper);
   return indices.length > 0 && indices || [0];
 }
 
+<<<<<<< b393fe99c605c65328ec6ec74fd98b46cb0be43b
 let toPaths = function (keys) {
   let filter = (key) => {
     return (entry) => (entry.name === key || entry.index === key)
@@ -135,6 +172,27 @@ let toPaths = function (keys) {
 
 let replaceUri = function (keys) {
   this.history.replace( "/"+keys.join("/") )
+=======
+/**
+ * Returns paths for index-based routing where possible
+ * @param keys [] Array of indices
+ * @returns [] Array of paths (or indices, where no name)
+ */
+let toPaths = function (keys) {
+  let filter = (key) => {
+    return (entry) => (entry.name === key || entry.index === key)
+  };
+  let mapper = (entry) => (entry.name || entry.index);
+  return walk(keys, this.map, filter, mapper);
+}
+
+/**
+ * Replaces the history uri by joining keys with '/'
+ * @param keys [] Array of path-parts
+ */
+let replaceUri = function (keys) {
+  this.history.replace( "/" + keys.join("/") )
+>>>>>>> Adds a bit of documentation to Router
 }
 
 let __Router = {
