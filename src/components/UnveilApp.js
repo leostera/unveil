@@ -1,10 +1,9 @@
  import { Observable } from 'rxjs';
 
 import React from 'react';
-// import CSSTransitionGroup from 'react-addons-css-transition-group';
 
 import Slide from './Slide';
-// import Presenter from './Presenter';
+import Presenter from './Presenter';
 
 import Router from './Router';
 import history from '../helpers/History';
@@ -45,14 +44,21 @@ export default React.createClass({
       .subscribe(this.updateState);
   },
 
-  updateState: function (e) {
-    console.log("updateState", e);
-    //this.setState({ currentSlide: this.getSlide(indices) });
+  updateState: function (s) {
+    this.setState({ currentSlide: this.getSlide(s.indices) });
   },
 
-  //navigate: function (direction) {
-  //  // Router.onNext("navigate.up");
-  //},
+  getInitialState: function () {
+    return { currentSlide: this.getSlide([0]) };
+  },
+
+  getSlide: function (indices) {
+    let slide = this.props.children[indices[0]];
+    if(indices.length > 1 )
+      return slide.props.children[indices[1]];
+    else
+      return slide
+  },
 
   areSlides: function (children) {
     return children.toList()
@@ -60,15 +66,8 @@ export default React.createClass({
       .reduce( (a,b) => (a&&b), true );
   },
 
-  //navigate: function (direction) {
-  //  subject.onNext( {type: "navigate", direction} );
-  //}
-
   render: function () {
-    //<UIController {...this.uiControllerOptions()} />
-    //<KeyListener navigate={this.navigate}/>
-      //<Presenter {...this.presenterOptions()}>
-    return (<div> {this.props.children} </div>);
+    return (<div> {this.state.currentSlide} </div>);
   }
 
 });

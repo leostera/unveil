@@ -109,4 +109,17 @@ describe('UnveilApp', () => {
     console.log(elements.updateState.mock);
     expect(elements.updateState).toBeCalled();
   });
+
+  let checkContentOnRoute = (route, content) => {
+    return () => {
+      history.push(route);
+      checkContentEquals(content);
+    }
+  }
+  let t = (name, path, content) => it(name, checkContentOnRoute(path, content))
+
+  t('routes to first slide', '/', 'Luke')
+  t('routes by index',       '/1', 'Vincent Vega')
+  t('routes by indices',     '/1/1', 'Jules effing Winnfield')
+  t('routes by name',        '/return-of-the-jedi/luke', 'Luke')
 });
