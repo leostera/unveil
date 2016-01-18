@@ -34,10 +34,11 @@ export default React.createClass({
 
   componentWillMount: function () {
     this.map = this.buildMap(this.props.children);
+    this.history = this.props.history || history;
 
     this.router = Router.configure({
       map: this.map,
-      history
+      history: this.history
     }).start();
 
     Observable.fromRouter(this.router)

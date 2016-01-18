@@ -10,8 +10,8 @@ const UnveilApp = require('../UnveilApp').default;
 const Slide = require('../Slide').default;
 const createHistory = require('history/lib/createHashHistory');
 
-let fixture = () => (
-  <UnveilApp>
+let fixture = (history) => (
+  <UnveilApp history={history}>
     <Slide key="0" name="return-of-the-jedi">
       Luke
     </Slide>
@@ -81,16 +81,17 @@ let mapFixture = () => [
   }
 ];
 
-let renderFixture = () => TestUtils.renderIntoDocument( fixture() );
+let renderFixture = (history) => TestUtils.renderIntoDocument( fixture(history) );
 
 describe('UnveilApp', () => {
-  let elements, node;
+  let history, elements, node;
 
   let checkContentEquals = (content) =>
     expect(node.textContent).toEqual(content)
 
   beforeEach( () => {
-    elements = renderFixture();
+    history = createHistory({ queryKey: false });
+    elements = renderFixture(history);
     node = ReactDOM.findDOMNode(elements);
   });
 
@@ -100,5 +101,12 @@ describe('UnveilApp', () => {
 
   it("creates the right map", () => {
     expect(elements.map).toEqual(mapFixture());
+  });
+
+  it("receives new states", () => {
+    elements.updateState = jest.genMockFunction();
+    history.push("/0/0");
+    console.log(elements.updateState.mock);
+    expect(elements.updateState).toBeCalled();
   });
 });
