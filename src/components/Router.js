@@ -23,7 +23,7 @@ import '../lib/Utils';
 >>>>>>> Adds a bit of documentation to Router
 
 let fromRouter = (router) => {
-  return __Router.emitter;
+  return __Router.subject;
 };
 Observable.fromRouter = fromRouter;
 
@@ -86,7 +86,7 @@ let start = function () {
  *  }
  */
 let emitState = function (state) {
-  this.emitter.next({
+  this.subject.next({
     current: state //this is just the indices
   });
 }
@@ -198,7 +198,7 @@ let replaceUri = function (keys) {
 let __Router = {
   history: false,
   map:     false,
-  emitter: new Subject(),
+  subject: new Subject(),
   start,
   emitState,
   toIndices,
@@ -222,7 +222,7 @@ let Router = {
   },
 
   asObservable: function () {
-    return __Router.emitter;
+    return __Router.subject;
   },
 
 };
