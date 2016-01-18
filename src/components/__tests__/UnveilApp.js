@@ -88,35 +88,29 @@ describe('UnveilApp', () => {
   let history, elements, node;
 
   let checkContentEquals = (content) => {
-    console.log(content);
-    console.log("el", elements.state.currentSlide);
-    //console.log("no", node);
-
     expect(node.textContent).toEqual(content);
   };
 
-  history = createHistory({ queryKey: false });
-  elements = renderFixture(history);
-  node = ReactDOM.findDOMNode(elements);
+  beforeEach( () => {
+    history = createHistory({ queryKey: false });
+    elements = renderFixture(history);
+    node = ReactDOM.findDOMNode(elements);
+  });
 
-  //beforeEach( () => {
-  //  node = ReactDOM.findDOMNode(elements);
-  //});
-  //
-  //afterEach( () => {
-  //  node = null;
-  //});
+  afterEach( () => {
+    elements = node = null;
+  });
 
-  //it('creates correct map', () => {
-  //  expect(elements.map).toEqual(mapFixture());
-  //});
+  it('creates correct map', () => {
+    expect(elements.map).toEqual(mapFixture());
+  });
 
-  //xit('receives new states', () => {
-  //  elements.updateState = jest.genMockFunction();
-  //  history.push('/0/0');
-  //  console.log(elements.updateState.mock);
-  //  expect(elements.updateState).toBeCalled();
-  //});
+  xit('receives new states', () => {
+    elements.updateState = jest.genMockFunction();
+    history.push('/0/0');
+    console.log(elements.updateState.mock);
+    expect(elements.updateState).toBeCalled();
+  });
 
   let checkContentOnRoute = (route, content) => {
     return () => {
@@ -130,5 +124,5 @@ describe('UnveilApp', () => {
   t('routes to first slide', '/', 'Luke');
   t('routes by index',       '/1', 'Vincent Vega');
   t('routes by indices',     '/1/1', 'Jules effing Winnfield');
-  //t('routes by name',        '/return-of-the-jedi/luke', 'Luke');
+  t('routes by name',        '/return-of-the-jedi/luke', 'Luke');
 });
