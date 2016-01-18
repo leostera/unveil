@@ -58,7 +58,7 @@ let mapFixture = () => [
       {
         index: 2,
         name: false
-      },
+      }
     ]
   },
   {
@@ -99,7 +99,7 @@ describe('UnveilApp', () => {
     elements = node = null;
   });
 
-  it("creates the right map", () => {
+  it("creates correct map", () => {
     expect(elements.map).toEqual(mapFixture());
   });
 
