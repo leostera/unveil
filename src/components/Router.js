@@ -182,14 +182,19 @@ let createRouter = function(opts) {
    *                level of the routing
    */
   let walk = (keys, list, filter, mapper) => {
-    if (keys.length < 1 && list) return mapper(list[0]);
+    if (keys.length < 1 && list) return walk([0], list, filter, mapper);
     if (keys.length < 1 || !list) return;
-    return list.filter(filter(keys[0]))
+
+    return list
+      .filter(filter(keys[0]))
       .map( (entry) => [
         mapper(entry),
         walk(keys.slice(1), entry.children, filter, mapper)
       ]).flatten().compact();
   };
+
+  // first slide: [0, 0]
+  // first filter: return []
 
   /**
    * Builds uri from path-array by joining with "/" and
@@ -218,7 +223,7 @@ let createRouter = function(opts) {
     };
     let mapper = (entry) => entry.index;
     let indices = walk(keys, map, filter, mapper);
-    return indices.length > 0 && indices || [0];
+    return indices.length > 0 && indices || walk([0], map, filter, mapper);
   };
 
   /**

@@ -132,22 +132,15 @@ describe('Router', () => {
     history = null;
   });
 
-  /**
-   * @todo resolve this hack!
-   * @see https://github.com/rackt/history/blob/master/modules/__tests__/describeBasename.js#L27-L34
-   */
   let checkPath = (result, done) => {
-    console.log("new test", result);
     let index = 0;
     let checks = result.toList();
 
     unlisten = history.listen((location) => {
-      console.log("inside check path", location);
       if (location.action === 'POP') return;
-      //if (index > 0) {
-        expect(location.pathname).toEqual(checks[index].pathname);
-        expect(location.action).toEqual(checks[index].action);
-      //}
+
+      expect(location.pathname).toEqual(checks[index].pathname);
+      expect(location.action).toEqual(checks[index].action);
 
       ++index;
 
@@ -187,30 +180,35 @@ describe('Router', () => {
   };
 
   describe('Observerability', () => {
-    it('pushes new states to subscribers', (done) => {
+    let t = (name, route, fixture, results) => it(name, (done) => {
       history = createHistory({ queryKey: false });
       router = createRouter({history, map: fixture()});
 
-      let results = [[0, 0], [1, 1]];
       let index = 0;
 
       let subscription = Observable.fromRouter(router)
         .subscribe( (state) => {
-          console.log(state.current, results, index);
           expect(state.current).toEqual(results[index]);
 
-          if (++index === results.length + 2) {
+          if (++index === results.length) {
             done();
             subscription.unsubscribe();
           }
         });
 
       router.start();
-      history.push('/1/1');
+      history.push(route);
     });
+
+    // @todo once walk is somewhere testable, this can be moved. this method tests if walk
+    //       returns the right nested fallback ([0, 0] instead of just [0] if what is
+    //       passed is either [] (1st test) or ['nonexistent'] (3rd test)
+    t('pushes new states to subscribers with nested first slide', '/1/1', fixtureWithNestedFirstSlide, [[0, 0], [1, 1]]);
+    t('pushes new states to subscribers', '/3/1', fixtureWithoutNestedFirstSlide, [[0], [3, 1]]);
+    t('pushes new states to subscribers with nested first slide', '/1/1', fixtureWithNestedFirstSlide, [[0, 0], [1, 1]]);
   });
 
-  xdescribe('Index to Name remapping', () => {
+  describe('Index to Name remapping', () => {
     let r = (name, route, result) => it(name, getPushAndCheckPath(route, toPushReplacePath([route, result])));
     let t = (name, route, result) => it(name, getPushAndCheckPath(route, toPushPath(result)));
 
@@ -226,18 +224,18 @@ describe('Router', () => {
     let t = (name, route, result) => it(name, getPushAndCheckPath(route, toPushPath(result)));
 
 
-    xit('fallbacks to first slide and subslide if slide index not found', (done) => {
+    it('fallbacks to first slide and subslide if slide index not found', (done) => {
       fixture = fixtureWithNestedFirstSlide;
       pushAndCheckPath('/23503957', toPushReplacePath(['/23503957', '/star-wars/episode-4']), done);
     });
 
-    //r('fallbacks to first slide if slide index not found', '/23503957', '/return-of-the-jedi');
-    //r('fallbacks to first slide if slide name not found', '/whatever', '/return-of-the-jedi');
-    //r('fallbacks to first subslide if subslide not found', '/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega');
+    r('fallbacks to first slide if slide index not found', '/23503957', '/return-of-the-jedi');
+    r('fallbacks to first slide if slide name not found', '/whatever', '/return-of-the-jedi');
+    r('fallbacks to first subslide if subslide not found', '/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega');
     r('fallbacks to slide if no subslides', '/2/not-found', '/2');
   });
   
-  xdescribe('Navigation', () => {
+  describe('Navigation', () => {
     let j = (name, target, result) => it(name, (done) => {
       checkPath(result, done);
       router.jump(target);
