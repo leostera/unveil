@@ -240,9 +240,7 @@ let createRouter = function(opts) {
    * @param keys *[] Path array
    */
   let replaceUri = function (keys) {
-    let equal = keys.map((a, i) => (currentPath[i] === a)).reduce((a, b) => (a && b));
-
-    if(!equal)
+    if(!keys.equals(currentPath))
       history.replace(buildUri(keys));
   };
 

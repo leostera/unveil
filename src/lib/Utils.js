@@ -16,3 +16,10 @@ Array.prototype.compact = function () {
     return !(a === null || a === undefined || (a.length !== undefined && a.length === 0));
   });
 };
+
+Array.prototype.equals = function (other) {
+  return this.length === other.length
+    && this
+      .map((a, i) => (other[i] === a))
+      .reduce((a, b) => (a && b));
+};
