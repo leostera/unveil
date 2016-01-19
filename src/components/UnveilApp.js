@@ -39,10 +39,13 @@ export default React.createClass({
     this.router = createRouter({
       map: this.map,
       history: this.history
-    }).start();
+    });
 
     Observable.fromRouter(this.router)
+      .do((e) => console.log("updating state", e))
       .subscribe(this.updateState);
+
+    this.router.start();
   },
 
   getInitialState: function() {
@@ -78,6 +81,7 @@ export default React.createClass({
   },
 
   render: function () {
+    console.log(this.state);
     return (<div>{this.state.currentSlide}</div>);
   }
 

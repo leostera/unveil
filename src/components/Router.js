@@ -7,7 +7,8 @@ let createRouter = function(opts) {
   let { history, map } = opts;
   let subject = new Subject();
   let state = {};
-  let subscription = {};
+  let currentPath = [];
+  let historySubscription;
 
   // We pass in a Routes Map
   // This performs routing on N-dimensions
@@ -32,7 +33,7 @@ let createRouter = function(opts) {
     isEmpty: path => (path.length > 0)
   };
 
-  let start = function () {
+  let start = () => {
     let outAction = (action) => {
       return (e) => e.action !== action;
     };
@@ -47,28 +48,36 @@ let createRouter = function(opts) {
     //     map them to indices,
     //     build state,
     //     emit
-    subscription = Observable.fromHistory(history)
-      .do((e) => console.log(e))
-      .filter(outAction("REPLACE"))
-      .pluck("pathname")
+    historySubscription = Observable.fromHistory(history)
+      .filter(outAction('REPLACE'))
+      //.do((e) => console.log('before pluck', e))
+      .pluck('pathname')
       .map(Path.cleanUp)
       .distinctUntilChanged()
       .map(toList)
+      //.do((e) => console.log("before distinct", e))
       .distinctUntilChanged()
+      .do(saveCurrentPath)
+      //.do((e) => console.log("before toIndicex", e))
       .map(toIndices)
+      //.do((e) => console.log("before saveState", e))
       .do(saveState)
+      //.do((e) => console.log("before emitState", e))
       .do(emitState)
+      //.do((e) => console.log("before toPaths", e))
       .map(toPaths)
+      //.do((e) => console.log("before distinct", e))
       .distinctUntilChanged()
+      //.do((e) => console.log("before replace", e))
       .subscribe(replaceUri);
-    //.map(this.toDirections)
+      //.map(toDirections)
   };
 
-  let stop = function() {
-    subscription && subscription.complete();
+  let stop = () => {
+    historySubscription && historySubscription.complete();
   };
 
-  let asObservable = function () {
+  let asObservable = () => {
     return subject;
   };
 
@@ -76,9 +85,10 @@ let createRouter = function(opts) {
    * @todo: Add tests to see if these are even valid.
    * @param {number[]} target Where to route to
    */
-  let jump = function (target) {
+  let jump = (target) => {
+    console.log(historySubscription);
     console.log("jumping to", target);
-    this.history.push(buildUri(target));
+    history.push(buildUri(target));
   };
 
   /**
@@ -95,7 +105,7 @@ let createRouter = function(opts) {
    * Navigates by directions
    * @param directions array of directions
    */
-  let navigate = function (directions) {
+  let navigate = (directions) => {
     jump(nextState(state, directions));
   };
 
@@ -103,8 +113,16 @@ let createRouter = function(opts) {
    * Saves state
    * @param state State
    */
-  let saveState = function (state) {
+  let saveState = (state) => {
     state = state;
+  };
+
+  /**
+   * Saves state
+   * @param state State
+   */
+  let saveCurrentPath = (path) => {
+    currentPath = path;
   };
 
   /**
@@ -127,7 +145,7 @@ let createRouter = function(opts) {
    *    ]
    *  }
    */
-  let emitState = function (state) {
+  let emitState = (state) => {
     subject.next({
       current: state //this is just the indices
     });
@@ -180,7 +198,7 @@ let createRouter = function(opts) {
    * @param path *[] Path array
    * @returns {string}
    */
-  let buildUri = function (path) {
+  let buildUri = (path) => {
     return '/' + path.join('/');
   };
 
@@ -193,13 +211,13 @@ let createRouter = function(opts) {
    * @param keys *[] Path array
    * @returns number[] Index-based path-array
    */
-  let toIndices = function (keys) {
+  let toIndices = (keys) => {
     let filter = (key) => {
       return (entry) => (entry.name === key || entry.index === key)
 
     };
     let mapper = (entry) => entry.index;
-    let indices = walk(keys, this.map, filter, mapper);
+    let indices = walk(keys, map, filter, mapper);
     return indices.length > 0 && indices || [0];
   };
 
@@ -214,7 +232,7 @@ let createRouter = function(opts) {
       return (entry) => (entry.name === key || entry.index === key)
     };
     let mapper = (entry) => (entry.name || entry.index);
-    return walk(keys, this.map, filter, mapper);
+    return walk(keys, map, filter, mapper);
   };
 
   /**
@@ -222,7 +240,10 @@ let createRouter = function(opts) {
    * @param keys *[] Path array
    */
   let replaceUri = function (keys) {
-    history.replace(buildUri(keys));
+    let equal = keys.map((a, i) => (currentPath[i] === a)).reduce((a, b) => (a && b));
+
+    if(!equal)
+      history.replace(buildUri(keys));
   };
 
   return {

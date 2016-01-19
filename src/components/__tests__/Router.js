@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 const createRouter = require('../Router').default;
 const createHistory = require('history/lib/createHashHistory');
 
-let fixture = () => [
+let fixtureWithoutNestedFirstSlide = () => [
   {
     index: 0,
     name: 'return-of-the-jedi'
@@ -84,77 +84,161 @@ let fixture = () => [
   }
 ];
 
+let fixtureWithNestedFirstSlide = () => [
+  {
+    index: 0,
+    name: 'star-wars',
+    children: [
+      {
+        index: 0,
+        name: 'episode-4'
+      },
+      {
+        index: 1,
+        name: 'episode-5'
+      }
+    ]
+  },
+  {
+    index: 1,
+    name: 'fight-club',
+    children: [
+      {
+        index: 0,
+        name: 'tyler'
+      },
+      {
+        index: 1,
+        name: 'tyler'
+      }
+    ]
+  }
+];
+
 describe('Router', () => {
   let history, unlisten;
   let router;
+  let fixture;
 
   beforeEach( () => {
     history = createHistory({ queryKey: false });
-    router = createRouter({history, map: fixture()}).start();
+    fixture = fixtureWithoutNestedFirstSlide;
   });
 
   afterEach( () => {
     if (unlisten) unlisten();
-    //router.stop();
+    // @todo the histortySubscription at this point is just {}
+    if(router) router.stop();
+    history = null;
   });
 
   /**
    * @todo resolve this hack!
    * @see https://github.com/rackt/history/blob/master/modules/__tests__/describeBasename.js#L27-L34
    */
-  let checkPath = (path, done) => {
-    console.log("new test");
+  let checkPath = (result, done) => {
+    console.log("new test", result);
     let index = 0;
-    let checks = ['/return-of-the-jedi'].concat(path.toList());
+    let checks = result.toList();
+
     unlisten = history.listen((location) => {
       console.log("inside check path", location);
-      expect(location.pathname).toEqual(checks[index++]);
+      if (location.action === 'POP') return;
+      //if (index > 0) {
+        expect(location.pathname).toEqual(checks[index].pathname);
+        expect(location.action).toEqual(checks[index].action);
+      //}
 
-      if (index === checks.length + 10) done();
+      ++index;
+
+      if (index === checks.length) done();
     });
   };
 
-  let pushAndCheckPath = (route, path) => {
+  // @todo find better name for this function
+  let pushAndCheckPath = (route, result, done) => {
+    checkPath(result, done);
+    router = createRouter({history, map: fixture()});
+    history.push(route);
+    router.start();
+  };
+
+  // @todo also find better name for this one
+  let getPushAndCheckPath = (route, result) => {
     return (done) => {
-      checkPath(path, done);
-      history.push(route);
+      pushAndCheckPath(route, result, done);
     };
   };
 
-  describe('Index to Name remapping', () => {
-    let t = (name, path, route) => it(name, pushAndCheckPath(path, route));
+  let toPath = (path, action) => {
+    return {pathname: path, action: action}
+  };
 
-    t('routes from index to name', '/0', '/return-of-the-jedi');
-    //t('routes from index to default subindex name', '/1', '/pulp-fiction/vincent-vega');
-    //t('routes from subindex to name', '/3/1', '/3/donnie-darko');
-    //t('does not reroute if no name is available for index', '/2', '/2');
-    //t('does not reroute if no name is available for subindex', '/3/0', '/3/0');
-  });
+  let toPushPath = (path) => {
+    return toPath(path, 'PUSH');
+  };
 
-  xdescribe('Fallbacks', () => {
-    let t = (name, path, route) => it(name, pushAndCheckPath(path, route));
+  let toReplacePath = (path) => {
+    return toPath(path, 'REPLACE');
+  };
 
-    t('fallbacks to first slide if slide index not found', '/23503957', '/return-of-the-jedi');
-    t('fallbacks to first slide if slide name not found', '/whatever', '/return-of-the-jedi');
-    t('fallbacks to first subslide if subslide not found', '/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega');
-    t('fallbacks to slide if no subslides', '/2/not-found', '/2');
-  });
+  let toPushReplacePath = (paths) => {
+    return [toPushPath(paths[0]), toReplacePath(paths[1])];
+  };
 
-  xdescribe('Observerability', () => {
+  describe('Observerability', () => {
     it('pushes new states to subscribers', (done) => {
+      history = createHistory({ queryKey: false });
+      router = createRouter({history, map: fixture()});
+
+      let results = [[0, 0], [1, 1]];
+      let index = 0;
+
       let subscription = Observable.fromRouter(router)
         .subscribe( (state) => {
-          expect(state.current).toEqual([3,1]);
-          subscription.unsubscribe();
-          done();
+          console.log(state.current, results, index);
+          expect(state.current).toEqual(results[index]);
+
+          if (++index === results.length + 2) {
+            done();
+            subscription.unsubscribe();
+          }
         });
 
-      history.push('/3/1');
+      router.start();
+      history.push('/1/1');
     });
+  });
+
+  xdescribe('Index to Name remapping', () => {
+    let r = (name, route, result) => it(name, getPushAndCheckPath(route, toPushReplacePath([route, result])));
+    let t = (name, route, result) => it(name, getPushAndCheckPath(route, toPushPath(result)));
+
+    r('routes from index to name', '/0', '/return-of-the-jedi');
+    r('routes from index to default subindex name', '/1', '/pulp-fiction/vincent-vega');
+    r('routes from subindex to name', '/3/1', '/3/donnie-darko');
+    t('does not reroute if no name is available for index', '/2', '/2');
+    t('does not reroute if no name is available for subindex', '/3/0', '/3/0');
+  });
+
+  describe('Fallbacks', () => {
+    let r = (name, route, result) => it(name, getPushAndCheckPath(route, toPushReplacePath([route, result])));
+    let t = (name, route, result) => it(name, getPushAndCheckPath(route, toPushPath(result)));
+
+
+    xit('fallbacks to first slide and subslide if slide index not found', (done) => {
+      fixture = fixtureWithNestedFirstSlide;
+      pushAndCheckPath('/23503957', toPushReplacePath(['/23503957', '/star-wars/episode-4']), done);
+    });
+
+    //r('fallbacks to first slide if slide index not found', '/23503957', '/return-of-the-jedi');
+    //r('fallbacks to first slide if slide name not found', '/whatever', '/return-of-the-jedi');
+    //r('fallbacks to first subslide if subslide not found', '/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega');
+    r('fallbacks to slide if no subslides', '/2/not-found', '/2');
   });
   
   xdescribe('Navigation', () => {
-    let j = (name, target, res) => it(name, (done) => {
+    let j = (name, target, result) => it(name, (done) => {
       checkPath(result, done);
       router.jump(target);
     });
@@ -166,10 +250,10 @@ describe('Router', () => {
     });
 
 
-    //j('jumps to a specified path', [4, 1], '/4/1');
+    j('jumps to a specified path', [4, 1], '/4/1');
 
-    n('navigates right from slide', [1], '/6', '/7');
-    n('navigates left from slide', [-1], '/7', '/6');
+    //n('navigates right from slide', [1], '/6', '/7');
+    //n('navigates left from slide', [-1], '/7', '/6');
     //n('stays on same when not moved', [0], '/6', '/6');
     //n('stays on same when moved illegally', [-1], '/0', '/0');
     //n('ignores subslide navigation on main slide', [0, -2], '/6', '/6');
