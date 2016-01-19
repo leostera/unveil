@@ -4,7 +4,7 @@ import 'rx-history';
 import '../lib/Utils';
 
 let createRouter = function(opts) {
-  let { history, map } = opts;
+  let { history, map, navigate } = opts;
   let subject = new Subject();
   let state = {};
   let currentPath = [];
@@ -55,14 +55,14 @@ let createRouter = function(opts) {
       .map(Path.cleanUp)
       .distinctUntilChanged()
       .map(toList)
-      //.do((e) => console.log("before distinct", e))
+      .do((e) => console.log("before distinct", e))
       .distinctUntilChanged()
       .do(saveCurrentPath)
-      //.do((e) => console.log("before toIndicex", e))
+      .do((e) => console.log("before toIndicex", e))
       .map(toIndices)
-      //.do((e) => console.log("before saveState", e))
+      .do((e) => console.log("before saveState", e))
       .do(saveState)
-      //.do((e) => console.log("before emitState", e))
+      .do((e) => console.log("before emitState", e))
       .do(emitState)
       //.do((e) => console.log("before toPaths", e))
       .map(toPaths)
@@ -73,6 +73,7 @@ let createRouter = function(opts) {
       //.map(toDirections)
   };
 
+  // @todo historySubscription is always undefined here :(
   let stop = () => {
     historySubscription && historySubscription.complete();
   };
@@ -86,7 +87,6 @@ let createRouter = function(opts) {
    * @param {number[]} target Where to route to
    */
   let jump = (target) => {
-    console.log(historySubscription);
     console.log("jumping to", target);
     history.push(buildUri(target));
   };
@@ -98,6 +98,7 @@ let createRouter = function(opts) {
    * @returns {number[]} New state
    */
   let nextState = (state, nav) => {
+    console.log("next step", state, nav);
     return nav.map((a, i) => state[i] + a)
   };
 
@@ -105,16 +106,17 @@ let createRouter = function(opts) {
    * Navigates by directions
    * @param directions array of directions
    */
-  let navigate = (directions) => {
-    jump(nextState(state, directions));
+  let __navigate = (directions) => {
+    navigate(directions, state, jump);
   };
 
   /**
    * Saves state
    * @param state State
    */
-  let saveState = (state) => {
-    state = state;
+  let saveState = (newState) => {
+    console.log("state", newState);
+    state = newState;
   };
 
   /**
@@ -124,6 +126,35 @@ let createRouter = function(opts) {
   let saveCurrentPath = (path) => {
     currentPath = path;
   };
+
+ // [0, 0]
+ // [0, 1]
+ // [0, 2]
+ // [1, 0]
+ // [1, 1]
+ // [1, 2] --> [1, 0] --> [0, 0]
+ //
+ //levels  0  1
+ //       [0, 2] --> next --> [1, 0]
+ // navigator(map) {
+ //   lastState;
+ //
+ //   getNext(level, state) {
+ //     // level: 0
+ //     return map[state[0] + 1] && state[0] + 1 || state[0];
+ //     // level: 1
+ //     return [state[0], getNext(level - 1)]
+ //   }
+ //
+ //   getPrevious(level, state) {
+ //
+ //   }
+ // }
+ //
+ // 09
+ // 01
+ // --
+ // 10
 
   /**
    * navigate.0.next => right
@@ -139,15 +170,16 @@ let createRouter = function(opts) {
    *  {
    *    current: [n, m, ...], // indices
    *    directions: [
-   *      { next: true, previous: true },
-   *      { next: true, previous: true },
+   *      { next: [0, 1], previous: 3 },
+   *      { next: 0, previous: 2 },
    *      ...
    *    ]
    *  }
    */
-  let emitState = (state) => {
+  let emitState = (newState) => {
     subject.next({
-      current: state //this is just the indices
+      current: newState, //this is just the indices
+      directions: nextStates(newState, map)
     });
   };
 
@@ -245,6 +277,7 @@ let createRouter = function(opts) {
    * @param keys *[] Path array
    */
   let replaceUri = function (keys) {
+    console.log("replace", keys, currentPath);
     if(!keys.equals(currentPath))
       history.replace(buildUri(keys));
   };

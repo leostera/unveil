@@ -137,12 +137,12 @@ describe('Router', () => {
     let checks = result.toList();
 
     unlisten = history.listen((location) => {
+      console.log(location);
       if (location.action === 'POP') return;
-
       expect(location.pathname).toEqual(checks[index].pathname);
       expect(location.action).toEqual(checks[index].action);
 
-      ++index;
+      index += 1;
 
       if (index === checks.length) done();
     });
@@ -179,7 +179,7 @@ describe('Router', () => {
     return [toPushPath(paths[0]), toReplacePath(paths[1])];
   };
 
-  describe('Observerability', () => {
+  xdescribe('Observerability', () => {
     let t = (name, route, fixture, results) => it(name, (done) => {
       history = createHistory({ queryKey: false });
       router = createRouter({history, map: fixture()});
@@ -208,7 +208,7 @@ describe('Router', () => {
     t('pushes new states to subscribers with nested first slide', '/1/1', fixtureWithNestedFirstSlide, [[0, 0], [1, 1]]);
   });
 
-  describe('Index to Name remapping', () => {
+  xdescribe('Index to Name remapping', () => {
     let r = (name, route, result) => it(name, getPushAndCheckPath(route, toPushReplacePath([route, result])));
     let t = (name, route, result) => it(name, getPushAndCheckPath(route, toPushPath(result)));
 
@@ -219,10 +219,8 @@ describe('Router', () => {
     t('does not reroute if no name is available for subindex', '/3/0', '/3/0');
   });
 
-  describe('Fallbacks', () => {
+  xdescribe('Fallbacks', () => {
     let r = (name, route, result) => it(name, getPushAndCheckPath(route, toPushReplacePath([route, result])));
-    let t = (name, route, result) => it(name, getPushAndCheckPath(route, toPushPath(result)));
-
 
     it('fallbacks to first slide and subslide if slide index not found', (done) => {
       fixture = fixtureWithNestedFirstSlide;
@@ -237,21 +235,25 @@ describe('Router', () => {
   
   describe('Navigation', () => {
     let j = (name, target, result) => it(name, (done) => {
-      checkPath(result, done);
+      checkPath(toPushPath(result), done);
+      router = createRouter({history, map: fixture()});
       router.jump(target);
+      router.start();
     });
 
     let n = (name, nav, start, result) => it(name, (done) => {
-      checkPath([start, start, result, result], done);
+      checkPath([toPushPath(start), toPushPath(result)], done);
+      router = createRouter({history, map: fixture()});
       history.push(start);
+      router.start();
       router.navigate(nav);
     });
 
 
     j('jumps to a specified path', [4, 1], '/4/1');
 
-    //n('navigates right from slide', [1], '/6', '/7');
-    //n('navigates left from slide', [-1], '/7', '/6');
+    n('navigates right from slide', [1], '/6', '/7');
+    n('navigates left from slide', [-1], '/7', '/6');
     //n('stays on same when not moved', [0], '/6', '/6');
     //n('stays on same when moved illegally', [-1], '/0', '/0');
     //n('ignores subslide navigation on main slide', [0, -2], '/6', '/6');
