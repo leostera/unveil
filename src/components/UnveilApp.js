@@ -5,7 +5,7 @@ import React from 'react';
 import Slide from './Slide';
 import Presenter from './Presenter';
 
-import Router from './Router';
+import createRouter from './Router';
 import history from '../helpers/History';
 
 import '../lib/Utils';
@@ -36,7 +36,7 @@ export default React.createClass({
     this.map = this.buildMap(this.props.children);
     this.history = this.props.history || history;
 
-    this.router = Router.configure({
+    this.router = createRouter({
       map: this.map,
       history: this.history
     }).start();
