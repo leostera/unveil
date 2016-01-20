@@ -127,35 +127,6 @@ let createRouter = function(opts) {
     currentPath = path;
   };
 
- // [0, 0]
- // [0, 1]
- // [0, 2]
- // [1, 0]
- // [1, 1]
- // [1, 2] --> [1, 0] --> [0, 0]
- //
- //levels  0  1
- //       [0, 2] --> next --> [1, 0]
- // navigator(map) {
- //   lastState;
- //
- //   getNext(level, state) {
- //     // level: 0
- //     return map[state[0] + 1] && state[0] + 1 || state[0];
- //     // level: 1
- //     return [state[0], getNext(level - 1)]
- //   }
- //
- //   getPrevious(level, state) {
- //
- //   }
- // }
- //
- // 09
- // 01
- // --
- // 10
-
   /**
    * navigate.0.next => right
    * navigate.1.next => down
@@ -224,9 +195,6 @@ let createRouter = function(opts) {
         walk(keys.slice(1), entry.children, filter, mapper)
       ]).flatten().compact();
   };
-
-  // first slide: [0, 0]
-  // first filter: return []
 
   /**
    * Builds uri from path-array by joining with "/" and
