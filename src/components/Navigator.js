@@ -19,7 +19,22 @@ let createNavigator = (map) => {
    * @param state
    */
   let getDirections = (state) => {
+    // for how many directions do we need this?? --> use deepest level of state!
+    let elements = map;
+    let result = [];
+    let intermediateState = [];
+    while (state.length > 0) {
+      let index = state.shift();
+      result.push({
+        next: elements[index + 1] !== undefined && intermediateState.concat([index + 1]) || false,
+        previous: elements[index - 1] !== undefined && intermediateState.concat([index - 1]) || false
+      });
 
+      intermediateState.push(index);
+      elements = elements[index].children;
+    }
+
+    return result;
   };
 
   /**
@@ -56,48 +71,6 @@ let createNavigator = (map) => {
   let getNextState = (level, state, change) => {
     state[level] += 1;
     return state.slice(0, level);
-  };
-
-  /**
-   * Returns the indices of the state when moving
-   * on level level if move is possible, else false.
-   *
-   * @param {number} level level at which to move
-   * @param {number[]} state current state
-   * @returns {number[]|false} indices of next state or
-   *                           false if there is no next
-   */
-  let getNewIndices = (level, state, change) => {
-    if (level < 0) return false;
-
-    let nextState = getNextState(level, state, change);
-    return doesStateExist(nextState, map) && nextState || getNext(level - 1, nextState);
-  };
-
-  /**
-   * Returns the indices of the next state when moving
-   * on level level if the move is possible, else false.
-   *
-   * @param {number} level level at which to move
-   * @param {number[]} state current state
-   * @returns {number[]|false} indices of next state or
-   *                           false if there is no next
-   */
-  let getNext = (level, state) => {
-    return getNewIndices(level, state, +1);
-  };
-
-  /**
-   * Returns the indices of the previous state when moving
-   * on level `level` if the move is possible, else false.
-   *
-   * @param {number} level level at which to move
-   * @param {number[]} state current state
-   * @returns {number[]|false} indices of next state or
-   *                           false if there is no next
-   */
-  let getPrevious = (level, state) => {
-    return getNewIndices(level, state, -1);
   };
 
   return {

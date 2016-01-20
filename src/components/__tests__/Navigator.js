@@ -54,7 +54,7 @@ let fixture = () => [
 describe('Navigator', () => {
   let navigator = createNavigator(fixture());
 
-  describe('returns correct directions', () => {
+  describe('directions', () => {
     let t = (name, state, level, direction, result) => it(name, () => {
       let directions = navigator.getDirections(state);
       expect(directions[level][direction]).toEqual(result);
@@ -63,14 +63,14 @@ describe('Navigator', () => {
     let n = (name, state, level, result) => t(name, state, level, 'next', result);
     let p = (name, state, level, result) => t(name, state, level, 'previous', result);
 
-    n('for main slide with next slide', [2], 0, [3]);
-    n('for main slide with previous slide', [2], 0, [1]);
-    n('for main slide without next slide', [3], 0, false);
-    n('for main slide without previous slide', [0], 0, false);
+    n('gets directions for 1st level with successor', [1], 0, [2]);
+    p('gets directions for 1st level with predecessor', [1], 0, [0]);
+    n('gets directions for 1st level without successor', [3, 0], 0, false);
+    p('gets directions for 1st level without predecessor', [0, 0], 0, false);
 
-    //it('for sub slide with next slide');
-    //it('for sub slide with previous slide');
-    //it('for sub slide without next slide');
-    //it('for sub slide without previous slide');
+    n('gets directions for 2nd level with successor', [3, 0], 1, [3, 1]);
+    p('gets directions for 2nd level with predecessor', [3, 1], 1, [3, 0]);
+    n('gets directions for 2nd level without successor', [2, 1], 1, false);
+    p('gets directions for 2nd level without predecessor', [2, 0], 1, false);
   });
 });
