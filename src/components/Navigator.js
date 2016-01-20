@@ -2,75 +2,62 @@ let createNavigator = (map) => {
   // @todo add Observer that updates map here!
 
   /**
-   * Returns possible directions from state on
-   * each level
-   *
+   * Returns possible directions from state on each level.
+   * If we are at state [1, 0] depending on the map, the
+   * result might look something like this:
    * [
    *    0: {
-     *      next: [2],
-     *      previous: [1]
-     *    },
+   *      next: [2],
+   *      previous: [0]
+   *    },
    *    1: {
-     *      next: [1, 1],
-     *      previous: false
-     *    }
+   *      next: [1, 1],
+   *      previous: false
+   *    }
    * ]
    *
-   * @param state
+   * @param {number[]} state State for which to return the directions
+   * @param {*[]} elements Elements to go through. Defaults to map.
+   * @param {number} level Depth of recursion. Defaults to 0.
    */
-  let getDirections = (state) => {
-    // for how many directions do we need this?? --> use deepest level of state!
-    let elements = map;
-    let result = [];
-    let intermediateState = [];
-    while (state.length > 0) {
-      let index = state.shift();
-      result.push({
-        next: elements[index + 1] !== undefined && intermediateState.concat([index + 1]) || false,
-        previous: elements[index - 1] !== undefined && intermediateState.concat([index - 1]) || false
-      });
+  let getDirections = (state, elements = map, level = 0) => {
+    if (level  === state.length) return [];
 
-      intermediateState.push(index);
-      elements = elements[index].children;
+    let index = state[level];
+    let stateLevel = state.slice(0, level);
+    let result = [getDirectionObject(elements, index, stateLevel)];
+
+    return result.concat(getDirections(state, elements[index].children, level + 1));
+  };
+
+  /**
+   * Builds the direction object for one level.
+   *
+   * @param {*[]} elements Elements to look into
+   * @param {number} index index of state at this level
+   * @param {number[]} stateLevel state until level
+   * @returns {{next, previous}} object with indices
+   *                             of next and previous
+   *                             indices. See @getIndex
+   */
+  let getDirectionObject = (elements, index, stateLevel) => {
+    return {
+      next: getIndex(elements, index + 1, stateLevel),
+      previous: getIndex(elements, index - 1, stateLevel)
     }
-
-    return result;
   };
 
   /**
-   * Returns if a provided state exists within children.
-   * Likely to be called with map.
+   * Returns the new state based on index or false, if
+   * the state does not exist
    *
-   * @param {number[]} state
-   * @param {Object[]} children where to check for the state
-   * @returns {bool}
+   * @param {*[]} elements
+   * @param {number} index
+   * @param {number[]} stateLevel state
+   * @returns {boolean|number[]} state array or false
    */
-  let doesStateExist = (state, children) => {
-    if (state.length === 0) return true;
-    if (children[state[0]] === undefined) return false;
-
-    return doesStateExist(state.slice(1), children[state[0]].children);
-  };
-
-  /**
-   * Returns state till the level of level, in which
-   * change is added to the value.
-   *
-   * Example:
-   *  level = 1
-   *  state = [0, 0, 2]
-   *  change = 1
-   *
-   *  Will result in [0, 1]
-   *
-   * @param number level
-   * @param number[] state
-   * @param number change
-   * @return number[] Resulting array
-   */
-  let getNextState = (level, state, change) => {
-    state[level] += 1;
-    return state.slice(0, level);
+  let getIndex = (elements, index, stateLevel) => {
+    return elements[index] !== undefined && stateLevel.concat([index]) || false;
   };
 
   return {
