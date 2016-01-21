@@ -72,7 +72,7 @@ describe('Router', () => {
     return [toPushPath(paths[0]), toReplacePath(paths[1])];
   };
 
-  xdescribe('Observerability', () => {
+  describe('Observerability', () => {
     let t = (name, route, fixture, results) => it(name, (done) => {
       history = createHistory({ queryKey: false });
       router = createRouter({history, map: fixture()});
@@ -101,7 +101,7 @@ describe('Router', () => {
     t('pushes new states to subscribers with nested first slide', '/1/1', fixtureWithNestedFirstSlide, [[0, 0], [1, 1]]);
   });
 
-  xdescribe('Index to Name remapping', () => {
+  describe('Index to Name remapping', () => {
     let r = (name, route, result) => it(name, getPushAndCheckPath(route, toPushReplacePath([route, result])));
     let t = (name, route, result) => it(name, getPushAndCheckPath(route, toPushPath(result)));
 
@@ -112,7 +112,7 @@ describe('Router', () => {
     t('does not reroute if no name is available for subindex', '/3/0', '/3/0');
   });
 
-  xdescribe('Fallbacks', () => {
+  describe('Fallbacks', () => {
     let r = (name, route, result) => it(name, getPushAndCheckPath(route, toPushReplacePath([route, result])));
 
     it('fallbacks to first slide and subslide if slide index not found', (done) => {
