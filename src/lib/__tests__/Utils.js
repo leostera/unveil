@@ -4,6 +4,24 @@ require('../Utils');
 
 describe("Utils", () => {
 
+  describe("Array.prototype.flatten", () => {
+
+    it("flattens an array", () => {
+      const a = [1,[2,3]];
+      const b = [1,2,3];
+
+      expect(a.flatten()).toEqual(b);
+    });
+
+    it("flattens an array recursively", () => {
+      const a = [1,[2,[3]]];
+      const b = [1,2,3];
+
+      expect(a.flatten()).toEqual(b);
+    });
+
+  });
+
   describe("Array.prototype.equals", () => {
 
     it("fails on different length arrays", () => {
