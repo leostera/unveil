@@ -67,6 +67,9 @@
       "<rootDir>/node_modules",
       "fixtures"
     ],
+    "testPathIgnorePatterns": [
+      "fixtures"
+    ],
     "modulePathIgnorePatterns": [
       "<rootDir>/node_modules/",
       "<rootDir>/build/",
