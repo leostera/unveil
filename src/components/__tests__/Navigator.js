@@ -4,7 +4,11 @@ const createNavigator = require('../Navigator').default;
 const fixture = require('./fixtures/RoutesMap').default;
 
 describe('Navigator', () => {
-  let navigator = createNavigator(fixture());
+  let navigator;
+
+  beforeEach( () => {
+    navigator = createNavigator(fixture());
+  });
 
   describe('directions', () => {
     let t = (name, state, level, direction, result) => it(name, () => {
