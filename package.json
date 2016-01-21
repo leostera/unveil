@@ -64,7 +64,8 @@
     "testRunner": "<rootDir>/node_modules/jest-cli/src/testRunners/jasmine/jasmine2.js",
     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
     "unmockedModulePathPatterns": [
-      "<rootDir>/node_modules"
+      "<rootDir>/node_modules",
+      "fixtures"
     ],
     "modulePathIgnorePatterns": [
       "<rootDir>/node_modules/",
