@@ -49,27 +49,32 @@ let createRouter = function(opts) {
     };
 
     observables.history = Observable.fromHistory(history)
+      .do((e) => console.log("history => filter outAction", e))
       .filter(outAction('REPLACE'))
+      .do((e) => console.log("history => pluck pathname", e))
       .pluck('pathname')
+      .do((e) => console.log("history => Path.cleanup", e))
       .map(Path.cleanUp)
+      .do((e) => console.log("history => distinct", e))
       .distinctUntilChanged()
+      .do((e) => console.log("history => toList", e))
       .map(toList)
-      .do((e) => console.log("before distinct", e))
-      .distinctUntilChanged();
-
-    observables.state = observables.history
-      .map(toStateObject)
-      .map(withIndices)
-      .map(withDirections)
-      .do(saveState)
-      .subscribe(emitState);
-
-    observables.replaceUri = observables.history
-      .do((e) => console.log("before toPaths", e))
-      .map(toPaths)
-      .do((e) => console.log("before distinct", e))
+      .do((e) => console.log("history => distinct", e))
       .distinctUntilChanged()
-      .do((e) => console.log("before replace", e))
+      .do((e) => console.log("state => before toStateObject", e))
+      .map(toStateObject)
+      .do((e) => console.log("state => before withIndices", e))
+      .map(withIndices)
+      .do((e) => console.log("state => before withDirections", e))
+      .map(withDirections)
+      //.do(saveState)
+      .do((e) => console.log("state => before emitState", e))
+      .do(emitState)
+      .do((e) => console.log("replaceUri => before toPaths", e))
+      .pluck('keys')
+      .map(toPaths)
+      .distinctUntilChanged()
+      .do((e) => console.log("replaceUri => before replaceUri", e))
       .subscribe(replaceUri);
   };
 
@@ -88,12 +93,10 @@ let createRouter = function(opts) {
   };
 
   let jump = (target) => {
-    console.log("jumping to", target);
     history.push(buildUri(target));
   };
 
   let saveState = (newState) => {
-    console.log("state", newState);
     oldState = state;
     state = {
       last: oldState
@@ -154,10 +157,11 @@ let createRouter = function(opts) {
    * @returns {string}
    */
   let buildUri = (path) => {
+    console.log(path);
     return '/' + path.join('/');
   };
 
-  let toStateObject = (keys) => { keys }
+  let toStateObject = (keys) => ({ keys })
 
   let withIndices = (state) => Object.assign(state, {
     indices: toIndices(state.keys)
@@ -214,8 +218,7 @@ let createRouter = function(opts) {
    * @param keys *[] Path array
    */
   let replaceUri = function (keys) {
-    console.log("replace", keys, currentPath);
-    if(!keys.equals(currentPath))
+    if(!keys.equals(state.path))
       history.replace(buildUri(keys));
   };
 
