@@ -1,4 +1,8 @@
+import { Subject } from 'rxjs';
+
 let createNavigator = () => {
+  let subject = new Subject();
+
   /**
    * Returns possible directions from state on each level.
    * If we are at state [1, 0] depending on the map, the
@@ -59,8 +63,13 @@ let createNavigator = () => {
     return elements[index] !== undefined && stateLevel.concat([index]) || false;
   };
 
+  let asObservable = () => {
+    return subject;
+  }
+
   return {
-    getDirections
+    getDirections,
+    asObservable,
   };
 };
 
