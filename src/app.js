@@ -17,7 +17,7 @@ While the congress of the Republic endlessly debates this alarming chain of even
          `}
       </Slide>
       <Slide name="second"> # Second Slide</Slide>
-      <Slide name="third"> # Second Slide</Slide>
+      <Slide name="third"> # Third Slide</Slide>
     </Slide>
     <Slide name="return-of-the-jedi">
       Luke
