@@ -12,18 +12,19 @@ export default React.createClass({
     37: 'left',
     38: 'up',
     39: 'right',
-    30: 'down',
+    40: 'down',
   },
+
+  getInitialState: () => ({ key: 'none' }),
 
   componentDidMount: function () {
     Observable.fromEvent(document, 'keyup')
       .pluck('keyCode')
-      .map( (code) => mappings[code] )
+      .map( (code) => this.mappings[code] )
       .filter( (motion) => motion !== undefined )
-      .do( function (motion) {
-        this.setState({ key: motion });
-        console.log(motion);
-      });
+      .do( function (key) {
+        this.setState({key});
+      }.bind(this))
       .subscribe(this.props.navigate);
   },
 
