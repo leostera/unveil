@@ -125,7 +125,7 @@ describe('Router', () => {
     r('fallbacks to first subslide if subslide not found', '/pulp-fiction/mia-wallace', '/pulp-fiction/vincent-vega');
     r('fallbacks to slide if no subslides', '/2/not-found', '/2');
   });
-  
+
   describe('Navigation', () => {
     let j = (name, target, result) => it(name, (done) => {
       checkPath(toPushPath(result), done);
