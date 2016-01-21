@@ -5,7 +5,7 @@ import '../lib/Utils';
 
 let createRouter = function(opts) {
   // Parametered options
-  let { history, map, navigate } = opts;
+  let { history, map, navigator } = opts;
 
   // __internal
   let subject = new Subject();
@@ -25,29 +25,13 @@ let createRouter = function(opts) {
     // Current node path if existent
     path: "",
     // Currently attempted path (might differ from final path)
-    attemptedPath: "",
-
+    keys: [],
+    // Next available directions from current node
+    directions: [],
     // Last node
-    last: {
-      // Last node's indices
-      indices: [],
-      // Last node's path
-      path: []
-    }
+    last: {} // previous state object
   };
 
-  // We pass in a Routes Map
-  // This performs routing on N-dimensions
-  //
-  //   /slide/subslide
-  //   /slide/subslide/trislide/fragments
-  //   /users/1/photos/3
-  //
-  // @todo: Expose navigate function that takes directions
-  // and calls an internal Subject producing a "navigate"
-  // event that we act upon by checking if the direction
-  // is available, looking up the route in the map
-  // and performing a history change
   let fromRouter = (router) => {
     return subject;
   };
@@ -74,7 +58,9 @@ let createRouter = function(opts) {
       .distinctUntilChanged();
 
     observables.state = observables.history
-      .map(toState)
+      .map(toStateObject)
+      .map(withIndices)
+      .map(withDirections)
       .do(saveState)
       .subscribe(emitState);
 
@@ -101,41 +87,9 @@ let createRouter = function(opts) {
     return subject;
   };
 
-  /**
-   * @todo: Add tests to see if these are even valid.
-   * @param {number[]} target Where to route to
-   */
   let jump = (target) => {
     console.log("jumping to", target);
     history.push(buildUri(target));
-  };
-
-  /**
-   * Returns next state by adding state + nav
-   * @param state Current state
-   * @param {number[]} nav
-   * @returns {number[]} New state
-   */
-  let nextState = (state, nav) => {
-    console.log("next step", state, nav);
-    return nav.map((a, i) => state[i] + a)
-  };
-
-  /**
-   * Navigates by directions
-   * @param directions array of directions
-   */
-  let __navigate = (directions) => {
-    navigate(directions, state, jump);
-  };
-
-  let toState = (keys) => {
-    const indices = toIndices(keys);
-    return {
-      indices,
-      path: buildUri(indices),
-      attemptedPath: keys
-    }
   };
 
   let saveState = (newState) => {
@@ -147,32 +101,8 @@ let createRouter = function(opts) {
     };
   };
 
-  /**
-   * navigate.0.next => right
-   * navigate.1.next => down
-   * navigate.2.next => in
-   * navigate.3.next => nextFragment
-   *
-   * navigate.jump(0,2,3)
-   * navigate.0.first
-   * navigate.0.last
-   *
-   * State:
-   *  {
-   *    current: [n, m, ...], // indices
-   *    directions: [
-   *      { next: [0, 1], previous: 3 },
-   *      { next: 0, previous: 2 },
-   *      ...
-   *    ]
-   *  }
-   */
   let emitState = (state) => {
-    // Extend state with directions
-    subject.next({
-      ...state,
-      directions: nextStates(newState, map)
-    });
+    subject.next(state);
   };
 
   /**
@@ -227,6 +157,28 @@ let createRouter = function(opts) {
   let buildUri = (path) => {
     return '/' + path.join('/');
   };
+
+  let toStateObject = (keys) => { keys }
+
+  let withIndices = (state) => {
+    ...state,
+    indices: toIndices(state.keys)
+  }
+
+  let withPath = (state) => {
+    ...state,
+    path: toPaths(state.keys)
+  }
+
+  let withDirections = (state) => {
+    if(navigator && navigator.getDirections) {
+      return {
+        ...state,
+        directions: navigator.getDirections(state.indices, map)
+      };
+    }
+    return state;
+  }
 
   /**
    * Returns integer-array representation of path-array.
