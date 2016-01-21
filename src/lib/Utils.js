@@ -18,8 +18,10 @@ Array.prototype.compact = function () {
 };
 
 Array.prototype.equals = function (other) {
-  return this.length === other.length
-    && this
-      .map((a, i) => (other[i] === a))
-      .reduce((a, b) => (a && b), true);
+  const deepEqual = (a, b) => {
+    if(a.length === 0 || b.length === 0) return true;
+    return (a[0] === b[0]) && deepEqual(a.slice(1),b.slice(1));
+  }
+
+  return this.length === other.length && deepEqual(this, other);
 };
