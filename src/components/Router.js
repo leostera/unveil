@@ -67,7 +67,6 @@ let createRouter = function(opts) {
       .map(withIndices)
       .do((e) => console.log("state => before withDirections", e))
       .map(withDirections)
-      //.do(saveState)
       .do((e) => console.log("state => before emitState", e))
       .do(emitState)
       .do((e) => console.log("replaceUri => before toPaths", e))
@@ -161,7 +160,7 @@ let createRouter = function(opts) {
     return '/' + path.join('/');
   };
 
-  let toStateObject = (keys) => ({ keys })
+  let toStateObject = (keys) => ({ keys, last: state })
 
   let withIndices = (state) => Object.assign(state, {
     indices: toIndices(state.keys)
@@ -227,7 +226,7 @@ let createRouter = function(opts) {
     stop,
     jump,
     asObservable
-  }
+  };
 };
 
 export default createRouter;
