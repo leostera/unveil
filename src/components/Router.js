@@ -96,7 +96,6 @@ let createRouter = function(opts) {
     console.log("state", newState);
     oldState = state;
     state = {
-      ...newState,
       last: oldState
     };
   };
@@ -160,22 +159,19 @@ let createRouter = function(opts) {
 
   let toStateObject = (keys) => { keys }
 
-  let withIndices = (state) => {
-    ...state,
+  let withIndices = (state) => Object.assign(state, {
     indices: toIndices(state.keys)
-  }
+  })
 
-  let withPath = (state) => {
-    ...state,
+  let withPath = (state) => Object.assign(state, {
     path: toPaths(state.keys)
-  }
+  })
 
   let withDirections = (state) => {
     if(navigator && navigator.getDirections) {
-      return {
-        ...state,
+      return Object.assign(state, {
         directions: navigator.getDirections(state.indices, map)
-      };
+      });
     }
     return state;
   }
@@ -227,7 +223,6 @@ let createRouter = function(opts) {
     start,
     stop,
     jump,
-    navigate,
     asObservable
   }
 };
