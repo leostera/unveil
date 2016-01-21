@@ -38,7 +38,7 @@ let fixture = (history) => (
   </UnveilApp>
 );
 
-const mapFixture = require('./fixtures/MoviesMap.js').default;
+const mapFixture = require('./fixtures/MapWithoutNestedFirstSlide').default;
 
 let renderFixture = (history) => TestUtils.renderIntoDocument( fixture(history) );
 
