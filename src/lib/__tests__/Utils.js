@@ -4,6 +4,28 @@ require('../Utils');
 
 describe("Utils", () => {
 
+  describe("Array.prototype.compact", () => {
+
+    it("removes all null values", () => {
+      const a = [1, null];
+      const b = [1];
+      expect(a.compact()).toEqual(b);
+    });
+
+    it("removes all undefined values", () => {
+      const a = [1, undefined];
+      const b = [1];
+      expect(a.compact()).toEqual(b);
+    });
+
+    it("removes all empty strings values", () => {
+      const a = [1, ""];
+      const b = [1];
+      expect(a.compact()).toEqual(b);
+    });
+
+  });
+
   describe("Array.prototype.flatten", () => {
 
     it("flattens an array", () => {
