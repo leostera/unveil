@@ -5,6 +5,7 @@ import React from 'react';
 import Slide from './Slide';
 import Presenter from './Presenter';
 import KeyController from './KeyController';
+import UIController from './UIController';
 
 import createNavigator from './Navigator';
 import createRouter from './Router';
@@ -122,6 +123,7 @@ export default React.createClass({
     console.log(this.state);
     return (<div>
       <KeyController navigate={this.navigate} />
+      <UIController navigate={this.navigate} directions={this.routerState.directions}/>
       {this.state.currentSlide}
     </div>);
   }
