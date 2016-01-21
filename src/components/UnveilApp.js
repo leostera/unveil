@@ -32,9 +32,9 @@ export default React.createClass({
   },
 
   componentWillMount: function () {
-    this.slides = this.props.children;
-    this.map = this.buildMap(this.props.children);
     this.history = this.props.history || history;
+    this.map = this.buildMap(this.props.children);
+    this.slides = this.props.children;
 
     this.router = createRouter({
       map: this.map,
