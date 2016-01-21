@@ -17,7 +17,7 @@ describe('Router', () => {
   });
 
   afterEach( () => {
-    if (router)   router.stop();
+    if (router) router.stop();
     history = null;
   });
 
@@ -30,7 +30,7 @@ describe('Router', () => {
 
       let subscription = Observable.fromRouter(router)
         .subscribe( (state) => {
-          expect(state.current).toEqual(results[index]);
+          expect(state.indices).toEqual(results[index]);
 
           if (++index === results.length) {
             done();
