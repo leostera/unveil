@@ -4,11 +4,14 @@ import 'rx-history';
 import '../lib/Utils';
 
 let createRouter = function(opts) {
+  // Parametered options
   let { history, map, navigate } = opts;
+
+  // __internal
   let subject = new Subject();
   let state = {};
   let currentPath = [];
-  let historySubscription;
+  let observables = {};
 
   // We pass in a Routes Map
   // This performs routing on N-dimensions
@@ -38,44 +41,41 @@ let createRouter = function(opts) {
       return (e) => e.action !== action;
     };
 
-    // @todo: split this into two streams after map(toList)
-    //
-    //  1. if there's some indices,
-    //     map them to paths,
-    //     replaceUri
-    //
-    //  2. if there's some paths,
-    //     map them to indices,
-    //     build state,
-    //     emit
-    historySubscription = Observable.fromHistory(history)
+    observables.history = Observable.fromHistory(history)
       .filter(outAction('REPLACE'))
-      //.do((e) => console.log('before pluck', e))
       .pluck('pathname')
       .map(Path.cleanUp)
       .distinctUntilChanged()
       .map(toList)
       .do((e) => console.log("before distinct", e))
-      .distinctUntilChanged()
+      .distinctUntilChanged();
+
+    observables.state = observables.history
       .do(saveCurrentPath)
       .do((e) => console.log("before toIndicex", e))
       .map(toIndices)
       .do((e) => console.log("before saveState", e))
       .do(saveState)
       .do((e) => console.log("before emitState", e))
-      .do(emitState)
-      //.do((e) => console.log("before toPaths", e))
+      .subscribe(emitState);
+
+    observables.replaceUri = observables.history
+      .do((e) => console.log("before toPaths", e))
       .map(toPaths)
-      //.do((e) => console.log("before distinct", e))
+      .do((e) => console.log("before distinct", e))
       .distinctUntilChanged()
-      //.do((e) => console.log("before replace", e))
+      .do((e) => console.log("before replace", e))
       .subscribe(replaceUri);
-      //.map(toDirections)
   };
 
-  // @todo historySubscription is always undefined here :(
+  /*
+   * Stops all subscriptions.
+   */
   let stop = () => {
-    historySubscription && historySubscription.complete();
+    Object.keys(observables)
+      .map( (key) => observables[key].complete )
+      .compact()
+      .forEach( (f) => f() );
   };
 
   let asObservable = () => {
@@ -251,11 +251,11 @@ let createRouter = function(opts) {
   };
 
   return {
-    start: start,
-    stop: stop,
-    jump: jump,
-    navigate: navigate,
-    asObservable: asObservable
+    start,
+    stop,
+    jump,
+    navigate,
+    asObservable
   }
 };
 

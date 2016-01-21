@@ -9,9 +9,7 @@ const fixtureWithoutNestedFirstSlide = require('./fixtures/MapWithoutNestedFirst
 const fixtureWithNestedFirstSlide = require('./fixtures/MapWithNestedFirstSlide').default;
 
 describe('Router', () => {
-  let history, unlisten;
-  let router;
-  let fixture;
+  let history, router, fixture;
 
   beforeEach( () => {
     history = createHistory({ queryKey: false });
@@ -19,10 +17,37 @@ describe('Router', () => {
   });
 
   afterEach( () => {
-    if (unlisten) unlisten();
-    // @todo the histortySubscription at this point is just {}
-    if(router) router.stop();
+    if (router)   router.stop();
     history = null;
+  });
+
+  describe('Observability', () => {
+    let t = (name, route, fixture, results) => it(name, (done) => {
+      history = createHistory({ queryKey: false });
+      router = createRouter({history, map: fixture()});
+
+      let index = 0;
+
+      let subscription = Observable.fromRouter(router)
+        .subscribe( (state) => {
+          expect(state.current).toEqual(results[index]);
+
+          if (++index === results.length) {
+            done();
+            subscription.unsubscribe();
+          }
+        });
+
+      router.start();
+      history.push(route);
+    });
+
+    // @todo once walk is somewhere testable, this can be moved. this method tests if walk
+    //       returns the right nested fallback ([0, 0] instead of just [0] if what is
+    //       passed is either [] (1st test) or ['nonexistent'] (3rd test)
+    t('pushes new states to subscribers with nested first slide', '/1/1', fixtureWithNestedFirstSlide, [[0, 0], [1, 1]]);
+    t('pushes new states to subscribers', '/3/1', fixtureWithoutNestedFirstSlide, [[0], [3, 1]]);
+    t('pushes new states to subscribers with nested first slide', '/1/1', fixtureWithNestedFirstSlide, [[0, 0], [1, 1]]);
   });
 
   let checkPath = (result, done) => {
@@ -72,34 +97,6 @@ describe('Router', () => {
     return [toPushPath(paths[0]), toReplacePath(paths[1])];
   };
 
-  describe('Observerability', () => {
-    let t = (name, route, fixture, results) => it(name, (done) => {
-      history = createHistory({ queryKey: false });
-      router = createRouter({history, map: fixture()});
-
-      let index = 0;
-
-      let subscription = Observable.fromRouter(router)
-        .subscribe( (state) => {
-          expect(state.current).toEqual(results[index]);
-
-          if (++index === results.length) {
-            done();
-            subscription.unsubscribe();
-          }
-        });
-
-      router.start();
-      history.push(route);
-    });
-
-    // @todo once walk is somewhere testable, this can be moved. this method tests if walk
-    //       returns the right nested fallback ([0, 0] instead of just [0] if what is
-    //       passed is either [] (1st test) or ['nonexistent'] (3rd test)
-    t('pushes new states to subscribers with nested first slide', '/1/1', fixtureWithNestedFirstSlide, [[0, 0], [1, 1]]);
-    t('pushes new states to subscribers', '/3/1', fixtureWithoutNestedFirstSlide, [[0], [3, 1]]);
-    t('pushes new states to subscribers with nested first slide', '/1/1', fixtureWithNestedFirstSlide, [[0, 0], [1, 1]]);
-  });
 
   describe('Index to Name remapping', () => {
     let r = (name, route, result) => it(name, getPushAndCheckPath(route, toPushReplacePath([route, result])));
