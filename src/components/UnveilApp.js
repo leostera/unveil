@@ -4,6 +4,7 @@ import React from 'react';
 
 import Slide from './Slide';
 import Presenter from './Presenter';
+import KeyController from './KeyController';
 
 import createNavigator from './Navigator';
 import createRouter from './Router';
@@ -53,6 +54,7 @@ export default React.createClass({
       .filter(this.isValidMotion)
       .map(this.toLevelAndDirection)
       .map(this.toState)
+      .filter(this.isValidState)
       .subscribe(this.router.jump);
 
     this.router.start();
@@ -64,9 +66,19 @@ export default React.createClass({
     left:  { level: 0, direction: 'previous' },
     right: { level: 0, direction: 'next' },
   },
-  isValidMotion: (motion) => Object.keys(motions).indexOf(motion.toLowerCase()),
-  toLevelAndDirection: (motion) => motions[motion],
-  toState: (motion) => this.routerState.directions[motion.level][motion.direction],
+  isValidMotion: function (motion) {
+    return Object.keys(this.motions).indexOf(motion.toLowerCase()) !== -1;
+  },
+  isValidState: function (state) {
+    return Array.isArray(state);
+  },
+  toLevelAndDirection: function (motion) {
+    return this.motions[motion];
+  },
+  toState: function (motion) {
+    let level = this.routerState.directions[motion.level]
+    return level && level[motion.direction];
+  },
 
   getInitialState: function() {
     let getFirstChildIfSlides = (slide) => {
@@ -83,6 +95,7 @@ export default React.createClass({
   },
 
   updateState: function (s) {
+    console.log("updateState",s);
     this.routerState = s;
     this.setState({ currentSlide: this.getSlide(s.indices) });
   },
@@ -101,10 +114,14 @@ export default React.createClass({
       .reduce( (a,b) => (a&&b), true );
   },
 
+  navigate: function(motion) {
+    this.navigator.asObservable().next(motion);
+  },
+
   render: function () {
     console.log(this.state);
     return (<div>
-      <KeyController navigate={this.navigator.asObservable().next} />
+      <KeyController navigate={this.navigate} />
       {this.state.currentSlide}
     </div>);
   }
