@@ -4,6 +4,25 @@ require('../Utils');
 
 describe("Utils", () => {
 
+  describe("Object.prototype.toList", () => {
+
+    it("returns a list from an object, containing the object", () => {
+      const a = {};
+      const b = [{}];
+      expect(a.toList()).toEqual(b);
+      expect(a.toList()).not.toEqual(a);
+    });
+
+    it("returns itself if the object already is a list", () => {
+      const a = [];
+      const b = [];
+      const c = [[]];
+      expect(a.toList()).toEqual(b);
+      expect(a.toList()).not.toEqual(c);
+    });
+
+  });
+
   describe("Array.prototype.compact", () => {
 
     it("removes all null values", () => {
