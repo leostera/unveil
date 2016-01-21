@@ -31,7 +31,7 @@
     "react": "^0.14.6",
     "react-addons-css-transition-group": "^0.14.6",
     "react-dom": "^0.14.6",
-    "rx-history": "^1.0.2",
+    "rx-history": "^1.0.4",
     "rxjs": "^5.0.0-beta.1"
   },
   "devDependencies": {
@@ -61,9 +61,14 @@
     ]
   },
   "jest": {
+    "testRunner": "<rootDir>/node_modules/jest-cli/src/testRunners/jasmine/jasmine2.js",
     "scriptPreprocessor": "<rootDir>/node_modules/babel-jest",
     "unmockedModulePathPatterns": [
-      "<rootDir>/node_modules"
+      "<rootDir>/node_modules",
+      "fixtures"
+    ],
+    "testPathIgnorePatterns": [
+      "fixtures"
     ],
     "modulePathIgnorePatterns": [
       "<rootDir>/node_modules/",

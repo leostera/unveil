@@ -16,3 +16,12 @@ Array.prototype.compact = function () {
     return !(a === null || a === undefined || (a.length !== undefined && a.length === 0));
   });
 };
+
+Array.prototype.equals = function (other) {
+  const deepEqual = (a, b) => {
+    if(a.length === 0 || b.length === 0) return true;
+    return (a[0] === b[0]) && deepEqual(a.slice(1),b.slice(1));
+  }
+
+  return this.length === other.length && deepEqual(this, other);
+};

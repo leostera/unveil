@@ -4,6 +4,10 @@ import marked from 'marked';
 
 export default React.createClass({
 
+  propTypes: {
+    name: React.PropTypes.string
+  },
+
   statics: {
     isSlide: function (e) {
       return React.isValidElement(e) && e.type.displayName === 'Slide';
