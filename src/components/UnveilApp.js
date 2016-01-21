@@ -62,10 +62,10 @@ export default React.createClass({
   },
 
   motions: {
-    up:    { level: 1, direction: 'previous' },
-    down:  { level: 1, direction: 'next' },
     left:  { level: 0, direction: 'previous' },
+    up:    { level: 1, direction: 'previous' },
     right: { level: 0, direction: 'next' },
+    down:  { level: 1, direction: 'next' },
   },
   isValidMotion: function (motion) {
     return Object.keys(this.motions).indexOf(motion.toLowerCase()) !== -1;
@@ -120,10 +120,14 @@ export default React.createClass({
   },
 
   render: function () {
-    console.log(this.state);
+    const controllerOptions = {
+      navigate: this.navigate,
+      motions: this.motions,
+      directions: this.routerState.directions
+    };
     return (<div>
-      <KeyController navigate={this.navigate} />
-      <UIController navigate={this.navigate} directions={this.routerState.directions}/>
+      <KeyController {...controllerOptions}/>
+      <UIController {...controllerOptions}/>
       {this.state.currentSlide}
     </div>);
   }
