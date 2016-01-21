@@ -9,9 +9,32 @@ let createRouter = function(opts) {
 
   // __internal
   let subject = new Subject();
-  let state = {};
-  let currentPath = [];
   let observables = {};
+
+  /*
+   * State Object
+   *
+   * Having both the current indices and path, and the last
+   * indices and path, make it trivial to listen to state changes
+   * both on feature code and on tests, and make sure that
+   * we are correctly navigating from our last state to our new state.
+   */
+  let state = {
+    // Current node indices
+    indices: [],
+    // Current node path if existent
+    path: "",
+    // Currently attempted path (might differ from final path)
+    attemptedPath: "",
+
+    // Last node
+    last: {
+      // Last node's indices
+      indices: [],
+      // Last node's path
+      path: []
+    }
+  };
 
   // We pass in a Routes Map
   // This performs routing on N-dimensions
@@ -51,12 +74,8 @@ let createRouter = function(opts) {
       .distinctUntilChanged();
 
     observables.state = observables.history
-      .do(saveCurrentPath)
-      .do((e) => console.log("before toIndicex", e))
-      .map(toIndices)
-      .do((e) => console.log("before saveState", e))
+      .map(toState)
       .do(saveState)
-      .do((e) => console.log("before emitState", e))
       .subscribe(emitState);
 
     observables.replaceUri = observables.history
@@ -110,21 +129,22 @@ let createRouter = function(opts) {
     navigate(directions, state, jump);
   };
 
-  /**
-   * Saves state
-   * @param state State
-   */
-  let saveState = (newState) => {
-    console.log("state", newState);
-    state = newState;
+  let toState = (keys) => {
+    const indices = toIndices(keys);
+    return {
+      indices,
+      path: buildUri(indices),
+      attemptedPath: keys
+    }
   };
 
-  /**
-   * Saves state
-   * @param state State
-   */
-  let saveCurrentPath = (path) => {
-    currentPath = path;
+  let saveState = (newState) => {
+    console.log("state", newState);
+    oldState = state;
+    state = {
+      ...newState,
+      last: oldState
+    };
   };
 
   /**
@@ -147,9 +167,10 @@ let createRouter = function(opts) {
    *    ]
    *  }
    */
-  let emitState = (newState) => {
+  let emitState = (state) => {
+    // Extend state with directions
     subject.next({
-      current: newState, //this is just the indices
+      ...state,
       directions: nextStates(newState, map)
     });
   };
