@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { Observable } from 'rxjs';
+import { Subject } from 'rxjs';
 
 export default React.createClass({
 
@@ -10,24 +10,57 @@ export default React.createClass({
     directions: React.PropTypes.array.isRequired
   },
 
-  node: function () {
-    return ReactDOM.findDOMNode(this);
+  isValidMotion: function (motion) {
+    return this.motions.indexOf(motion) !== -1;
   },
 
-  motions: ['left', 'up', 'down', 'right'],
-
-  componentDidMount: function () {
-    let motions = this.motions;
-    Observable.fromEvent(this.node(), 'mouseup')
+  componentWillMount: function () {
+    this.motions = Object.keys(this.props.motions);
+    this.clicks = new Subject(),
+    this.clicks
       .pluck('target', 'id')
-      .filter( (id) => motions.indexOf(id) !== -1 )
+      .filter(this.isValidMotion)
       .subscribe(this.props.navigate);
   },
 
+  componentWillUnmount: function () {
+    this.clicks.complete();
+  },
+
+  next: function (e) {
+    this.clicks.next(e);
+  },
+
+  buttons: function () {
+    let toButton = function (m) {
+      const options = {
+        "key": m.name,
+        "id": m.name,
+        "onClick": this.next,
+        "disabled": m.disabled
+      };
+      console.log(options);
+      return <button {...options}>{m.name}</button>;
+    }.bind(this);
+
+    let isEnabled = function (m) {
+      let {level, direction} = this.props.motions[m];
+      let l = this.props.directions[level];
+      let disabled = true;
+      if(l !== undefined) {
+        disabled = !l[direction];
+      }
+      return {
+        disabled,
+        name: m
+      };
+    }.bind(this);
+
+    return this.motions.map(isEnabled).map(toButton);
+  },
+
   render: function () {
-    let toButton = (m) => <button key={m} id={m}> {m} </button>
-    let buttons  = this.motions.map(toButton);
-    return (<div>{buttons}</div>);
+    return (<div>{this.buttons()}</div>);
   }
 
 });
