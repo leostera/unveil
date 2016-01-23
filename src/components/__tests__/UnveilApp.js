@@ -43,11 +43,9 @@ describe('UnveilApp', () => {
     expect(elements.map).toEqual(mapFixture());
   });
 
-  it('receives new states', () => {
-    elements.updateState = jest.genMockFunction();
-    history.push('/0/0');
-    console.log(elements.updateState.mock);
-    expect(elements.updateState).toBeCalled();
+  it('saves new states', () => {
+    history.push('/1');
+    expect(elements.routerState.indices).toEqual([1, 0]);
   });
 
   let checkContentOnRoute = (route, content) => {
