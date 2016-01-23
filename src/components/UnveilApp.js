@@ -50,7 +50,6 @@ export default React.createClass({
     });
 
     this.router.asObservable()
-      .do((e) => console.log("updating state", e))
       .subscribe(this.updateState);
 
     this.navigator.asObservable()
@@ -98,6 +97,7 @@ export default React.createClass({
   },
 
   updateState: function (s) {
+    console.log("updating state", s);
     this.routerState = s;
     this.setState({ currentSlide: this.getSlide(s.indices) });
   },
@@ -121,21 +121,23 @@ export default React.createClass({
   },
 
   controlsElements: function () {
-    const props = {
-      navigate: this.navigate,
-      motions:  this.motions,
-      directions: this.routerState.directions
-    };
-
-    return this.controls.map( (control) => {
-      return React.createElement( control, props );
+    let controls = this.controls.map( (control) => {
+      const props = {
+        key: control.displayName,
+        navigate: this.navigate,
+        motions:  this.motions,
+        directions: this.routerState.directions
+      };
+      return React.createElement(control, props);
     });
+
+    return React.createElement('controls', null, controls);
   },
 
   render: function () {
     return (<div>
       {this.controlsElements()}
-      {this.state.currentSlide}
+      <current ref="current-slide">{this.state.currentSlide}</current>
     </div>);
   }
 
