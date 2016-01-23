@@ -43,6 +43,7 @@ export default React.createClass({
 
     this.navigator = createNavigator();
 
+    this.routerState = { directions: [] };
     this.router = createRouter({
       map: this.map,
       history: this.history,
@@ -97,7 +98,6 @@ export default React.createClass({
   },
 
   updateState: function (s) {
-    console.log("updating state", s);
     this.routerState = s;
     this.setState({ currentSlide: this.getSlide(s.indices) });
   },
