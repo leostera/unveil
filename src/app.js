@@ -4,8 +4,13 @@ import ReactDOM from 'react-dom';
 import UnveilApp from './components/UnveilApp';
 import Slide from './components/Slide';
 
+import KeyControls from './components/KeyControls';
+import UIControls  from './components/UIControls';
+
+const controls = [KeyControls, UIControls];
+
 ReactDOM.render( (
-  <UnveilApp>
+  <UnveilApp controls={controls}>
     <Slide name="star-wars">
       <Slide name="episode-1" markdown={true}>
         {`

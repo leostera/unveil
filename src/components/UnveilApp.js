@@ -2,14 +2,15 @@ import { Observable } from 'rxjs';
 
 import React from 'react';
 
-import Slide from './Slide';
+import Slide     from './Slide';
 import Presenter from './Presenter';
-import KeyController from './KeyController';
-import UIController from './UIController';
+
+import KeyControls from './KeyControls';
+import UIControls  from './UIControls';
 
 import createNavigator from './Navigator';
-import createRouter from './Router';
-import history from '../helpers/History';
+import createRouter    from './Router';
+import history         from '../helpers/History';
 
 import '../lib/Utils';
 
@@ -35,12 +36,14 @@ export default React.createClass({
   },
 
   componentWillMount: function () {
-    this.history = this.props.history || history;
-    this.map = this.buildMap(this.props.children);
-    this.slides = this.props.children;
+    this.controls = this.props.controls || [UIControls, KeyControls];
+    this.history  = this.props.history || history;
+    this.slides   = this.props.children;
+    this.map      = this.buildMap(this.slides);
 
     this.navigator = createNavigator();
 
+    this.routerState = { directions: [] };
     this.router = createRouter({
       map: this.map,
       history: this.history,
@@ -48,7 +51,6 @@ export default React.createClass({
     });
 
     this.router.asObservable()
-      .do((e) => console.log("updating state", e))
       .subscribe(this.updateState);
 
     this.navigator.asObservable()
@@ -56,7 +58,7 @@ export default React.createClass({
       .map(this.toLevelAndDirection)
       .map(this.toState)
       .filter(this.isValidState)
-      .subscribe(this.router.jump);
+      .subscribe(this.router.go);
 
     this.router.start();
   },
@@ -96,7 +98,6 @@ export default React.createClass({
   },
 
   updateState: function (s) {
-    console.log("updateState",s);
     this.routerState = s;
     this.setState({ currentSlide: this.getSlide(s.indices) });
   },
@@ -119,16 +120,24 @@ export default React.createClass({
     this.navigator.asObservable().next(motion);
   },
 
+  controlsElements: function () {
+    let controls = this.controls.map( (control) => {
+      const props = {
+        key: control.displayName,
+        navigate: this.navigate,
+        motions:  this.motions,
+        directions: this.routerState.directions
+      };
+      return React.createElement(control, props);
+    });
+
+    return React.createElement('controls', null, controls);
+  },
+
   render: function () {
-    const controllerOptions = {
-      navigate: this.navigate,
-      motions: this.motions,
-      directions: this.routerState.directions
-    };
     return (<div>
-      <KeyController {...controllerOptions}/>
-      <UIController {...controllerOptions}/>
-      {this.state.currentSlide}
+      {this.controlsElements()}
+      <current ref="current-slide">{this.state.currentSlide}</current>
     </div>);
   }
 
