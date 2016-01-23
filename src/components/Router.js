@@ -57,33 +57,33 @@ let createRouter = function(opts) {
     };
 
     observables.history = Observable.fromHistory(history)
-      .do((e) => console.log("     history => filter outAction", e))
+      //.do((e) => console.log("     history => filter outAction", e))
       .filter(outAction('REPLACE'))
-      .do((e) => console.log("     history => pluck pathname", e))
+      //.do((e) => console.log("     history => pluck pathname", e))
       .pluck('pathname')
-      .do((e) => console.log("     history => Path.cleanup", e))
+      //.do((e) => console.log("     history => Path.cleanup", e))
       .map(Path.cleanUp)
-      .do((e) => console.log("     history => distinct", e))
+      //.do((e) => console.log("     history => distinct", e))
       .distinctUntilChanged()
-      .do((e) => console.log("     history => toList", e))
+      //.do((e) => console.log("     history => toList", e))
       .map(toList)
-      .do((e) => console.log("     history => distinct", e))
+      //.do((e) => console.log("     history => distinct", e))
       .distinctUntilChanged()
-      .do((e) => console.log("     state => before toStateObject", e))
+      //.do((e) => console.log("     state => before toStateObject", e))
       .map(toStateObject)
-      .do((e) => console.log("     state => before withIndices", e))
+      //.do((e) => console.log("     state => before withIndices", e))
       .map(withIndices)
-      .do((e) => console.log("     state => before withPath", e))
+      //.do((e) => console.log("     state => before withPath", e))
       .map(withPath)
-      .do((e) => console.log("     state => before withDirections", e))
+      //.do((e) => console.log("     state => before withDirections", e))
       .map(withDirections)
-      .do((e) => console.log("     state => before emitState", e))
+      //.do((e) => console.log("     state => before emitState", e))
       .do(emitState)
-      .do((e) => console.log("     replaceUri => before toPaths", e))
+      //.do((e) => console.log("     replaceUri => before toPaths", e))
       .pluck('keys')
       .map(toPaths)
       .distinctUntilChanged()
-      .do((e) => console.log("     replaceUri => before replaceUri", e))
+      //.do((e) => console.log("     replaceUri => before replaceUri", e))
       .subscribe(replaceUri, (e) => {
         console.log("Router unsubscribed from History successfully");
       });
@@ -98,7 +98,6 @@ let createRouter = function(opts) {
       .map( function (key) { return observables[key]; } )
       .compact()
       .forEach( (f) => f.complete() );
-    console.log("Stopped: ", subject, observables);
   };
 
   let asObservable = () => {
@@ -107,7 +106,6 @@ let createRouter = function(opts) {
 
   let go = (target) => {
     let parts =  options.replaceUri && toPaths(toList(target)) || toList(target);
-    console.log("Going: ", target, "=>", parts);
     history.push(buildUri(parts));
   };
 

@@ -27,8 +27,6 @@ describe('Router', () => {
     let key = Array.isArray(replacedPath) && 'indices' || 'path';
     let subscription = Observable.fromRouter(router)
       .subscribe( (state) => {
-        console.log(" ===> subscribe called with ", state);
-        console.log(" ===> should use key ", key);
         expect(state[key]).toEqual(replacedPath);
         subscription.unsubscribe();
         done();
@@ -53,7 +51,6 @@ describe('Router', () => {
   describe('Index to Name remapping', () => {
     beforeEach( () => {
       router.stop();
-      console.log("===== REMAPPING =====");
       router = createRouter({history, map: fixture(), replaceUri: true});
       router.start();
     });
