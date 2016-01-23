@@ -2,14 +2,15 @@ import { Observable } from 'rxjs';
 
 import React from 'react';
 
-import Slide from './Slide';
+import Slide     from './Slide';
 import Presenter from './Presenter';
-import KeyController from './KeyController';
-import UIController from './UIController';
+
+import KeyControls from './KeyControls';
+import UIControls  from './UIControls';
 
 import createNavigator from './Navigator';
-import createRouter from './Router';
-import history from '../helpers/History';
+import createRouter    from './Router';
+import history         from '../helpers/History';
 
 import '../lib/Utils';
 
@@ -35,9 +36,10 @@ export default React.createClass({
   },
 
   componentWillMount: function () {
-    this.history = this.props.history || history;
-    this.map = this.buildMap(this.props.children);
-    this.slides = this.props.children;
+    this.controls = this.props.controls || [UIControls, KeyControls];
+    this.history  = this.props.history || history;
+    this.slides   = this.props.children;
+    this.map      = this.buildMap(this.slides);
 
     this.navigator = createNavigator();
 
@@ -96,7 +98,6 @@ export default React.createClass({
   },
 
   updateState: function (s) {
-    console.log("updateState",s);
     this.routerState = s;
     this.setState({ currentSlide: this.getSlide(s.indices) });
   },
@@ -119,15 +120,21 @@ export default React.createClass({
     this.navigator.asObservable().next(motion);
   },
 
-  render: function () {
-    const controllerOptions = {
+  controlsElements: function () {
+    const props = {
       navigate: this.navigate,
-      motions: this.motions,
+      motions:  this.motions,
       directions: this.routerState.directions
     };
+
+    return this.controls.map( (control) => {
+      return React.createElement( control, props );
+    });
+  },
+
+  render: function () {
     return (<div>
-      <KeyController {...controllerOptions}/>
-      <UIController {...controllerOptions}/>
+      {this.controlsElements()}
       {this.state.currentSlide}
     </div>);
   }
