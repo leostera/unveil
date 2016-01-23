@@ -105,7 +105,7 @@ let createRouter = function(opts) {
   };
 
   let go = (target) => {
-    let parts =  options.replaceUri && toPaths(toList(target)) || toList(target);
+    let parts = options.replaceUri && toPaths(toList(target)) || toList(target);
     history.push(buildUri(parts));
   };
 
