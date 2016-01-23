@@ -1,6 +1,6 @@
 {
   "name": "unveil",
-  "description": "Next-gen presentation framework",
+  "description": "A React-based Reactive Presentation Framework",
   "keywords": [
     "presentation",
     "slides",
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/ostera/unveil.js",
   "license": "MIT",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "main": "src/app.js",
   "dependencies": {
     "history": "^1.17.0",
