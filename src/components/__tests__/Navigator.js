@@ -12,7 +12,7 @@ describe('Navigator', () => {
 
   describe('directions', () => {
     let t = (name, state, level, direction, result) => it(name, () => {
-      let directions = navigator.getDirections(state);
+      let directions = navigator.getDirections(state, fixture());
       expect(directions[level][direction]).toEqual(result);
     });
 

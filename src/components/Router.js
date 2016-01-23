@@ -67,6 +67,7 @@ let createRouter = function(opts) {
       .map(withIndices)
       .do((e) => console.log("state => before withDirections", e))
       .map(withDirections)
+      //.do(saveState)
       .do((e) => console.log("state => before emitState", e))
       .do(emitState)
       .do((e) => console.log("replaceUri => before toPaths", e))
@@ -132,20 +133,20 @@ let createRouter = function(opts) {
    * @param {function} filter Filter method used
    *                          for finding the right
    *                          route per level
-   * @param mapper function Mapper method returning
+   * @param {function} mapper Mapper method returning
+   * @param {number[]} result Resulting array
+   *
    * @returns {*[]} Array of mapped entries for each
    *                level of the routing
    */
-  let walk = (keys, list, filter, mapper) => {
-    if (keys.length < 1 && list) return walk([0], list, filter, mapper);
-    if (keys.length < 1 || !list) return;
+  let walk = (keys, list, filter, mapper, result = []) => {
+    if (keys.length < 1 && list) return walk([0], list, filter, mapper, result);
+    if (keys.length < 1 || !list) return result;
 
-    return list
-      .filter(filter(keys[0]))
-      .map( (entry) => [
-        mapper(entry),
-        walk(keys.slice(1), entry.children, filter, mapper)
-      ]).flatten().compact();
+    let element = list.filter(filter(keys[0])).pop() || list[0];
+    result.push(mapper(element));
+
+    return walk(keys.slice(1), element.children, filter, mapper, result);
   };
 
   /**
@@ -160,15 +161,15 @@ let createRouter = function(opts) {
     return '/' + path.join('/');
   };
 
-  let toStateObject = (keys) => ({ keys, last: state })
+  let toStateObject = (keys) => ({ keys });
 
   let withIndices = (state) => Object.assign(state, {
     indices: toIndices(state.keys)
-  })
+  });
 
   let withPath = (state) => Object.assign(state, {
     path: toPaths(state.keys)
-  })
+  });
 
   let withDirections = (state) => {
     if(navigator && navigator.getDirections) {
@@ -177,7 +178,7 @@ let createRouter = function(opts) {
       });
     }
     return state;
-  }
+  };
 
   /**
    * Returns integer-array representation of path-array.
@@ -195,6 +196,7 @@ let createRouter = function(opts) {
     };
     let mapper = (entry) => entry.index;
     let indices = walk(keys, map, filter, mapper);
+    console.log('indices', indices);
     return indices.length > 0 && indices || walk([0], map, filter, mapper);
   };
 
@@ -226,7 +228,7 @@ let createRouter = function(opts) {
     stop,
     jump,
     asObservable
-  };
+  }
 };
 
 export default createRouter;
