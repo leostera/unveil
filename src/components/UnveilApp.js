@@ -58,7 +58,7 @@ export default React.createClass({
       .map(this.toLevelAndDirection)
       .map(this.toState)
       .filter(this.isValidState)
-      .subscribe(this.router.jump);
+      .subscribe(this.router.go);
 
     this.router.start();
   },
