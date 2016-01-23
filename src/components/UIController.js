@@ -35,11 +35,11 @@ export default React.createClass({
     let toButton = function (m) {
       const options = {
         "key": m.name,
+        "ref": `button-${m.name}`,
         "id": m.name,
         "onClick": this.next,
         "disabled": m.disabled
       };
-      console.log(options);
       return <button {...options}>{m.name}</button>;
     }.bind(this);
 
