@@ -4,8 +4,8 @@ import ReactDOM from 'react-dom';
 import UnveilApp from './components/UnveilApp';
 import Slide from './components/Slide';
 
-import KeyControls from './KeyControls';
-import UIControls  from './UIControls';
+import KeyControls from './components/KeyControls';
+import UIControls  from './components/UIControls';
 
 const controls = [KeyControls, UIControls];
 
