@@ -14,7 +14,7 @@ let createRouter = function(opts) {
 
 
   // __internal
-  let subject;// = new Subject();
+  let subject = new Subject();
   let observables = {};
 
   /*
@@ -50,7 +50,7 @@ let createRouter = function(opts) {
   };
 
   let start = () => {
-    subject = new Subject();
+    subject = subject || new Subject();
 
     let outAction = (action) => {
       return (e) => e.action !== action;
