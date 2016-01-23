@@ -7,6 +7,12 @@ let createRouter = function(opts) {
   // Parametered options
   let { history, map, navigator } = opts;
 
+  let defaultOptions = {
+    replaceUri: true
+  };
+  let options = Object.assign(defaultOptions, opts);
+
+
   // __internal
   let subject = new Subject();
   let observables = {};
@@ -219,7 +225,8 @@ let createRouter = function(opts) {
    * @param keys *[] Path array
    */
   let replaceUri = function (keys) {
-    if(!keys.equals(state.path))
+    console.log("should replace?", options.replaceUri);
+    if(options.replaceUri && !keys.equals(state.path))
       history.replace(buildUri(keys));
   };
 
