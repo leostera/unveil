@@ -1,13 +1,13 @@
-jest.dontMock('../UIController');
+jest.dontMock('../UIControls');
 jest.dontMock('marked');
 
 import React     from 'react';
 import ReactDOM  from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
-const UIController = require('../UIController').default;
+const UIControls = require('../UIControls').default;
 
-describe('UIController', () => {
+describe('UIControls', () => {
   let controller, node, navigate, directions, motions
 
   directions = [
@@ -26,11 +26,11 @@ describe('UIController', () => {
   beforeEach( () => {
     navigate   = jest.genMockFunction();
     controller = TestUtils.renderIntoDocument( (
-      <UIController
+      <UIControls
         navigate={navigate}
         directions={directions}
         motions={motions}>
-      </UIController>));
+      </UIControls>));
 
     node = ReactDOM.findDOMNode(controller);
   });
