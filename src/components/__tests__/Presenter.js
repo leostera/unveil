@@ -15,7 +15,6 @@ let renderFixture = (slide) => TestUtils.renderIntoDocument( fixture(slide) );
 describe('Presenter', () => {
   let elements, node;
 
-
   beforeEach( () => {
   });
 
