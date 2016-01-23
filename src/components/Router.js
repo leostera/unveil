@@ -105,7 +105,11 @@ let createRouter = function(opts) {
   };
 
   let go = (target) => {
-    let parts = options.replaceUri && toPaths(toList(target)) || toList(target);
+    let parts = Array.isArray(target) && target || toList(target);
+
+    if (options.replaceUri)
+      parts = toPaths(parts);
+
     history.push(buildUri(parts));
   };
 
@@ -170,7 +174,7 @@ let createRouter = function(opts) {
    * @returns {string}
    */
   let buildUri = (path) => {
-    return '/' + path.join('/');
+    return `/${path.join('/')}`;
   };
 
   let toStateObject = (keys) => ({ keys });
