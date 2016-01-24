@@ -41,18 +41,21 @@ describe('KeyControls', () => {
     node = ReactDOM.findDOMNode(controls);
   });
 
+  let simulateKeyUp = (key) => {
+    let event = new KeyboardEvent('keyup', {'keyCode': key});
+    document.dispatchEvent(event);
+  };
+
   Object.keys(mappings).forEach( (direction) => {
     let key = mappings[direction];
     it(`calls navigate(${direction}) when pressing ${direction}-arrow-key (${key})`, () => {
-      let event = new KeyboardEvent('keyup', {'keyCode': key});
-      document.dispatchEvent(event);
+      simulateKeyUp(key);
       expect(navigator.move).toBeCalledWith(direction);
     });
   });
 
   it(`does not react to non-mapped keyUps`, () => {
-    let event = new KeyboardEvent('keyup', {'keyCode': 65});
-    document.dispatchEvent(event);
+    simulateKeyUp(65);
     expect(navigator.move).not.toBeCalled();
   });
 
