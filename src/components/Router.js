@@ -5,7 +5,7 @@ import '../lib/Utils';
 
 let createRouter = function(opts) {
   // Parametered options
-  let { history, map, navigator } = opts;
+  let { history, map, moveCalculator } = opts;
 
   let defaultOptions = {
     replaceUri: true
@@ -188,9 +188,9 @@ let createRouter = function(opts) {
   });
 
   let withDirections = (state) => {
-    if(navigator && navigator.getDirections) {
+    if(moveCalculator && moveCalculator.getDirections) {
       return Object.assign(state, {
-        directions: navigator.getDirections(state.indices, map)
+        directions: moveCalculator.getDirections(state.indices, map)
       });
     }
     return state;

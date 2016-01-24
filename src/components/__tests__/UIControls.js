@@ -1,14 +1,16 @@
 jest.dontMock('../UIControls');
+jest.dontMock('../Navigator');
 jest.dontMock('marked');
 
-import React     from 'react';
-import ReactDOM  from 'react-dom';
-import TestUtils from 'react-addons-test-utils';
+import React           from 'react';
+import ReactDOM        from 'react-dom';
+import TestUtils       from 'react-addons-test-utils';
 
-const UIControls = require('../UIControls').default;
+const createNavigator = require('../Navigator').default;
+const UIControls      = require('../UIControls').default;
 
 describe('UIControls', () => {
-  let controller, node, navigate, directions, motions
+  let controller, node, navigator, directions, motions;
 
   directions = [
     {next: [0], previous: [0]},
@@ -20,16 +22,22 @@ describe('UIControls', () => {
     left:  { level: 0, direction: 'previous' },
     up:    { level: 1, direction: 'previous' },
     right: { level: 0, direction: 'next' },
-    down:  { level: 1, direction: 'next' },
+    down:  { level: 1, direction: 'next' }
   };
 
+  navigator = createNavigator();
+
   beforeEach( () => {
-    navigate   = jest.genMockFunction();
+    navigator = createNavigator();
+    navigator.setPossibleMoves(directions);
+    navigator.move = jest.genMockFunction();
+
+    spyOn(navigator, 'move');
+
     controller = TestUtils.renderIntoDocument( (
       <UIControls
-        navigate={navigate}
-        directions={directions}
-        motions={motions}>
+        navigator={navigator}
+      >
       </UIControls>));
 
     node = ReactDOM.findDOMNode(controller);
@@ -40,9 +48,9 @@ describe('UIControls', () => {
 
   Object.keys(motions).forEach( (motion) => {
     it(`calls navigate(${motion}) when pressing ${motion}`, () => {
-      node = find(motion)
+      node = find(motion);
       TestUtils.Simulate.click(node);
-      expect(navigate).toBeCalledWith(motion);
+      expect(navigator.move).toBeCalledWith(motion);
     });
   });
 
