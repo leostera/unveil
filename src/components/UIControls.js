@@ -10,7 +10,7 @@ export default React.createClass({
   },
 
   isValidMotion: function (motion) {
-    return this.motions.indexOf(motion) !== -1;
+    return this.directions.indexOf(motion) !== -1;
   },
 
   componentWillMount: function () {
@@ -19,7 +19,7 @@ export default React.createClass({
     this.clicks
       .pluck('target', 'id')
       .filter(this.isValidMotion)
-      .subscribe(this.props.navigator.navigate);
+      .subscribe(this.props.navigator.move);
   },
 
   componentWillUnmount: function () {

@@ -32,8 +32,6 @@ describe('UIControls', () => {
     navigator.setPossibleMoves(directions);
     navigator.move = jest.genMockFunction();
 
-    spyOn(navigator, 'move');
-
     controller = TestUtils.renderIntoDocument( (
       <UIControls
         navigator={navigator}
