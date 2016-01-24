@@ -53,5 +53,4 @@ describe('KeyControls', () => {
     expect(navigator.next).not.toBeCalled();
   });
 
-
 });
