@@ -45,8 +45,7 @@ let createRouter = function(opts) {
   Observable.fromRouter = fromRouter;
 
   let Path = {
-    cleanUp: path => (path.trim()),
-    isEmpty: path => (path.length > 0)
+    cleanUp: path => (Object.assign(path, {path: path.path.trim()}))
   };
 
   let start = () => {
@@ -59,8 +58,8 @@ let createRouter = function(opts) {
     observables.history = Observable.fromHistory(history)
       //.do((e) => console.log("     history => filter outAction", e))
       .filter(outAction('REPLACE'))
-      //.do((e) => console.log("     history => pluck pathname", e))
-      .pluck('pathname')
+      //.do((e) => console.log("     history => toPathAndQuery", e))
+      .map(toPathnameAndQuery)
       //.do((e) => console.log("     history => Path.cleanup", e))
       .map(Path.cleanUp)
       //.do((e) => console.log("     history => distinct", e))
@@ -69,8 +68,6 @@ let createRouter = function(opts) {
       .map(toList)
       //.do((e) => console.log("     history => distinct", e))
       .distinctUntilChanged()
-      //.do((e) => console.log("     state => before toStateObject", e))
-      .map(toStateObject)
       //.do((e) => console.log("     state => before withIndices", e))
       .map(withIndices)
       //.do((e) => console.log("     state => before withPath", e))
@@ -126,6 +123,10 @@ let createRouter = function(opts) {
     subject.next(state);
   };
 
+  let toPathnameAndQuery = (path) => {
+    return {path: path.pathname, query: path.query};
+  };
+
   /**
    * Returns array representation of path.
    * Casts numeric path-parts to actual integers.
@@ -136,10 +137,10 @@ let createRouter = function(opts) {
    * @returns {*[]} Array of path-parts (split by "/")
    */
   let toList = (path) => {
-    return path.split("/").compact().map((key) => {
+    return Object.assign(path, {keys: path.path.split("/").compact().map((key) => {
       let n = Number(key);
       return Number.isNaN(n) && key || n;
-    });
+    })});
   };
 
   /**
@@ -178,8 +179,6 @@ let createRouter = function(opts) {
   let buildUri = (path) => {
     return `/${path.join('/')}`;
   };
-
-  let toStateObject = (keys) => ({ keys });
 
   let withIndices = (state) => Object.assign(state, {
     indices: toIndices(state.keys)
@@ -238,7 +237,7 @@ let createRouter = function(opts) {
   let replaceUri = function (keys) {
     if(options.replaceUri && !keys.equals(state.path)) {
       let uri = buildUri(keys);
-      history.replace(uri);
+      history.replace({pathname: uri, query: state.query});
     }
   };
 
