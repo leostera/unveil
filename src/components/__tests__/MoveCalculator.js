@@ -1,13 +1,13 @@
 jest.dontMock('../MoveCalculator');
 
-const moveCalculator = require('../MoveCalculator').default;
+const createMoveCalculator = require('../MoveCalculator').default;
 const fixture = require('./fixtures/RoutesMap').default;
 
 describe('MoveCalculator', () => {
   let moveCalculator;
 
   beforeEach( () => {
-    moveCalculator = createNavigator(fixture());
+    moveCalculator = createMoveCalculator(fixture());
   });
 
   describe('directions', () => {
