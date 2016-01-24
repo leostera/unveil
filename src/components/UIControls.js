@@ -32,7 +32,7 @@ export default React.createClass({
   },
 
   buttons: function () {
-    let toButton = function (m) {
+    let toButton = function (d) {
       const options = {
         "key": m,
         "href": '', // @todo add right href here

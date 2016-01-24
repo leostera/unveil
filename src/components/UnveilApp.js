@@ -79,6 +79,7 @@ export default React.createClass({
 
   updateState: function (s) {
     this.routerState = s;
+    this.navigator.setPossibleMoves(this.routerState.directions);
     this.setState({ currentSlide: this.getSlide(s.indices) });
   },
 

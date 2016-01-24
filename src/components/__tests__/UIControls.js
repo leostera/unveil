@@ -5,6 +5,7 @@ jest.dontMock('marked');
 import React           from 'react';
 import ReactDOM        from 'react-dom';
 import TestUtils       from 'react-addons-test-utils';
+
 import { Subject } from 'rxjs';
 
 const createNavigator = require('../Navigator').default;
@@ -24,12 +25,27 @@ describe('UIControls', () => {
     down:  { level: 1, direction: 'next' }
   };
 
+  navigator = createNavigator();
+
   beforeEach( () => {
+<<<<<<< HEAD
     navigator = createNavigator({ stateObservable: new Subject() });
     navigator.next = jest.genMockFunction();
 
     controller = TestUtils.renderIntoDocument( (
       <UIControls navigator={navigator} >
+=======
+    navigator = createNavigator();
+    navigator.setPossibleMoves(directions);
+    navigator.move = jest.genMockFunction();
+
+    spyOn(navigator, 'move');
+
+    controller = TestUtils.renderIntoDocument( (
+      <UIControls
+        navigator={navigator}
+      >
+>>>>>>> Extracts MoveCalculator and refactors Navigator
       </UIControls>));
 
     node = ReactDOM.findDOMNode(controller);
