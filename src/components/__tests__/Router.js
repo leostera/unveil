@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 
 const createRouter = require('../Router').default;
 const createHistory = require('history/lib/createHashHistory');
+const useQueries = require('history/lib/useQueries');
 
 const fixtureWithoutNestedFirstSlide = require('./fixtures/MapWithoutNestedFirstSlide').default;
 const fixtureWithNestedFirstSlide = require('./fixtures/MapWithNestedFirstSlide').default;
@@ -12,7 +13,7 @@ describe('Router', () => {
   let history, router, fixture;
 
   beforeEach( () => {
-    history = createHistory({ queryKey: false });
+    history = useQueries(createHistory)({ queryKey: false });
     fixture = fixtureWithoutNestedFirstSlide;
     router  = createRouter({history, map: fixture(), replaceUri: false});
     router.start();

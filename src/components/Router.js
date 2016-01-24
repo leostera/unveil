@@ -65,7 +65,7 @@ let createRouter = function(opts) {
       //.do((e) => console.log("     history => distinct", e))
       .distinctUntilChanged()
       //.do((e) => console.log("     history => toList", e))
-      .map(toList)
+      .map((e) => Object.assign(e, {keys: toList(e.path)}))
       //.do((e) => console.log("     history => distinct", e))
       .distinctUntilChanged()
       //.do((e) => console.log("     state => before withIndices", e))
@@ -137,10 +137,10 @@ let createRouter = function(opts) {
    * @returns {*[]} Array of path-parts (split by "/")
    */
   let toList = (path) => {
-    return Object.assign(path, {keys: path.path.split("/").compact().map((key) => {
+    return path.split("/").compact().map((key) => {
       let n = Number(key);
       return Number.isNaN(n) && key || n;
-    })});
+    });
   };
 
   /**
@@ -177,7 +177,7 @@ let createRouter = function(opts) {
    * @returns {string}
    */
   let buildUri = (path) => {
-    return `/${path.join('/')}`;
+    return {pathname: `/${path.join('/')}`, query: state.query};
   };
 
   let withIndices = (state) => Object.assign(state, {
@@ -185,7 +185,7 @@ let createRouter = function(opts) {
   });
 
   let withPath = (state) => Object.assign(state, {
-    path: buildUri(toPaths(state.keys))
+    path: buildUri(toPaths(state.keys)).pathname
   });
 
   let withDirections = (state) => {
@@ -237,7 +237,7 @@ let createRouter = function(opts) {
   let replaceUri = function (keys) {
     if(options.replaceUri && !keys.equals(state.path)) {
       let uri = buildUri(keys);
-      history.replace({pathname: uri, query: state.query});
+      history.replace(uri);
     }
   };
 
