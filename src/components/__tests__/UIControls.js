@@ -14,8 +14,6 @@ describe('UIControls', () => {
 
   directions = [
     {next: [0], previous: [0]},
-    {next: [0], previous: [0]},
-    {next: [0], previous: [0]},
     {next: [0], previous: [0]}
   ];
   motions    = {

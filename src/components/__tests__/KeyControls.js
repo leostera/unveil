@@ -10,26 +10,20 @@ const createNavigator = require('../Navigator').default;
 const KeyControls     = require('../KeyControls').default;
 
 describe('KeyControls', () => {
-  let controls, node, navigator, directions, mappings;
+  let controls, node, navigator, mappings;
 
-  directions = [
-    {next: [0], previous: [0]},
-    {next: [0], previous: [0]},
-    {next: [0], previous: [0]},
-    {next: [0], previous: [0]}
-  ];
   mappings = {
-    'left': 37,
-    'up': 38,
+    'left':  37,
+    'up':    38,
     'right': 39,
-    'down': 40
+    'down':  40
   };
 
   navigator = createNavigator();
 
   beforeEach( () => {
     navigator = createNavigator();
-    navigator.setPossibleMoves(directions);
+    navigator.setPossibleMoves([]);
     navigator.move = jest.genMockFunction();
 
     controls = TestUtils.renderIntoDocument( (
