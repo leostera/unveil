@@ -1,6 +1,7 @@
 jest.dontMock('../UnveilApp');
 jest.dontMock('../Router');
 jest.dontMock('../Navigator');
+jest.dontMock('../MoveCalculator');
 jest.dontMock('../UIControls');
 jest.dontMock('../KeyControls');
 jest.dontMock('../Slide');
