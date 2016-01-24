@@ -25,7 +25,7 @@ export default React.createClass({
       .do( function (key) {
         this.setState({key});
       }.bind(this))
-      .subscribe(this.props.navigator.navigate);
+      .subscribe(this.props.navigator.move);
   },
 
   render: function () {
