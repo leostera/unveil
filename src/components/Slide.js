@@ -34,8 +34,8 @@ export default React.createClass({
   },
 
   getScale: function () {
-    let verticalScale = this.refs['slide-container'].offsetHeight / this.refs.slide.offsetHeight;
-    let horizontalScale = this.refs['slide-container'].offsetWidth / this.refs.slide.offsetWidth;
+    let verticalScale   = this.refs['slide-container'].offsetHeight / this.refs.slide.offsetHeight;
+    let horizontalScale = this.refs['slide-container'].offsetWidth  / this.refs.slide.offsetWidth;
     return Math.min(verticalScale, horizontalScale);
   },
 
