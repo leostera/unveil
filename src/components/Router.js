@@ -17,27 +17,6 @@ let createRouter = function(opts) {
   let subject = new Subject();
   let observables = {};
 
-  /*
-   * State Object
-   *
-   * Having both the current indices and path, and the last
-   * indices and path, make it trivial to listen to state changes
-   * both on feature code and on tests, and make sure that
-   * we are correctly navigating from our last state to our new state.
-   */
-  let state = {
-    // Current node indices
-    indices: [],
-    // Current node path if existent
-    path: "",
-    // Currently attempted path (might differ from final path)
-    keys: [],
-    // Next available directions from current node
-    directions: [],
-    // Last node
-    last: {} // previous state object
-  };
-
   let fromRouter = (router) => {
     return subject;
   };
@@ -45,7 +24,7 @@ let createRouter = function(opts) {
   Observable.fromRouter = fromRouter;
 
   let Path = {
-    cleanUp: path => (Object.assign(path, {path: path.path.trim()}))
+    cleanUp: path => (path.trim())
   };
 
   let start = () => {
@@ -61,15 +40,15 @@ let createRouter = function(opts) {
       //.do((e) => console.log("     history => toPathAndQuery", e))
       .map(toPathnameAndQuery)
       //.do((e) => console.log("     history => Path.cleanup", e))
-      .map(Path.cleanUp)
+      .map(stateWith('pathname', Path.cleanUp, 'pathname'))
       //.do((e) => console.log("     history => distinct", e))
       .distinctUntilChanged()
       //.do((e) => console.log("     history => toList", e))
-      .map((e) => Object.assign(e, {keys: toList(e.path)}))
+      .map(stateWith('keys', toList, 'pathname'))
       //.do((e) => console.log("     history => distinct", e))
       .distinctUntilChanged()
       //.do((e) => console.log("     state => before withIndices", e))
-      .map(withIndices)
+      .map(stateWith('indices', toIndices, 'keys'))
       //.do((e) => console.log("     state => before withPath", e))
       .map(withPath)
       //.do((e) => console.log("     state => before withDirections", e))
@@ -77,8 +56,6 @@ let createRouter = function(opts) {
       //.do((e) => console.log("     state => before emitState", e))
       .do(emitState)
       //.do((e) => console.log("     replaceUri => before toPaths", e))
-      .pluck('keys')
-      .map(toPaths)
       .distinctUntilChanged()
       //.do((e) => console.log("     replaceUri => before replaceUri", e))
       .subscribe(replaceUri, (e) => {
@@ -103,20 +80,17 @@ let createRouter = function(opts) {
     return subject;
   };
 
-  let go = (target) => {
+  let go = (target, query = {}) => {
     let parts = Array.isArray(target) && target || toList(target);
 
     if (options.replaceUri)
       parts = toPaths(parts);
 
-    history.push(buildUri(parts));
+    history.push(buildUri(buildUriString(parts), query));
   };
 
-  let saveState = (newState) => {
-    oldState = state;
-    state = {
-      last: oldState
-    };
+  let stateWith = (property, method, paramName) => {
+    return (state) => Object.assign(state, {[property]: method(state[paramName])})
   };
 
   let emitState = (state) => {
@@ -124,7 +98,7 @@ let createRouter = function(opts) {
   };
 
   let toPathnameAndQuery = (path) => {
-    return {path: path.pathname, query: path.query};
+    return {pathname: path.pathname, query: path.query};
   };
 
   /**
@@ -170,22 +144,28 @@ let createRouter = function(opts) {
   };
 
   /**
-   * Builds uri from path-array by joining with "/" and
-   * adding leading "/".
+   * Builds uri object from pathname and query
    *
-   * @param path *[] Path array
-   * @returns {string}
+   * @param pathname {string} Pathname
+   * @param query {object} Object with query params
+   * @returns {object} Uri object with pathname and query
    */
-  let buildUri = (path) => {
-    return {pathname: `/${path.join('/')}`, query: state.query};
+  let buildUri = (pathname, query) => {
+    return {pathname: path, query: query};
   };
 
-  let withIndices = (state) => Object.assign(state, {
-    indices: toIndices(state.keys)
-  });
+  /**
+   * Builds uri string with leading "/" from path array
+   * by joining path with "/".
+   * @param {*[]} path path array
+   * @returns {string} Uri string
+   */
+  let buildUriString = (path) => {
+    return `/${path.join('/')}`
+  };
 
   let withPath = (state) => Object.assign(state, {
-    path: buildUri(toPaths(state.keys)).pathname
+    path: buildUriString(toPaths(state.keys))
   });
 
   let withDirections = (state) => {
@@ -232,12 +212,12 @@ let createRouter = function(opts) {
 
   /**
    * Replaces history with path built with keys
-   * @param keys *[] Path array
+   * @param state {object} State object
    */
-  let replaceUri = function (keys) {
-    if(options.replaceUri && !keys.equals(state.path)) {
-      let uri = buildUri(keys);
-      history.replace(uri);
+  let replaceUri = function (state) {
+    console.log(state.path, state.pathname);
+    if(options.replaceUri && state.path !== state.pathname) {
+      history.replace(buildUri(state.path, state.query));
     }
   };
 

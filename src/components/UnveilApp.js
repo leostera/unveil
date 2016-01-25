@@ -37,7 +37,20 @@ export default React.createClass({
   },
 
   componentWillMount: function () {
-    this.controls       = this.props.controls || [UIControls, KeyControls];
+    let controls       = this.props.controls || [UIControls, KeyControls];
+    let presenter      = this.props.presenter || Presenter;
+
+    this.modes          = this.props.modes || {
+        default: {
+          controls : controls,
+          presenter: presenter
+        },
+        presenter: {
+          controls : [KeyControls],
+          presenter: presenter
+        }
+      };
+
     this.history        = this.props.history || history;
     this.slides         = this.props.children.toList();
     this.map            = this.buildMap(this.slides);
@@ -58,9 +71,22 @@ export default React.createClass({
       .subscribe(this.updateState);
 
     this.navigator.asObservable()
-      .subscribe(this.router.go);
+      .subscribe(function(e) {
+        this.router.go(e, this.getQuery())
+      }.bind(this));
 
     this.router.start();
+  },
+
+  getMode: function (mode) {
+    return this.modes[mode] || this.modes['default'];
+  },
+
+  getQuery: function () {
+    if (this.state.mode === 'default' || this.modes[this.state.mode] === undefined) {
+      return {};
+    }
+    return { mode: this.state.mode};
   },
 
   getInitialState: function() {
@@ -81,6 +107,7 @@ export default React.createClass({
     this.routerState = s;
     this.navigator.setPossibleMoves(this.routerState.directions);
     this.setState({ currentSlide: this.getSlide(s.indices) });
+    this.setState({ mode: s.query.mode || 'default' });
   },
 
   getSlide: function (indices) {
@@ -98,7 +125,7 @@ export default React.createClass({
   },
 
   controlsElements: function () {
-    let controls = this.controls.map( (control) => {
+    let controls = this.getMode(this.state.mode).controls.map( (control) => {
       let props = {
         key: control.displayName,
         navigator: this.navigator
