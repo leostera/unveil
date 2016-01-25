@@ -1,11 +1,12 @@
 import { Observable } from 'rxjs';
 
 import React from 'react';
-import ReactDOM from 'react-dom';
 
 import marked from 'marked';
 
 export default React.createClass({
+
+  scale: 1,
 
   propTypes: {
     name: React.PropTypes.string
@@ -29,21 +30,27 @@ export default React.createClass({
     return this.props.markdown && !Array.isArray(this.props.children);
   },
 
-  getInitialState: function () {
-    return { scale: 1 };
+  componentDidUpdate: function () {
+    let scale = this.getScale();
+    if(this.scale !== scale) {
+      this.scale = scale;
+      this.forceUpdate();
+    }
   },
 
   getScale: function () {
     let verticalScale   = this.refs['slide-container'].offsetHeight / this.refs.slide.offsetHeight;
     let horizontalScale = this.refs['slide-container'].offsetWidth  / this.refs.slide.offsetWidth;
-    return Math.min(verticalScale, horizontalScale);
+    let scale = Math.min(verticalScale, horizontalScale);
+    return scale > 1 && 1 || scale;
   },
 
   componentDidMount: function () {
     ['load', 'resize'].forEach( function (event) {
       Observable.fromEvent(window, event)
       .subscribe( function () {
-        this.setState({scale: this.getScale()});
+        this.scale = this.getScale();
+        this.forceUpdate();
       }.bind(this));
     }.bind(this));
   },
@@ -53,7 +60,7 @@ export default React.createClass({
       ref: 'slide',
       id: this.props.name || "",
       style: {
-        transform: `translate(-50%, -50%) scale(${this.state.scale})`
+        transform: `translate(-50%, -50%) scale(${this.scale})`
       }
     };
     if(this.shouldUseMarkdown())
