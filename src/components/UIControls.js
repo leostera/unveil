@@ -29,18 +29,20 @@ export default React.createClass({
 
   next: function (e) {
     this.clicks.next(e);
+    e.preventDefault();
   },
 
   buttons: function () {
     let toButton = function (m) {
       const options = {
         "key": m.name,
+        "href": '', // @todo add right href here
         "ref": `button-${m.name}`,
         "id": m.name,
         "onClick": this.next,
-        "disabled": m.disabled
+        "className": m.disabled && 'disabled' || 'enabled'
       };
-      return <button {...options}>{m.name}</button>;
+      return <a {...options}></a>;
     }.bind(this);
 
     let isEnabled = function (m) {
@@ -60,7 +62,7 @@ export default React.createClass({
   },
 
   render: function () {
-    return (<div>{this.buttons()}</div>);
+    return (<div className="ui-controls">{this.buttons()}</div>);
   }
 
 });

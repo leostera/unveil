@@ -29,7 +29,7 @@ export default React.createClass({
   },
 
   render: function () {
-    return (<div>KeyController: {this.state.key}</div>);
+    return (<div></div>);
   }
 
 });
