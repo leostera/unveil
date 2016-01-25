@@ -1,6 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+
+import GithubRibbon from './components/GithubRibbon';
+
 import UnveilApp from './components/UnveilApp';
 import Slide from './components/Slide';
 
@@ -10,6 +13,8 @@ import UIControls  from './components/UIControls';
 const controls = [KeyControls, UIControls];
 
 ReactDOM.render( (
+<section>
+  <GithubRibbon path="ostera/unveil.js" />
   <UnveilApp controls={controls}>
     <Slide name="star-wars" markdown={true}>
       {`
@@ -39,16 +44,19 @@ While the congress of the Republic endlessly debates this alarming chain of even
     </Slide>
 
     <Slide name="episode-2" markdown={true}>
-      {`
-# Attack of the Clones
+      <Slide name="intro" markdown={true}>
+        {`
+  # Attack of the Clones
 
-Turmoies unrest in the Galactic Senate. Several thousand solar systems have declared their intentions to leave the Republic.
+  Turmoies unrest in the Galactic Senate. Several thousand solar systems have declared their intentions to leave the Republic.
 
-This separatist movement, under the leadership of the mysterious Count Dooku, has made it difficult for the limited number of Jedi Knights to maintain peace and order in the galaxy.
+  This separatist movement, under the leadership of the mysterious Count Dooku, has made it difficult for the limited number of Jedi Knights to maintain peace and order in the galaxy.
 
-Senator Amidala, the former Queen of Naboo, is returning to the Galactic Senate to vote on the critical issue of creating an ARMY OF THE REPUBLIC to assist the overwhelmed Jedi....
-        `}
+  Senator Amidala, the former Queen of Naboo, is returning to the Galactic Senate to vote on the critical issue of creating an ARMY OF THE REPUBLIC to assist the overwhelmed Jedi....
+          `}
+      </Slide>
     </Slide>
+
     <Slide name="episode-3" markdown={true}>
       {`
 # The Revent of the Sith
@@ -61,4 +69,5 @@ As the Separatist Droid Army attempts to flee the besieged capital with their va
        `}
     </Slide>
   </UnveilApp>
+</section>
 ), document.getElementById('unveil'));
