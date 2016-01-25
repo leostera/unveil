@@ -12,10 +12,12 @@
     "rx"
   ],
   "author": "Leandro Ostera <leandro@ostera.io>",
-  "contributors": [{
-    "name": "Iris Schaffer",
-    "email": "irisschaffer@gmx.net"
-  }],
+  "contributors": [
+    {
+      "name": "Iris Schaffer",
+      "email": "irisschaffer@gmx.net"
+    }
+  ],
   "repository": "https://github.com/ostera/unveil.js",
   "bugs": {
     "url": "https://github.com/ostera/unveil.js/issues"
@@ -28,6 +30,7 @@
     "history": "~1.17.0",
     "immutable": "~3.7.6",
     "marked": "~0.3.5",
+    "normalize.css": "^3.0.3",
     "react": "~0.15.0-alpha.1",
     "react-addons-css-transition-group": "~0.15.0-alpha.1",
     "react-dom": "~0.15.0-alpha.1",
