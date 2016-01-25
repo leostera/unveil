@@ -74,8 +74,8 @@ export default React.createClass({
     this.router.start();
   },
 
-  getMode: function (mode) {
-    return this.modes[mode] || this.modes['default'];
+  getMode: function () {
+    return this.modes[this.state.mode] || this.modes['default'];
   },
 
   getInitialState: function() {
@@ -95,16 +95,7 @@ export default React.createClass({
   updateState: function (s) {
     this.routerState = s;
     this.navigator.setPossibleMoves(this.routerState.directions);
-    this.setState({ currentSlide: this.getSlide(s.indices) });
     this.setState({ mode: s.query.mode || 'default' });
-  },
-
-  getSlide: function (indices) {
-    let slide = this.slides[indices[0]];
-    if(indices.length > 1 )
-      return slide.props.children.toList()[indices[1]];
-    else
-      return slide
   },
 
   areSlides: function (children) {
@@ -114,8 +105,8 @@ export default React.createClass({
   },
 
   controlsElements: function () {
-    let controls = this.getMode(this.state.mode).controls.map( (control) => {
-      let props = {
+    let controls = this.getMode().controls.map( (control) => {
+      const props = {
         key: control.displayName,
         navigator: this.navigator
       };
@@ -125,11 +116,23 @@ export default React.createClass({
     return React.createElement('controls', null, controls);
   },
 
+  presenterElement: function() {
+    return React.createElement(
+      this.getMode().presenter,
+      {
+        routerState: this.routerState,
+        slides: this.slides
+      }
+    );
+  },
+
   render: function () {
-    return (<div>
-      {this.controlsElements()}
-      <current ref="current-slide">{this.state.currentSlide}</current>
-    </div>);
+    return (
+      <div>
+        {this.controlsElements()}
+        {this.presenterElement()}
+      </div>
+    );
   }
 
 });
