@@ -40,9 +40,11 @@ export default React.createClass({
   },
 
   componentDidMount: function () {
-    Observable.fromEvent(window, 'resize')
-    .subscribe( function () {
-      this.setState({scale: this.getScale()});
+    ['load', 'resize'].forEach( function (event) {
+      Observable.fromEvent(window, event)
+      .subscribe( function () {
+        this.setState({scale: this.getScale()});
+      }.bind(this));
     }.bind(this));
   },
 
