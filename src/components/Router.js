@@ -151,7 +151,7 @@ let createRouter = function(opts) {
    * @returns {object} Uri object with pathname and query
    */
   let buildUri = (pathname, query) => {
-    return {pathname: path, query: query};
+    return {pathname: pathname, query: query};
   };
 
   /**
@@ -215,7 +215,6 @@ let createRouter = function(opts) {
    * @param state {object} State object
    */
   let replaceUri = function (state) {
-    console.log(state.path, state.pathname);
     if(options.replaceUri && state.path !== state.pathname) {
       history.replace(buildUri(state.path, state.query));
     }
