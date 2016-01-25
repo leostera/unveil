@@ -41,6 +41,11 @@ While the congress of the Republic endlessly debates this alarming chain of even
 * Nobody cares about the rest
           `}
       </Slide>
+      <Slide name="screenshots" markdown={true}>
+        {`
+![obi-wan and qui-gonn jin](http://static1.squarespace.com/static/51b3dc8ee4b051b96ceb10de/t/5479f9a4e4b05e2320d89a2e/1417279908429/)
+          `}
+      </Slide>
     </Slide>
 
     <Slide name="episode-2" markdown={true}>
