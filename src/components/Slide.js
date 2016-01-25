@@ -1,4 +1,7 @@
+import { Observable } from 'rxjs';
+
 import React from 'react';
+import ReactDOM from 'react-dom';
 
 import marked from 'marked';
 
@@ -15,7 +18,7 @@ export default React.createClass({
   },
 
   defaults: (overrides) => (Object.assign({
-    className: 'slide'
+    className: 'slide-content'
   }, overrides)),
 
   fromMarkdown: function () {
@@ -26,8 +29,31 @@ export default React.createClass({
     return this.props.markdown && !Array.isArray(this.props.children);
   },
 
+  getInitialState: function () {
+    return { scale: 1 };
+  },
+
+  getScale: function () {
+    let verticalScale = this.refs['slide-container'].offsetHeight / this.refs.slide.offsetHeight;
+    let horizontalScale = this.refs['slide-container'].offsetWidth / this.refs.slide.offsetWidth;
+    return Math.min(verticalScale, horizontalScale);
+  },
+
+  componentDidMount: function () {
+    Observable.fromEvent(window, 'resize')
+    .subscribe( function () {
+      this.setState({scale: this.getScale()});
+    }.bind(this));
+  },
+
   options: function () {
-    let opts = {};
+    let opts = {
+      ref: 'slide',
+      id: this.props.name || "",
+      style: {
+        transform: `translate(-50%, -50%) scale(${this.state.scale})`
+      }
+    };
     if(this.shouldUseMarkdown())
       opts.dangerouslySetInnerHTML = {__html: this.fromMarkdown()};
     else
@@ -36,7 +62,9 @@ export default React.createClass({
   },
 
   render: function () {
-    return (<section {...this.options()} />);
+    return (<section ref="slide-container" className="slide">
+      <section {...this.options()} />
+    </section>);
   }
 
 });
