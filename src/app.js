@@ -64,7 +64,7 @@ While the congress of the Republic endlessly debates this alarming chain of even
 
     <Slide name="episode-3" markdown={true}>
       {`
-# The Revent of the Sith
+# The Revenge of the Sith
 
 War! The Republic is crumbling under attacks by the ruthless Sith Lord, Count Dooku.  There are heroes on both sides.  Evil is everywhere.
 
