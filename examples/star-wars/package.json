@@ -1,0 +1,32 @@
+{
+  "name": "unveil-star-wars",
+  "private": true,
+  "author": "Leandro Ostera <leandro@ostera.io>",
+  "dependencies": {
+    "unveil": "^0.1.3"
+  },
+  "devDependencies": {
+    "react-addons-test-utils": "~0.15.0-alpha.1",
+    "babel-plugin-transform-runtime": "~6.4.3",
+    "babel-preset-es2015": "~6.3.13",
+    "babel-preset-react": "~6.3.13",
+    "babelify": "~7.2.0",
+    "browserify": "~6.2.0",
+    "envify": "~3.0.0",
+    "jest-cli": "^0.8.2",
+    "babel-jest": "~6.0.1",
+    "reactify": "~1.1.1",
+    "uglify-js": "~2.4.15",
+    "watchify": "~2.1.1"
+  },
+  "scripts": {
+    "start": "watchify -t [envify --NODE_ENV local] -o build/bundle.js -v -d index.js & sass -w ./styles:./build"
+  },
+  "browserify": {
+    "transform": [
+      "babelify",
+      "reactify",
+      "envify"
+    ]
+  }
+}

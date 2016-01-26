@@ -1,14 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-
-import GithubRibbon from './components/GithubRibbon';
-
-import UnveilApp from './components/UnveilApp';
-import Slide from './components/Slide';
-
-import KeyControls from './components/KeyControls';
-import UIControls  from './components/UIControls';
+import { GithubRibbon, UnveilApp, Slide, KeyControls, UIControls } from 'unveil';
 
 const controls = [KeyControls, UIControls];
 
