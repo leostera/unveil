@@ -1,4 +1,4 @@
-import createHistory from 'history/lib/createHistory';
+import createHistory from 'history/lib/createHashHistory';
 
 let history = createHistory({
     queryKey: false
