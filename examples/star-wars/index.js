@@ -1,13 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import { GithubRibbon, UnveilApp, Slide, KeyControls, UIControls } from 'unveil';
+import { UnveilApp, Slide, KeyControls, UIControls } from 'unveil';
 
 const controls = [KeyControls, UIControls];
 
 ReactDOM.render( (
 <section>
-  <GithubRibbon path="ostera/unveil.js" />
   <UnveilApp controls={controls}>
     <Slide name="star-wars" markdown={true}>
       {`
