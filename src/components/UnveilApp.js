@@ -8,7 +8,7 @@ import Presenter from './Presenter';
 import KeyControls from './KeyControls';
 import UIControls  from './UIControls';
 
-import createMoveCalculator from './MoveCalculator';
+import getDirections        from '../getDirections';
 import createRouter         from './Router';
 import createNavigator      from './Navigator';
 import history              from '../helpers/History';
@@ -42,13 +42,13 @@ export default React.createClass({
     this.slides         = this.props.children;
     this.navigator      = this.props.navigator || createNavigator();
     this.map            = this.buildMap(this.slides);
-    this.moveCalculator = this.props.moveCalculator || createMoveCalculator();
+    this.getDirections  = this.props.getDirections || getDirections;
 
     this.routerState = { directions: [] };
     this.router = createRouter({
       map: this.map,
       history: this.history,
-      moveCalculator: this.moveCalculator
+      getDirections: this.getDirections
     });
 
     this.router.asObservable()
