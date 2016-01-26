@@ -1,0 +1,13 @@
+.github-corner {
+  border: 0;
+  fill: #FEFEFE;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 99;
+  padding: 0.5em; }
+  @media only screen and (min-device-width: 1024px) and (min-device-height: 728px) {
+    .github-corner {
+      padding: 0.2em; } }
+
+/*# sourceMappingURL=octocat.css.map */

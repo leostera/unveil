@@ -1,0 +1,96 @@
+@charset "UTF-8";
+@import url(../node_modules/normalize.css/normalize.css);
+* {
+  font-family: "Open Sans", Heveltica Neue, Helvetica;
+  font-size: 1rem; }
+
+#unveil {
+  font-size: 1rem; }
+  #unveil .ui-controls a {
+    transition: opacity 0.25s;
+    position: absolute;
+    font-size: 1em;
+    margin: 0.25em;
+    z-index: 100;
+    color: #151515;
+    text-decoration: none;
+    opacity: 0.3; }
+    #unveil .ui-controls a:hover {
+      opacity: 1; }
+    #unveil .ui-controls a.disabled {
+      display: none; }
+  #unveil .ui-controls #left {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%); }
+    #unveil .ui-controls #left:before {
+      content: "◀"; }
+  #unveil .ui-controls #right {
+    top: 50%;
+    right: 0;
+    transform: translateY(-50%); }
+    #unveil .ui-controls #right:before {
+      content: "►"; }
+  #unveil .ui-controls #up {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%); }
+    #unveil .ui-controls #up:before {
+      content: "▲"; }
+  #unveil .ui-controls #down {
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%); }
+    #unveil .ui-controls #down:before {
+      content: "▼"; }
+  #unveil .slide {
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    max-width: 100%;
+    max-height: 100%;
+    width: 100%;
+    height: 100%;
+    text-align: center; }
+    #unveil .slide .slide-content {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 100%;
+      max-width: 720px;
+      padding: 3rem;
+      transform: translate(-50%, -50%); }
+    #unveil .slide h1 {
+      font-size: 3rem;
+      margin: 1rem;
+      text-transform: uppercase; }
+    #unveil .slide ul {
+      margin: 0 auto;
+      text-align: left;
+      display: inline-block; }
+    #unveil .slide img {
+      max-width: 100%;
+      max-height: 100%;
+      display: inline-block; }
+
+.slide-appear {
+  opacity: 0; }
+
+.slide-enter {
+  opacity: 0;
+  -webkit-transition: opacity 0.5s ease-in; }
+
+.slide-enter.slide-enter-active {
+  opacity: 1; }
+
+.slide-leave {
+  -webkit-transition: opacity 0.5s ease-in; }
+
+.slide-leave.slide-leave-active {
+  opacity: 0; }
+
+/*# sourceMappingURL=index.css.map */
