@@ -1,7 +1,0 @@
-{
-"version": 3,
-"mappings": "AAEA,cAAc;EACZ,MAAM,EAAE,CAAC;EACT,IAAI,ECIY,OAAM;EDHtB,QAAQ,EAAE,KAAK;EACf,KAAK,EAAE,CAAC;EACR,GAAG,EAAE,CAAC;EACN,OAAO,EAAE,EAAE;EACX,OAAO,EAAE,KAAK;EAEd,gFAAgF;IATlF,cAAc;MAUV,OAAO,EAAE,KAAK",
-"sources": ["../../styles/octocat.sass","../../styles/colors.sass"],
-"names": [],
-"file": "octocat.css"
-}
