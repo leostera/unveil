@@ -80,10 +80,10 @@
       "fixtures"
     ],
     "modulePathIgnorePatterns": [
-      "<rootDir>/node_modules/",
-      "<rootDir>/build/",
-      "<rootDir>/styles/",
-      "<rootDir>/lib/"
+      "node_modules",
+      "build",
+      "styles",
+      "<rootDir>/lib"
     ]
   }
 }
