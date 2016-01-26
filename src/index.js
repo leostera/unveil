@@ -1,21 +1,8 @@
-import History         from './helpers/History';
-import KeyControls     from './components/KeyControls';
-import Presenter       from './components/Presenter';
-import Slide           from './components/Slide';
-import UIControls      from './components/UIControls';
-import UnveilApp       from './components/UnveilApp';
-import createNavigator from './components/Navigator';
-import createRouter    from './components/Router';
-
-const Unveil = {
-  History,
-  KeyControls,
-  Presenter,
-  Slide,
-  UIControls,
-  UnveilApp,
-  createNavigator,
-  createRouter,
-};
-
-export default Unveil;
+export History         from './helpers/History';
+export KeyControls     from './components/KeyControls';
+export Presenter       from './components/Presenter';
+export Slide           from './components/Slide';
+export UIControls      from './components/UIControls';
+export UnveilApp       from './components/UnveilApp';
+export createNavigator from './components/Navigator';
+export createRouter    from './components/Router';
