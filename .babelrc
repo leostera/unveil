@@ -1,4 +1,4 @@
 {
-  "plugins": ["transform-runtime"],
+  "plugins": ["transform-runtime", "transform-export-extensions"],
   "presets": ["es2015", "react"],
 }

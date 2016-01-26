@@ -11,6 +11,9 @@
     "reactive",
     "rx"
   ],
+  "files": [
+    "lib"
+  ],
   "author": "Leandro Ostera <leandro@ostera.io>",
   "contributors": [
     {
@@ -27,6 +30,7 @@
   "version": "0.1.5",
   "main": "lib/index.js",
   "dependencies": {
+    "babel-plugin-transform-export-extensions": "^6.4.0",
     "history": "~1.17.0",
     "immutable": "~3.7.6",
     "marked": "~0.3.5",
@@ -53,6 +57,7 @@
     "watchify": "~2.1.1"
   },
   "scripts": {
+    "prepublish": "npm run build",
     "start": "watchify -t [envify --NODE_ENV local] -o build/bundle.js -v -d app.js & sass -w ./styles:./build",
     "build": "./node_modules/babel-cli/bin/babel.js src -d lib --source-maps inline; sass --update ./styles:./lib/css",
     "test": "jest"
