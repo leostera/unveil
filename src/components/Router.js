@@ -5,7 +5,7 @@ import '../lib/Utils';
 
 let createRouter = function(opts) {
   // Parametered options
-  let { history, map, navigator } = opts;
+  let { history, map, getDirections } = opts;
 
   let defaultOptions = {
     replaceUri: true
@@ -85,7 +85,9 @@ let createRouter = function(opts) {
       .distinctUntilChanged()
       //.do((e) => console.log("     replaceUri => before replaceUri", e))
       .subscribe(replaceUri, (e) => {
-        console.log("Router unsubscribed from History successfully");
+        console.log("Error", e);
+      }, (done) => {
+        console.log("Router successfully unsubscribed from History")
       });
   };
 
@@ -188,9 +190,9 @@ let createRouter = function(opts) {
   });
 
   let withDirections = (state) => {
-    if(navigator && navigator.getDirections) {
+    if(getDirections && typeof getDirections === "function") {
       return Object.assign(state, {
-        directions: navigator.getDirections(state.indices, map)
+        directions: getDirections(state.indices, map)
       });
     }
     return state;

@@ -1,32 +1,71 @@
 jest.dontMock('../Navigator');
 
+import { Observable, Subject } from 'rxjs';
+
 const createNavigator = require('../Navigator').default;
-const fixture = require('./fixtures/RoutesMap').default;
+const possibleMoves = [
+  {next: [0], previous: [2]},
+  {next: false, previous: [1, 1]}
+];
+
+const motions = ['left', 'right', 'up', 'down'];
 
 describe('Navigator', () => {
-  let navigator;
+  let navigator, stateSubject;
 
   beforeEach( () => {
-    navigator = createNavigator(fixture());
+    stateSubject = new Subject();
+    let stateObservable = stateSubject;
+    navigator = createNavigator({stateObservable});
   });
 
-  describe('directions', () => {
-    let t = (name, state, level, direction, result) => it(name, () => {
-      let directions = navigator.getDirections(state, fixture());
-      expect(directions[level][direction]).toEqual(result);
+  describe('Motion Names', () => {
+    it('returns correct motion names', () => {
+      let names = navigator.motionNames;
+      expect(names.length).toEqual(4);
+      motions.forEach(function(motion) {
+        expect(names.indexOf(motion)).not.toEqual(-1);
+      });
+    });
+  });
+
+  describe('Possible motions', () => {
+    let t = (name, possibleMotions, directions) => it(name, () => {
+      stateSubject.next(directions);
+      possibleMotions.forEach((val, i) => {
+        expect(navigator.isPossibleMotion(motions[i])).toEqual(val);
+      });
     });
 
-    let n = (name, state, level, result) => t(name, state, level, 'next', result);
-    let p = (name, state, level, result) => t(name, state, level, 'previous', result);
+    t('computes possible motions before setting moves', [false, false, false, false], []);
+    t('computes possible motions after setting moves', [true, true, true, false], possibleMoves);
+  });
 
-    n('gets directions for 1st level with successor', [1], 0, [2]);
-    p('gets directions for 1st level with predecessor', [1], 0, [0]);
-    n('gets directions for 1st level without successor', [3, 0], 0, false);
-    p('gets directions for 1st level without predecessor', [0, 0], 0, false);
+  describe('Go', () => {
+    let mockSubscriber, subscription;
 
-    n('gets directions for 2nd level with successor', [3, 0], 1, [3, 1]);
-    p('gets directions for 2nd level with predecessor', [3, 1], 1, [3, 0]);
-    n('gets directions for 2nd level without successor', [2, 1], 1, false);
-    p('gets directions for 2nd level without predecessor', [2, 0], 1, false);
+    beforeEach(() => {
+      stateSubject.next(possibleMoves);
+      mockSubscriber = jest.genMockFn();
+      subscription   = navigator.asObservable().subscribe(mockSubscriber);
+    });
+
+    afterEach(() => {
+      if (subscription) subscription.unsubscribe();
+    });
+
+    let t = (name, next, expectation) => {
+      return it(name, () => {
+        navigator.next(next);
+        expectation();
+      });
+    }
+
+    t('does not go to invalid state', ['not'], () => expect(mockSubscriber).not.toBeCalled() );
+    t('does not move diagonally', 'diagonally', () => expect(mockSubscriber).not.toBeCalled() );
+    t('does not move down', 'down', () => expect(mockSubscriber).not.toBeCalled() );
+    t('goes to valid state', [1], () => expect(mockSubscriber).toBeCalledWith([1]) );
+    t('goes to valid string state', [1], () => expect(mockSubscriber).toBeCalledWith([1]) );
+    t('moves up', 'up', () => expect(mockSubscriber).toBeCalledWith([1, 1]) );
   });
 });

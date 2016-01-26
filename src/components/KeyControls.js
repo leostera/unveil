@@ -5,14 +5,14 @@ import { Observable } from 'rxjs';
 export default React.createClass({
 
   propTypes: {
-    navigate: React.PropTypes.func.isRequired
+    navigator: React.PropTypes.object.isRequired
   },
 
   mappings: {
     37: 'left',
     38: 'up',
     39: 'right',
-    40: 'down',
+    40: 'down'
   },
 
   getInitialState: () => ({ key: 'none' }),
@@ -25,7 +25,7 @@ export default React.createClass({
       .do( function (key) {
         this.setState({key});
       }.bind(this))
-      .subscribe(this.props.navigate);
+      .subscribe(this.props.navigator.next);
   },
 
   render: function () {
