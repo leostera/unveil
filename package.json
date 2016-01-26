@@ -25,7 +25,7 @@
   "homepage": "https://github.com/ostera/unveil.js",
   "license": "MIT",
   "version": "0.1.2",
-  "main": "src/app.js",
+  "main": "lib/index.js",
   "dependencies": {
     "history": "~1.17.0",
     "immutable": "~3.7.6",
@@ -52,8 +52,8 @@
     "watchify": "~2.1.1"
   },
   "scripts": {
-    "start": "watchify -t [envify --NODE_ENV local] -o build/bundle.js -v -d src/app.js & sass -w ./styles:./build",
-    "build": "browserify . -t [envify --NODE_ENV production] | uglifyjs -cm > build/bundle.js; sass --update ./styles:./build",
+    "start": "watchify -t [envify --NODE_ENV local] -o build/bundle.js -v -d app.js & sass -w ./styles:./build",
+    "build": "babel src -d lib --source-maps inline; sass --update ./styles:./lib/css",
     "test": "jest"
   },
   "browserify": {
@@ -76,7 +76,8 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/node_modules/",
       "<rootDir>/build/",
-      "<rootDir>/styles/"
+      "<rootDir>/styles/",
+      "<rootDir>/lib/"
     ]
   }
 }
