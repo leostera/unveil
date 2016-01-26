@@ -85,7 +85,9 @@ let createRouter = function(opts) {
       .distinctUntilChanged()
       //.do((e) => console.log("     replaceUri => before replaceUri", e))
       .subscribe(replaceUri, (e) => {
-        console.log("Router unsubscribed from History successfully");
+        console.log("Error", e);
+      }, (done) => {
+        console.log("Router successfully unsubscribed from History")
       });
   };
 

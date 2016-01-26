@@ -5,6 +5,7 @@ jest.dontMock('marked');
 import React           from 'react';
 import ReactDOM        from 'react-dom';
 import TestUtils       from 'react-addons-test-utils';
+import { Subject } from 'rxjs';
 
 const createNavigator = require('../Navigator').default;
 const UIControls      = require('../UIControls').default;
@@ -23,17 +24,12 @@ describe('UIControls', () => {
     down:  { level: 1, direction: 'next' }
   };
 
-  navigator = createNavigator();
-
   beforeEach( () => {
-    navigator = createNavigator();
-    navigator.setPossibleMoves(directions);
-    navigator.move = jest.genMockFunction();
+    navigator = createNavigator({ stateObservable: new Subject() });
+    navigator.next = jest.genMockFunction();
 
     controller = TestUtils.renderIntoDocument( (
-      <UIControls
-        navigator={navigator}
-      >
+      <UIControls navigator={navigator} >
       </UIControls>));
 
     node = ReactDOM.findDOMNode(controller);
@@ -46,7 +42,7 @@ describe('UIControls', () => {
     it(`calls navigate(${motion}) when pressing ${motion}`, () => {
       node = find(motion);
       TestUtils.Simulate.click(node);
-      expect(navigator.move).toBeCalledWith(motion);
+      expect(navigator.next).toBeCalledWith(motion);
     });
   });
 

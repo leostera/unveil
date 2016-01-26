@@ -39,8 +39,7 @@ export default React.createClass({
   componentWillMount: function () {
     this.controls       = this.props.controls || [UIControls, KeyControls];
     this.history        = this.props.history || history;
-    this.slides         = this.props.children;
-    this.navigator      = this.props.navigator || createNavigator();
+    this.slides         = this.props.children.toList();
     this.map            = this.buildMap(this.slides);
     this.getDirections  = this.props.getDirections || getDirections;
 
@@ -49,6 +48,10 @@ export default React.createClass({
       map: this.map,
       history: this.history,
       getDirections: this.getDirections
+    });
+
+    this.navigator = (this.props.navigator || createNavigator)({
+      stateObservable: this.router.asObservable().pluck('directions')
     });
 
     this.router.asObservable()
@@ -95,7 +98,6 @@ export default React.createClass({
 
   updateState: function (s) {
     this.routerState = s;
-    this.navigator.setPossibleMoves(this.routerState.directions);
     this.setState({ currentSlide: this.getSlide(s.indices) });
   },
 
@@ -111,10 +113,6 @@ export default React.createClass({
     return children.toList()
       .map(Slide.isSlide)
       .reduce( (a,b) => (a&&b), true );
-  },
-
-  navigate: function(motion) {
-    this.navigator.asObservable().next(motion);
   },
 
   controlsElements: function () {

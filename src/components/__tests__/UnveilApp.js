@@ -1,7 +1,7 @@
 jest.dontMock('../UnveilApp');
 jest.dontMock('../Router');
 jest.dontMock('../Navigator');
-jest.dontMock('../MoveCalculator');
+jest.dontMock('../../getDirections');
 jest.dontMock('../UIControls');
 jest.dontMock('../KeyControls');
 jest.dontMock('../Slide');
@@ -49,14 +49,12 @@ describe('UnveilApp', () => {
     expect(elements.routerState.indices).toEqual([1, 0]);
   });
 
-  let checkContentOnRoute = (route, content) => {
-    return () => {
-      history.push(route);
+  let t = (name, path, content) => {
+    it(name, () => {
+      history.push(path);
       checkContentEquals(content);
-    }
-  };
-
-  let t = (name, path, content) => it(name, checkContentOnRoute(path, content));
+    });
+  }
 
   t('routes to first slide', '/', 'Luke');
   t('routes by index',       '/1', 'Vincent Vega');

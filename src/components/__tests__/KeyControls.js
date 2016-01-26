@@ -2,15 +2,16 @@ jest.dontMock('../KeyControls');
 jest.dontMock('../Navigator');
 jest.dontMock('marked');
 
-import React           from 'react';
-import ReactDOM        from 'react-dom';
-import TestUtils       from 'react-addons-test-utils';
+import React       from 'react';
+import ReactDOM    from 'react-dom';
+import TestUtils   from 'react-addons-test-utils';
+import { Subject } from 'rxjs';
 
 const createNavigator = require('../Navigator').default;
 const KeyControls     = require('../KeyControls').default;
 
 describe('KeyControls', () => {
-  let controls, node, navigator, mappings;
+  let controls, node, navigator, stateSubject, mappings;
 
   mappings = {
     'left':  37,
@@ -19,12 +20,11 @@ describe('KeyControls', () => {
     'down':  40
   };
 
-  navigator = createNavigator();
-
   beforeEach( () => {
-    navigator = createNavigator();
-    navigator.setPossibleMoves([]);
-    navigator.move = jest.genMockFunction();
+    stateSubject = new Subject();
+    navigator = createNavigator({stateObservable: stateSubject});
+    stateSubject.next({ direction: [] });
+    navigator.next = jest.genMockFunction();
 
     controls = TestUtils.renderIntoDocument( (
       <KeyControls
@@ -44,13 +44,13 @@ describe('KeyControls', () => {
     let key = mappings[direction];
     it(`calls navigate(${direction}) when pressing ${direction}-arrow-key (${key})`, () => {
       simulateKeyUp(key);
-      expect(navigator.move).toBeCalledWith(direction);
+      expect(navigator.next).toBeCalledWith(direction);
     });
   });
 
   it(`does not react to non-mapped keyUps`, () => {
     simulateKeyUp(65);
-    expect(navigator.move).not.toBeCalled();
+    expect(navigator.next).not.toBeCalled();
   });
 
 

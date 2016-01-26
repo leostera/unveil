@@ -10,16 +10,16 @@ export default React.createClass({
   },
 
   isValidMotion: function (motion) {
-    return this.directions.indexOf(motion) !== -1;
+    return this.motions.indexOf(motion) !== -1;
   },
 
   componentWillMount: function () {
-    this.directions = this.props.navigator.getDirectionNames();
+    this.motions = this.props.navigator.motionNames;
     this.clicks = new Subject();
     this.clicks
       .pluck('target', 'id')
       .filter(this.isValidMotion)
-      .subscribe(this.props.navigator.move);
+      .subscribe(this.props.navigator.next);
   },
 
   componentWillUnmount: function () {
@@ -32,19 +32,19 @@ export default React.createClass({
   },
 
   buttons: function () {
-    let toButton = function (d) {
+    let toButton = function (m) {
       const options = {
-        "key": m.name,
+        "key": m,
         "href": '', // @todo add right href here
-        "ref": `button-${m.name}`,
-        "id": m.name,
+        "ref": `button-${m}`,
+        "id": m,
         "onClick": this.next,
-        "className": m.disabled && 'disabled' || 'enabled'
+        "className": (this.props.navigator.isPossibleMotion(m) && 'disabled' || 'enabled')
       };
       return <a {...options}></a>;
     }.bind(this);
 
-    return this.directions.map(toButton);
+    return this.motions.map(toButton);
   },
 
   render: function () {
