@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/ostera/unveil.js",
   "license": "MIT",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "main": "lib/index.js",
   "dependencies": {
     "history": "~1.17.0",
