@@ -57,7 +57,7 @@
     "watchify": "~2.1.1"
   },
   "scripts": {
-    "prepublish": "npm run build",
+    "preversion": "npm run build",
     "start": "watchify -t [envify --NODE_ENV local] -o build/bundle.js -v -d app.js & sass -w ./styles:./build",
     "build": "./node_modules/babel-cli/bin/babel.js src -d lib --source-maps inline; sass --update ./styles:./lib/css",
     "test": "jest"
