@@ -1,18 +1,20 @@
-jest.dontMock('../UnveilApp');
-jest.dontMock('../Router');
-jest.dontMock('../Navigator');
 jest.dontMock('../../getDirections');
-jest.dontMock('../UIControls');
 jest.dontMock('../KeyControls');
+jest.dontMock('../Navigator');
+jest.dontMock('../Presenter');
+jest.dontMock('../Router');
 jest.dontMock('../Slide');
+jest.dontMock('../UIControls');
+jest.dontMock('../UnveilApp');
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import TestUtils from 'react-addons-test-utils';
 
+import { useQueries, createHashHistory } from 'history';
+const createHistory = (opts) => (useQueries(createHashHistory)(opts));
+
 const UnveilApp = require('../UnveilApp').default;
-const Slide = require('../Slide').default;
-const createHistory = require('history/lib/createHashHistory');
 
 const UIControls  = require('../UIControls').default;
 const KeyControls = require('../KeyControls').default;
@@ -26,6 +28,7 @@ describe('UnveilApp', () => {
   let history, elements, node, controls;
 
   let checkContentEquals = (content) => {
+    node = ReactDOM.findDOMNode(elements.refs['current-slide']);
     expect(node.textContent).toEqual(content);
   };
 
@@ -33,10 +36,10 @@ describe('UnveilApp', () => {
     history = createHistory({ queryKey: false });
     controls = [UIControls, KeyControls];
     elements = renderFixture({ history, controls });
-    node = ReactDOM.findDOMNode(elements.refs['current-slide']);
   });
 
   afterEach( () => {
+    elements.router.stop();
     elements = node = null;
   });
 

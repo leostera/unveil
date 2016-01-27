@@ -83,18 +83,18 @@ export default React.createClass({
       if (!this.areSlides(slide.props.children)) {
         return slide;
       } else {
-        getFirstChildIfSlides(slide.props.children[0]);
+        return getFirstChildIfSlides(slide.props.children[0]);
       }
     };
 
     return {
-      currentSlide: getFirstChildIfSlides(this.props.children[0])
+      currentSlide: getFirstChildIfSlides(this.props.children[0]),
+      mode: 'default'
     };
   },
 
   updateState: function (s) {
     this.routerState = s;
-    this.navigator.setPossibleMoves(this.routerState.directions);
     this.setState({ mode: s.query.mode || 'default' });
   },
 
@@ -121,7 +121,8 @@ export default React.createClass({
       this.getMode().presenter,
       {
         routerState: this.routerState,
-        slides: this.slides
+        slides: this.slides,
+        ref: 'current-slide'
       }
     );
   },

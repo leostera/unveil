@@ -28,22 +28,11 @@ describe('UIControls', () => {
   navigator = createNavigator();
 
   beforeEach( () => {
-<<<<<<< HEAD
     navigator = createNavigator({ stateObservable: new Subject() });
     navigator.next = jest.genMockFunction();
 
     controller = TestUtils.renderIntoDocument( (
       <UIControls navigator={navigator} >
-=======
-    navigator = createNavigator();
-    navigator.setPossibleMoves(directions);
-    navigator.move = jest.genMockFunction();
-
-    controller = TestUtils.renderIntoDocument( (
-      <UIControls
-        navigator={navigator}
-      >
->>>>>>> Extracts MoveCalculator and refactors Navigator
       </UIControls>));
 
     node = ReactDOM.findDOMNode(controller);

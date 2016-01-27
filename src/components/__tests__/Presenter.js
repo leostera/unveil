@@ -15,12 +15,6 @@ let renderFixture = (slide) => TestUtils.renderIntoDocument( fixture(slide) );
 describe('Presenter', () => {
   let elements, node;
 
-  beforeEach( () => {
-  });
-
-  afterEach( () => {
-  });
-
   it('renders html slide', () => {
     elements = renderFixture(<Slide><h1>Hello</h1></Slide>);
     node = ReactDOM.findDOMNode(elements);
