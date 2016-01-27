@@ -32,6 +32,10 @@ export default React.createClass({
 
   componentDidUpdate: function () {
     let scale = this.getScale();
+
+    if(Number.isNaN(scale) || Number.isNaN(this.scale))
+      return;
+
     if(this.scale !== scale) {
       this.scale = scale;
       this.forceUpdate();
