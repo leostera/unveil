@@ -5,6 +5,7 @@ jest.dontMock('marked');
 import React           from 'react';
 import ReactDOM        from 'react-dom';
 import TestUtils       from 'react-addons-test-utils';
+
 import { Subject } from 'rxjs';
 
 const createNavigator = require('../Navigator').default;
@@ -23,6 +24,8 @@ describe('UIControls', () => {
     right: { level: 0, direction: 'next' },
     down:  { level: 1, direction: 'next' }
   };
+
+  navigator = createNavigator();
 
   beforeEach( () => {
     navigator = createNavigator({ stateObservable: new Subject() });
