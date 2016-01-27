@@ -3,7 +3,7 @@
   "private": true,
   "author": "Leandro Ostera <leandro@ostera.io>",
   "dependencies": {
-    "unveil": "^0.1.12"
+    "unveil": "^0.1.13"
   },
   "devDependencies": {
     "react-addons-test-utils": "~0.15.0-alpha.1",
