@@ -25,8 +25,6 @@ describe('UIControls', () => {
     down:  { level: 1, direction: 'next' }
   };
 
-  navigator = createNavigator();
-
   beforeEach( () => {
     navigator = createNavigator({ stateObservable: new Subject() });
     navigator.next = jest.genMockFunction();

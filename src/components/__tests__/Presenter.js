@@ -8,15 +8,20 @@ import TestUtils from 'react-addons-test-utils';
 const Slide     = require('../Slide').default;
 const Presenter = require('../Presenter').default;
 
-let fixture = (slide) => ( <Presenter currentSlide={slide} />);
+let fixture = (opts) => ( <Presenter {...opts} />);
 
-let renderFixture = (slide) => TestUtils.renderIntoDocument( fixture(slide) );
+let renderFixture = (opts) => TestUtils.renderIntoDocument( fixture(opts) );
 
 describe('Presenter', () => {
   let elements, node;
 
   it('renders html slide', () => {
-    elements = renderFixture(<Slide><h1>Hello</h1></Slide>);
+    elements = renderFixture({
+      slides: [(<Slide><h1>Hello</h1></Slide>)],
+      routerState: {
+        indices: [0]
+      }
+    });
     node = ReactDOM.findDOMNode(elements);
 
     let children = node.children;

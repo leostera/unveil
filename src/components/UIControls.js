@@ -10,7 +10,7 @@ export default React.createClass({
   },
 
   isValidMotion: function (motion) {
-    return this.directions.indexOf(motion) !== -1;
+    return this.motions.indexOf(motion) !== -1;
   },
 
   componentWillMount: function () {
