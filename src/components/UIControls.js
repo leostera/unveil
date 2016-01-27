@@ -39,7 +39,7 @@ export default React.createClass({
         "ref": `button-${m}`,
         "id": m,
         "onClick": this.next,
-        "className": (this.props.navigator.isPossibleMotion(m) && 'disabled' || 'enabled')
+        "className": (this.props.navigator.isPossibleMotion(m) && 'enabled' || 'disabled')
       };
       return <a {...options}></a>;
     }.bind(this);
