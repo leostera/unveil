@@ -27,7 +27,7 @@
   },
   "homepage": "https://github.com/ostera/unveil.js",
   "license": "MIT",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "main": "lib/index.js",
   "dependencies": {
     "babel-plugin-transform-export-extensions": "^6.4.0",
