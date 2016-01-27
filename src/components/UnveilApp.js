@@ -117,7 +117,7 @@ export default React.createClass({
 
   controlsElements: function () {
     let controls = this.controls.map( (control) => {
-      const props = {
+      let props = {
         key: control.displayName,
         navigator: this.navigator
       };
