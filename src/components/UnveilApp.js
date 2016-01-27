@@ -37,13 +37,22 @@ export default React.createClass({
   },
 
   componentWillMount: function () {
-    this.controls       = this.props.controls || [UIControls, KeyControls];
+    let controls  = this.props.controls || [UIControls, KeyControls];
+    let presenter = this.props.presenter || Presenter;
+
+    this.modes    = this.props.modes || {
+      default: {
+        controls : controls,
+        presenter: presenter
+      }
+    };
+
     this.history        = this.props.history || history;
     this.slides         = this.props.children.toList();
     this.map            = this.buildMap(this.slides);
     this.getDirections  = this.props.getDirections || getDirections;
 
-    this.routerState = { directions: [] };
+    this.routerState = { directions: [], query: {} };
     this.router = createRouter({
       map: this.map,
       history: this.history,
@@ -58,9 +67,15 @@ export default React.createClass({
       .subscribe(this.updateState);
 
     this.navigator.asObservable()
-      .subscribe(this.router.go);
+      .subscribe(function(e) {
+        this.router.go(e, this.routerState.query)
+      }.bind(this));
 
     this.router.start();
+  },
+
+  getMode: function () {
+    return this.modes[this.state.mode] || this.modes['default'];
   },
 
   getInitialState: function() {
@@ -68,26 +83,19 @@ export default React.createClass({
       if (!this.areSlides(slide.props.children)) {
         return slide;
       } else {
-        getFirstChildIfSlides(slide.props.children[0]);
+        return getFirstChildIfSlides(slide.props.children[0]);
       }
     };
 
     return {
-      currentSlide: getFirstChildIfSlides(this.props.children[0])
+      currentSlide: getFirstChildIfSlides(this.props.children[0]),
+      mode: 'default'
     };
   },
 
   updateState: function (s) {
     this.routerState = s;
-    this.setState({ currentSlide: this.getSlide(s.indices) });
-  },
-
-  getSlide: function (indices) {
-    let slide = this.slides[indices[0]];
-    if(indices.length > 1 )
-      return slide.props.children.toList()[indices[1]];
-    else
-      return slide
+    this.setState({ mode: s.query.mode || 'default' });
   },
 
   areSlides: function (children) {
@@ -97,8 +105,8 @@ export default React.createClass({
   },
 
   controlsElements: function () {
-    let controls = this.controls.map( (control) => {
-      let props = {
+    let controls = this.getMode().controls.map( (control) => {
+      const props = {
         key: control.displayName,
         navigator: this.navigator
       };
@@ -108,11 +116,24 @@ export default React.createClass({
     return React.createElement('controls', null, controls);
   },
 
+  presenterElement: function() {
+    return React.createElement(
+      this.getMode().presenter,
+      {
+        routerState: this.routerState,
+        slides: this.slides,
+        ref: 'current-slide'
+      }
+    );
+  },
+
   render: function () {
-    return (<div>
-      {this.controlsElements()}
-      <current ref="current-slide">{this.state.currentSlide}</current>
-    </div>);
+    return (
+      <div>
+        {this.controlsElements()}
+        {this.presenterElement()}
+      </div>
+    );
   }
 
 });

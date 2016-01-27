@@ -1,7 +1,7 @@
-import createHistory from 'history/lib/createHashHistory';
+import {createHashHistory, useQueries} from 'history';
 
-let history = createHistory({
-    queryKey: false
+let history = useQueries(createHashHistory)({
+  queryKey: false
 });
 
 export default history;

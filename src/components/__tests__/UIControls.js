@@ -5,6 +5,7 @@ jest.dontMock('marked');
 import React           from 'react';
 import ReactDOM        from 'react-dom';
 import TestUtils       from 'react-addons-test-utils';
+
 import { Subject } from 'rxjs';
 
 const createNavigator = require('../Navigator').default;
