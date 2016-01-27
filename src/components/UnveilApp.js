@@ -63,25 +63,6 @@ export default React.createClass({
     this.router.start();
   },
 
-  /**
-   * Recursively build a route map from all the slides.
-   */
-  buildMap: function (nodes) {
-    return nodes.map( (slide, index) => {
-      if(Slide.isSlide(slide)) {
-        let entry = {
-          index,
-          name: slide.props.name || false
-        };
-
-        if(this.areSlides(slide.props.children))
-          entry.children = this.buildMap(slide.props.children);
-
-        return entry;
-      }
-    }).compact();
-  },
-
   getInitialState: function() {
     let getFirstChildIfSlides = (slide) => {
       if (!this.areSlides(slide.props.children)) {
