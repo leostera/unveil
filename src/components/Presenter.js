@@ -5,8 +5,7 @@ export default React.createClass({
 
   propTypes: {
     slides: React.PropTypes.array.isRequired,
-    routerState: React.PropTypes.object.isRequired,
-    //ref: React.PropTypes.string.isRequired
+    routerState: React.PropTypes.object.isRequired
   },
 
   getSlide: function (indices) {
