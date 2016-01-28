@@ -62,7 +62,8 @@
     "preversion": "npm run build && npm run package",
     "build": "./node_modules/babel-cli/bin/babel.js src -d lib --source-maps inline; sass --update ./styles:./lib/css",
     "package": "mkdir -p dist && browserify . -t [envify --NODE_ENV production] src/index.js -o dist/unveil.js && uglifyjs dist/unveil.js -cm -o dist/unveil.min.js && sass --update ./styles:./dist --style compressed",
-    "test": "jest"
+    "test": "jest",
+    "clean": "rm -rf ./dist ./build ./lib"
   },
   "browserify": {
     "transform": [
