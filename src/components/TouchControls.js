@@ -52,10 +52,12 @@ export default React.createClass({
   componentDidMount: function () {
     Observable.fromEvent(document, 'touchstart')
       .map(this.toXY)
+      .do((xy) => console.log("starting", xy))
       .subscribe(this.saveCoords);
 
     Observable.fromEvent(document, 'touchmove')
       .filter(this.touchStarted)
+      .do((xy) => console.log("moving", xy))
       .map(this.toXY)
       .map(this.toDirection)
       .do(this.resetTouchStart)
