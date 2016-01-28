@@ -12,7 +12,8 @@
     "rx"
   ],
   "files": [
-    "lib"
+    "lib",
+    "dist"
   ],
   "author": "Leandro Ostera <leandro@ostera.io>",
   "contributors": [
@@ -54,13 +55,15 @@
     "babel-cli": "~6.0.0",
     "reactify": "~1.1.1",
     "uglify-js": "~2.4.15",
+    "cssmin": "^0.4.3",
     "watchify": "~2.1.1"
   },
   "scripts": {
-    "preversion": "npm run build",
-    "start": "watchify -t [envify --NODE_ENV local] -o build/bundle.js -v -d src/index.js & sass -w ./styles:./build",
+    "preversion": "npm run clean && npm run build && npm run package",
     "build": "./node_modules/babel-cli/bin/babel.js src -d lib --source-maps inline; sass --update ./styles:./lib/css",
-    "test": "jest"
+    "package": "mkdir -p dist && browserify . -t [envify --NODE_ENV production] src/index.js -o dist/unveil.js && uglifyjs dist/unveil.js -cm -o dist/unveil.min.js && sass --update ./styles:./dist --style compressed",
+    "test": "jest",
+    "clean": "rm -rf ./dist ./build ./lib"
   },
   "browserify": {
     "transform": [
