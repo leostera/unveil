@@ -5,6 +5,7 @@ import { UnveilApp, Slide, KeyControls, UIControls } from 'unveil';
 
 const controls = [KeyControls, UIControls];
 
+
 ReactDOM.render( (
 <section>
   <UnveilApp controls={controls}>
@@ -28,7 +29,7 @@ While the congress of the Republic endlessly debates this alarming chain of even
       </Slide>
       <Slide name="characters" markdown={true}>
         {`
-* Obi-wan Kenobi
+* Obi-wan Kenobi (Ben Kenobi)
 * Qui-gonn Jinn
 * Nobody cares about the rest
           `}
