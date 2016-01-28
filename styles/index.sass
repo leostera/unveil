@@ -9,7 +9,7 @@
   font-size: 1rem
 
   .ui-controls
-    //position: absolute
+
     a
       transition: opacity .25s
       position: absolute
@@ -26,37 +26,28 @@
       &.disabled
         display: none
 
+      &:before
+        content: '\25B2'
+
     #left
       top: 50%
       left: 0
-      transform: translateY(-50%)
-
-      &:before
-        content: '\25C0'
+      transform: translateY(-50%) rotate(-90deg)
 
     #right
       top: 50%
       right: 0
-      transform: translateY(-50%)
-
-      &:before
-        content: '\25BA'
+      transform: translateY(-50%) rotate(90deg)
 
     #up
       top: 0
       left: 50%
       transform: translateX(-50%)
-      &:before
-        content: '\25B2'
 
     #down
       left: 50%
       bottom: 0
-      transform: translateX(-50%)
-
-      &:before
-        content: '\25BC'
-
+      transform: translateX(-50%) rotate(180deg)
 
   .slide
     z-index: 1
