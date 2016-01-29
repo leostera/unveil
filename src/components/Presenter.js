@@ -25,8 +25,8 @@ export default React.createClass({
       transitionName: "slide-fade",
       transitionAppear: true,
       transitionAppearTimeout: 1,
-      transitionEnterTimeout: 900,
-      transitionLeaveTimeout: 900,
+      transitionEnterTimeout: 500,
+      transitionLeaveTimeout: 120,
     };
     return React.createElement(TransitionGroup, opts, slide);
   }
