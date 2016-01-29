@@ -1,4 +1,7 @@
 import React from 'react';
+
+import TransitionGroup from 'react-addons-css-transition-group';
+
 import '../lib/Utils';
 
 export default React.createClass({
@@ -17,7 +20,15 @@ export default React.createClass({
   },
 
   render: function () {
-    return this.getSlide(this.props.routerState.indices);
+    let slide = this.getSlide(this.props.routerState.indices);
+    let opts = {
+      transitionName: "slide-fade",
+      transitionAppear: true,
+      transitionAppearTimeout: 1,
+      transitionEnterTimeout: 900,
+      transitionLeaveTimeout: 900,
+    };
+    return React.createElement(TransitionGroup, opts, slide);
   }
 
 });

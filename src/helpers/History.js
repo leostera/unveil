@@ -1,6 +1,6 @@
-import {createHashHistory, useQueries} from 'history';
+import {createHistory, useQueries} from 'history';
 
-let history = useQueries(createHashHistory)({
+let history = useQueries(createHistory)({
   queryKey: false
 });
 

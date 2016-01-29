@@ -36,6 +36,13 @@ export default React.createClass({
     }).compact();
   },
 
+  autoKeySlides: function (children) {
+    if (!Array.isArray(children) || children.length === 0) return children;
+    return React.Children.map(children, function (c) {
+      return React.cloneElement(c, { key: c.props.name || '' }, this.autoKeySlides(c.props.children));
+    }.bind(this));
+  },
+
   componentWillMount: function () {
     let controls  = this.props.controls || [UIControls, KeyControls];
     let presenter = this.props.presenter || Presenter;
@@ -48,8 +55,9 @@ export default React.createClass({
     };
 
     this.history        = this.props.history || history;
-    this.slides         = this.props.children.toList();
-    this.map            = this.buildMap(this.slides);
+
+    this.slides         = this.autoKeySlides(this.props.children);
+    this.map            = this.buildMap(this.props.children);
     this.getDirections  = this.props.getDirections || getDirections;
 
     this.routerState = { directions: [], query: {} };
@@ -122,7 +130,6 @@ export default React.createClass({
       {
         routerState: this.routerState,
         slides: this.slides,
-        ref: 'current-slide'
       }
     );
   },
