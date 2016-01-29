@@ -26,7 +26,7 @@ export default React.createClass({
       transitionAppear: true,
       transitionAppearTimeout: 1,
       transitionEnterTimeout: 500,
-      transitionLeaveTimeout: 120,
+      transitionLeaveTimeout: 250,
     };
     return React.createElement(TransitionGroup, opts, slide);
   }
