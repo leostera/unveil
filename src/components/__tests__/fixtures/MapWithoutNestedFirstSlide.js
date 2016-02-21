@@ -1,10 +1,10 @@
-import Base from './MapBase';
+import Base from './MapBase'
 
 const fixture = () => [
   {
     index: 0,
     name: 'return-of-the-jedi'
   },
-].concat(Base());
+].concat(Base())
 
-export default fixture;
+export default fixture

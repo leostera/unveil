@@ -8,7 +8,7 @@ const controls = [KeyControls, UIControls];
 ReactDOM.render( (
 <section>
   <UnveilApp controls={controls}>
-    <Slide name="star-wars" markdown={true}>
+    <Slide name="star-wars" transitionName="slide-fade" markdown={true}>
       {`
 # Star Wars
 `}

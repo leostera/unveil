@@ -71,6 +71,6 @@ let fixture = () => [
     index: 7,
     name: false
   }
-];
+]
 
-export default fixture;
+export default fixture

@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 
 export default React.createClass({
 
   render: function () {
-    let id = this.props.id || "";
-    let href = "https://github.com/"+this.props.path;
-    let title = this.props.title || this.props.path+" on Github";
+    let id = this.props.id || ""
+    let href = "https://github.com/"+this.props.path
+    let title = this.props.title || this.props.path+" on Github"
     return (
       <div>
         <a
@@ -20,8 +20,8 @@ export default React.createClass({
             data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" />
         </a>
       </div>
-    );
+    )
   },
 
-});
+})
 

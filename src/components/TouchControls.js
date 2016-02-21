@@ -1,6 +1,6 @@
-import React from 'react';
+import React from 'react'
 
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs'
 
 export default React.createClass({
 
@@ -11,40 +11,40 @@ export default React.createClass({
   threshold: 0,
 
   touchStarted: function () {
-    return this.state.xDown !== null && this.state.yDown !== null;
+    return this.state.xDown !== null && this.state.yDown !== null
   },
 
   toXY: function(evt) {
-    return {x: evt.touches[0].clientX, y: evt.touches[0].clientY};
+    return {x: evt.touches[0].clientX, y: evt.touches[0].clientY}
   },
 
   resetTouchStart: function() {
-    this.setState({xDown: null});
-    this.setState({yDown: null});
+    this.setState({xDown: null})
+    this.setState({yDown: null})
   },
 
   toDirection: function (coords) {
-    let xDiff = this.state.xDown - coords.x;
-    let yDiff = this.state.yDown - coords.y;
+    let xDiff = this.state.xDown - coords.x
+    let yDiff = this.state.yDown - coords.y
 
     if ( Math.abs( xDiff ) > Math.abs( yDiff ) ) {/*most significant*/
       if (xDiff > this.threshold) {
-        return 'right';
+        return 'right'
       } else {
-        return 'left';
+        return 'left'
       }
     } else {
       if (yDiff > this.threshold) {
-        return 'down';
+        return 'down'
       } else {
-        return 'up';
+        return 'up'
       }
     }
   },
 
   saveCoords: function (coords) {
-    this.setState({xDown: coords.x});
-    this.setState({yDown: coords.y});
+    this.setState({xDown: coords.x})
+    this.setState({yDown: coords.y})
   },
 
   getInitialState: () => ({ key: 'none' }),
@@ -53,7 +53,7 @@ export default React.createClass({
     Observable.fromEvent(document, 'touchstart')
       .map(this.toXY)
       .do((xy) => console.log("starting", xy))
-      .subscribe(this.saveCoords);
+      .subscribe(this.saveCoords)
 
     Observable.fromEvent(document, 'touchmove')
       .filter(this.touchStarted)
@@ -61,13 +61,13 @@ export default React.createClass({
       .map(this.toXY)
       .map(this.toDirection)
       .do(this.resetTouchStart)
-      .subscribe(this.props.navigator.next);
+      .subscribe(this.props.navigator.next)
   },
 
   render: function () {
     return (
       <div></div>
-    );
+    )
   }
 
-});
+})
