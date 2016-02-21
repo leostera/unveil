@@ -22,7 +22,7 @@
     "watchify": "~2.1.1"
   },
   "scripts": {
-    "start": "sass -w ./styles:./build & beefy index.js 2112 --live --index=./index.html"
+    "start": "beefy index.js 2112 --live --index=./index.html & sass -w ./styles:./build"
   },
   "browserify": {
     "transform": [

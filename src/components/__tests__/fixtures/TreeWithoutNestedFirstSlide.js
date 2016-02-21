@@ -1,9 +1,9 @@
-import React from 'react';
+import React from 'react'
 
-import UnveilApp from '../../UnveilApp';
-import Slide from '../../Slide';
+import UnveilApp from '../../UnveilApp'
+import Slide from '../../Slide'
 
-import Base from './MapBase';
+import Base from './MapBase'
 
 const fixture = (options) => {
   return (
@@ -46,6 +46,6 @@ const fixture = (options) => {
       Leia
     </Slide>
   </UnveilApp>)
-};
+}
 
-export default fixture;
+export default fixture

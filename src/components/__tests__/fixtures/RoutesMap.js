@@ -45,6 +45,6 @@ const fixture = () => [
       }
     ]
   }
-];
+]
 
-export default fixture;
+export default fixture

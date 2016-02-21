@@ -19,14 +19,14 @@
  * @return {[directions]} List of direcitons object
  */
 let getDirections = (state, elements, level = 0) => {
-  if (level  === state.length) return [];
+  if (level  === state.length) return []
 
-  let index = state[level];
-  let stateLevel = state.slice(0, level);
-  let result = [getDirectionObject(elements, index, stateLevel)];
+  let index = state[level]
+  let stateLevel = state.slice(0, level)
+  let result = [getDirectionObject(elements, index, stateLevel)]
 
-  return result.concat(getDirections(state, elements[index].children, level + 1));
-};
+  return result.concat(getDirections(state, elements[index].children, level + 1))
+}
 
 /**
  * Builds the direction object for one level.
@@ -43,7 +43,7 @@ let getDirectionObject = (elements, index, stateLevel) => {
     next: getIndex(elements, index + 1, stateLevel),
     previous: getIndex(elements, index - 1, stateLevel)
   }
-};
+}
 
 /**
  * Returns the new state based on index or false, if
@@ -55,7 +55,7 @@ let getDirectionObject = (elements, index, stateLevel) => {
  * @returns {boolean|number[]} state list or false
  */
 let getIndex = (elements, index, stateLevel) => {
-  return elements[index] !== undefined && stateLevel.concat([index]) || false;
-};
+  return elements[index] !== undefined && stateLevel.concat([index]) || false
+}
 
-export default getDirections;
+export default getDirections

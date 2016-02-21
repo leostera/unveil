@@ -1,15 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import React from '../../node_modules/react';
+import ReactDOM from '../../node_modules/react-dom';
 
-import { UnveilApp, Slide, KeyControls, UIControls } from 'unveil';
+import { UnveilApp, Slide, KeyControls, UIControls } from '../../src/index';
 
 const controls = [KeyControls, UIControls];
-
 
 ReactDOM.render( (
 <section>
   <UnveilApp controls={controls}>
-    <Slide name="star-wars" markdown={true}>
+    <Slide name="star-wars" transitionName="slide-fade" markdown={true}>
       {`
 # Star Wars
 `}

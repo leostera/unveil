@@ -1,12 +1,12 @@
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs'
 
 let createNavigator = (opts) => {
-  let { stateObservable } = opts;
+  let { stateObservable } = opts
 
-  let subject = new Subject();
+  let subject = new Subject()
 
-  let possibleMotions = [];
-  let directions = {};
+  let possibleMotions = []
+  let directions = {}
 
   /**
    * Maps motion-names to position in directions array
@@ -23,16 +23,16 @@ let createNavigator = (opts) => {
     up:    { level: 1, direction: 'previous' },
     right: { level: 0, direction: 'next' },
     down:  { level: 1, direction: 'next' }
-  };
+  }
 
   let toPossibleMotions = (directions) => {
     let reduce  = (result, name) => {
-      let motion = motions[name];
-      result[name] = !!(directions[motion.level] && directions[motion.level][motion.direction]);
-      return result;
-    };
+      let motion = motions[name]
+      result[name] = !!(directions[motion.level] && directions[motion.level][motion.direction])
+      return result
+    }
 
-    return getMotionNames().reduce(reduce, {});
+    return getMotionNames().reduce(reduce, {})
   }
 
   /**
@@ -40,8 +40,8 @@ let createNavigator = (opts) => {
    * @returns {string[]} Array of possible motions (left, right, down, up)
    */
   let getMotionNames = () => {
-    return Object.keys(motions);
-  };
+    return Object.keys(motions)
+  }
 
   /**
    * Is direction possible?
@@ -49,23 +49,23 @@ let createNavigator = (opts) => {
    * @returns {boolean}
    */
   let isPossibleMotion = (motion) => {
-    return !!possibleMotions[motion];
-  };
+    return !!possibleMotions[motion]
+  }
 
   let isValidMotion = (motion) => {
     return typeof motion === 'string' &&
-      getMotionNames().indexOf(motion.toLowerCase()) !== -1;
-  };
+      getMotionNames().indexOf(motion.toLowerCase()) !== -1
+  }
 
   let isJumpMotion = (motion) => {
     return Array.isArray(motion) && motion.reduce( (acc, i) => {
-      return acc && !Number.isNaN( Number(i) );
-    }, true);
-  };
+      return acc && !Number.isNaN( Number(i) )
+    }, true)
+  }
 
   let toNumericIndices = (motion) => {
-    return motion.map( (i) => Number(i) );
-  };
+    return motion.map( (i) => Number(i) )
+  }
 
   /**
    * Is state valid?
@@ -74,8 +74,8 @@ let createNavigator = (opts) => {
    * @returns {boolean}
    */
   let isValidState = (state) => {
-    return Array.isArray(state);
-  };
+    return Array.isArray(state)
+  }
 
   /**
    * Get level and direction for motion-string
@@ -83,8 +83,8 @@ let createNavigator = (opts) => {
    * @returns {level, direction}
    */
   let toLevelAndDirection = (direction) => {
-    return motions[direction];
-  };
+    return motions[direction]
+  }
 
   /**
    * Returns new state from motion
@@ -92,8 +92,8 @@ let createNavigator = (opts) => {
    * @returns {number[]|false}
    */
   let toState = (motion) => {
-    return directions[motion.level] && directions[motion.level][motion.direction];
-  };
+    return directions[motion.level] && directions[motion.level][motion.direction]
+  }
 
   /**
    * Get subject to observe navigator changes
@@ -102,13 +102,13 @@ let createNavigator = (opts) => {
   let asObservable = () => {
     return Observable.merge(motionObservable, jumpObservable)
       .filter(isValidState)
-  };
+  }
 
-  // navigator.next("left");
-  // navigator.next([0,1]);
+  // navigator.next("left")
+  // navigator.next([0,1])
   let next = (motion) => {
-    subject.next(motion);
-  };
+    subject.next(motion)
+  }
 
   /*
    * Here's where the magic happens: Observability!
@@ -117,12 +117,12 @@ let createNavigator = (opts) => {
     .map(toPossibleMotions)
     .subscribe( (motions) => {
       possibleMotions = motions
-    });
+    })
 
   let directionsUpdater = stateObservable
     .subscribe( (_directions) => {
       directions = _directions
-    });
+    })
 
   let motionObservable = subject
     .filter(isValidMotion)
@@ -140,7 +140,7 @@ let createNavigator = (opts) => {
     directions,
     motionNames: getMotionNames(),
     next
-  };
-};
+  }
+}
 
-export default createNavigator;
+export default createNavigator

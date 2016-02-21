@@ -1,1 +1,25 @@
 @import "../../../styles/index.sass"
+
+.slide
+  .slide-content
+    transition: opacity .175s ease-in
+
+.slide-fade-appear
+  .slide-content
+    opacity: 0
+
+.slide-fade-enter
+  .slide-content
+    opacity: 0
+
+.slide-fade-enter.slide-fade-enter-active
+  .slide-content
+    opacity: 1
+
+.slide-fade-leave
+  .slide-content
+    opacity: 1
+
+.slide-fade-leave.slide-fade-leave-active
+  .slide-content
+    opacity: 0

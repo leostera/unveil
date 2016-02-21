@@ -1,6 +1,6 @@
-import React from 'react';
+import React from 'react'
 
-import { Observable } from 'rxjs';
+import { Observable } from 'rxjs'
 
 export default React.createClass({
 
@@ -23,13 +23,13 @@ export default React.createClass({
       .map( (code) => this.mappings[code] )
       .filter( (motion) => motion !== undefined )
       .do( function (key) {
-        this.setState({key});
+        this.setState({key})
       }.bind(this))
-      .subscribe(this.props.navigator.next);
+      .subscribe(this.props.navigator.next)
   },
 
   render: function () {
-    return (<div></div>);
+    return (<div></div>)
   }
 
-});
+})

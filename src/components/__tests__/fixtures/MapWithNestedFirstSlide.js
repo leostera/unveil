@@ -1,4 +1,4 @@
-import Base from './MapBase';
+import Base from './MapBase'
 
 const fixture = () => [
   {
@@ -15,6 +15,6 @@ const fixture = () => [
       }
     ]
   },
-].concat(Base());
+].concat(Base())
 
-export default fixture;
+export default fixture
