@@ -34,7 +34,7 @@ let defaults = (overrides = {}) => (
  */
 let defaultKeys = (match) => {
   return Object.keys(defaults()).filter( k => {
-    !!(new RegExp(match).exec(k))
+    return !!(match.exec(k))
   })
 }
 
