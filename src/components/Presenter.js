@@ -22,7 +22,9 @@ export default React.createClass({
 
   render: function () {
     let slide = this.getSlide(this.props.routerState.indices)
-    let opts  = Slide.propsByKey(slide, /^transition/)
+    let opts  = Object.assign({
+      ref: "presenter"
+    }, Slide.propsByKey(slide, /^transition/))
     return React.createElement(TransitionGroup, opts, slide)
   }
 
