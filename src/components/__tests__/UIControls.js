@@ -1,5 +1,5 @@
 jest.dontMock('../UIControls')
-jest.dontMock('../Navigator')
+jest.dontMock('../../Navigator')
 jest.dontMock('marked')
 
 import React           from 'react'
@@ -8,7 +8,7 @@ import TestUtils       from 'react-addons-test-utils'
 
 import { Subject } from 'rxjs'
 
-const createNavigator = require('../Navigator').default
+const createNavigator = require('../../Navigator').default
 const UIControls      = require('../UIControls').default
 
 describe('UIControls', () => {

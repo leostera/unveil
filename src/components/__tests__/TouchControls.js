@@ -1,5 +1,5 @@
 jest.dontMock('../TouchControls')
-jest.dontMock('../Navigator')
+jest.dontMock('../../Navigator')
 jest.dontMock('marked')
 
 import React       from 'react'
@@ -7,7 +7,7 @@ import ReactDOM    from 'react-dom'
 import TestUtils   from 'react-addons-test-utils'
 import { Subject } from 'rxjs'
 
-const createNavigator = require('../Navigator').default
+const createNavigator = require('../../Navigator').default
 const TouchControls     = require('../TouchControls').default
 
 describe('TouchControls', () => {
