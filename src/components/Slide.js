@@ -72,6 +72,10 @@ export default React.createClass({
 
   },
 
+  fromMarkdown: function () {
+    return marked(this.props.children).trim()
+  }
+
   shouldUseMarkdown: function () {
     return this.props.markdown && !Array.isArray(this.props.children)
   },
@@ -114,7 +118,7 @@ export default React.createClass({
     })
 
     if(this.shouldUseMarkdown())
-      opts.dangerouslySetInnerHTML = {__html: marked(this.props.children).trim()}
+      opts.dangerouslySetInnerHTML = {__html: this.fromMarkdown()}
     else
       opts.children = this.props.children
 
