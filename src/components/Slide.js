@@ -12,7 +12,7 @@ export default React.createClass({
     name: React.PropTypes.string
   },
 
-  getDefaultProps: {
+  getDefaultProps: function () {
     return {
       transitionName: "slide-fade",
       transitionAppear: true,
