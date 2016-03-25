@@ -1,7 +1,7 @@
 import { Observable, Subject } from 'rxjs'
 import 'rx-history'
 
-import '../lib/Utils'
+import './lib/Utils'
 
 let createRouter = function(opts) {
   // Parametered options

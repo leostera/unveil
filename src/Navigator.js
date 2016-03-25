@@ -120,8 +120,8 @@ let createNavigator = (opts) => {
     })
 
   let directionsUpdater = stateObservable
-    .subscribe( (_directions) => {
-      directions = _directions
+    .subscribe( (newDirections) => {
+      directions = newDirections
     })
 
   let motionObservable = subject

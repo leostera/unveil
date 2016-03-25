@@ -8,10 +8,10 @@ import Presenter from './Presenter'
 import KeyControls from './KeyControls'
 import UIControls  from './UIControls'
 
-import getDirections        from '../getDirections'
-import createRouter         from './Router'
-import createNavigator      from './Navigator'
-import history              from '../helpers/History'
+import getDirections   from '../getDirections'
+import createRouter    from '../Router'
+import createNavigator from '../Navigator'
+import history         from '../helpers/History'
 
 import '../lib/Utils'
 
