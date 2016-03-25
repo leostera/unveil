@@ -3,8 +3,6 @@ import React from 'react'
 import UnveilApp from '../../UnveilApp'
 import Slide from '../../Slide'
 
-import Base from './MapBase'
-
 const fixture = (options) => {
   return (
   <UnveilApp {...options}>

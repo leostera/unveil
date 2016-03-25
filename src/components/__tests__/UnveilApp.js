@@ -20,7 +20,7 @@ const UIControls  = require('../UIControls').default
 const KeyControls = require('../KeyControls').default
 
 const fixture    = require('./fixtures/TreeWithoutNestedFirstSlide').default
-const mapFixture = require('./fixtures/MapWithoutNestedFirstSlide').default
+const mapFixture = require('../../__tests__/fixtures/MapWithoutNestedFirstSlide').default
 
 let renderFixture = (options) => TestUtils.renderIntoDocument( fixture(options) )
 
