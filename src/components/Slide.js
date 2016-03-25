@@ -74,7 +74,7 @@ export default React.createClass({
 
   fromMarkdown: function () {
     return marked(this.props.children).trim()
-  }
+  },
 
   shouldUseMarkdown: function () {
     return this.props.markdown && !Array.isArray(this.props.children)
@@ -110,19 +110,19 @@ export default React.createClass({
   },
 
   options: function () {
-    let opts = defaults({
+    let opts = {
+      id: this.props.name || "",
       style: {
         transform: `translate(-50%, -50%) scale(${this.scale})`
-      },
-      id: this.props.name || "",
-    })
+      }
+    }
 
     if(this.shouldUseMarkdown())
       opts.dangerouslySetInnerHTML = {__html: this.fromMarkdown()}
     else
       opts.children = this.props.children
 
-    return opts
+    return defaults(opts)
   },
 
   render: function () {
