@@ -66,8 +66,8 @@ export default React.createClass({
       return React.isValidElement(e) && e.type.displayName === 'Slide'
     },
 
-    transition: function (slide) {
-      return filterKeys(slide.props, "transition")
+    propsByKey: function (slide, key) {
+      return filterKeys(slide.props, key)
     },
 
   },

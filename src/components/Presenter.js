@@ -12,16 +12,6 @@ export default React.createClass({
     routerState: React.PropTypes.object.isRequired
   },
 
-  defaults: (overrides={}) => (Object.assign({
-    transition: {
-      transitionName: "slide-fade",
-      transitionAppear: true,
-      transitionAppearTimeout: 1,
-      transitionEnterTimeout: 500,
-      transitionLeaveTimeout: 250,
-    }
-  }, overrides)),
-
   getSlide: function (indices) {
     let slide = this.props.slides.toList()[indices[0]]
     if(indices.length > 1 )
@@ -32,8 +22,7 @@ export default React.createClass({
 
   render: function () {
     let slide = this.getSlide(this.props.routerState.indices)
-    let opts = Object.assign(this.defaults().transition,
-                             Slide.transition(slide))
+    let opts  = Slide.propsByKey(slide, "transition")
     return React.createElement(TransitionGroup, opts, slide)
   }
 
