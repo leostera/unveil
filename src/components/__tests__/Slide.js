@@ -27,4 +27,16 @@ describe('Slide', () => {
     expect(slideNode.textContent).toEqual('Hello')
   })
 
+  it('properly sets default properties', () => {
+    let slide = (<Slide></Slide>);
+    expect(slide.props.transitionName).toEqual('slide-fade');
+    expect(slide.props.transitionEnter).toEqual(true);
+  })
+
+  it('overrides default properties', () => {
+    let slide = (<Slide transitionName="nope"></Slide>);
+    expect(slide.props.transitionName).toEqual('nope');
+    expect(slide.props.transitionEnter).toEqual(true);
+  })
+
 })

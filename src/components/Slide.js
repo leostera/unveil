@@ -4,6 +4,52 @@ import React from 'react'
 
 import marked from 'marked'
 
+/*
+ * Slide default options
+ */
+const DEFAULT_PROPS = {
+  ref: 'slide',
+  transitionName: "slide-fade",
+  transitionAppear: true,
+  transitionAppearTimeout: 1,
+  transitionEnter: true,
+  transitionEnterTimeout: 500,
+  transitionLeave: true,
+  transitionLeaveTimeout: 250,
+  className: 'slide-content'
+}
+
+
+/*
+ * Utility method to fallback undefined properties
+ * to their default values
+ */
+let defaults = (overrides = {}) => (
+  Object.assign({}, DEFAULT_PROPS, overrides)
+)
+
+
+/*
+ * Get all keys of an object that match a regex
+ */
+let defaultKeys = (match) => {
+  return Object.keys(defaults()).filter( k => {
+    return !!(match.exec(k))
+  })
+}
+
+
+/*
+ * Get all the properties of an object that match a given regex
+ */
+let filterKeys = (obj, keyMatch) => {
+  return defaultKeys(keyMatch).reduce( (acc, name ) => {
+    if(obj[name])
+      acc[name] = obj[name]
+    return acc
+  }, {})
+}
+
 export default React.createClass({
 
   scale: 1,
@@ -12,15 +58,7 @@ export default React.createClass({
     name: React.PropTypes.string
   },
 
-  getDefaultProps: function () {
-    return {
-      transitionName: "slide-fade",
-      transitionAppear: true,
-      transitionAppearTimeout: 1,
-      transitionEnterTimeout: 500,
-      transitionLeaveTimeout: 250,
-    }
-  },
+  getDefaultProps: () => (defaults()),
 
   statics: {
 
@@ -28,29 +66,11 @@ export default React.createClass({
       return React.isValidElement(e) && e.type.displayName === 'Slide'
     },
 
-    transition: function (slide) {
-      let opts = [
-        'transitionName',
-        'transitionEnterTimeout',
-        'transitionEnter',
-        'transitionLeaveTimeout',
-        'transitionLeave',
-        'transitionActiveTimeout',
-        'transitionActive'
-      ]
-      return opts.reduce( (obj, name ) => {
-        if(slide.props[name])
-          obj[name] = slide.props[name]
-        return obj
-      }, {})
+    propsByKey: function (slide, key) {
+      return filterKeys(slide.props, key)
     },
 
   },
-
-  defaults: (overrides = {}) => (Object.assign({
-    className: 'slide-content'
-  }, overrides)),
-
 
   fromMarkdown: function () {
     return marked(this.props.children).trim()
@@ -91,17 +111,18 @@ export default React.createClass({
 
   options: function () {
     let opts = {
-      ref: 'slide',
       id: this.props.name || "",
       style: {
         transform: `translate(-50%, -50%) scale(${this.scale})`
       }
     }
+
     if(this.shouldUseMarkdown())
       opts.dangerouslySetInnerHTML = {__html: this.fromMarkdown()}
     else
       opts.children = this.props.children
-    return this.defaults(opts)
+
+    return defaults(opts)
   },
 
   render: function () {
