@@ -50,7 +50,7 @@
     "babelify": "~7.3.0",
     "browserify": "~13.1.1",
     "envify": "~3.4.1",
-    "jest-cli": "^17.0.2",
+    "jest-cli": "^22.1.1",
     "babel-jest": "~17.0.2",
     "babel-cli": "~6.18.0",
     "reactify": "~1.1.1",
