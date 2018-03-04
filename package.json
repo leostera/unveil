@@ -56,7 +56,7 @@
     "reactify": "~1.1.1",
     "uglify-js": "~2.7.4",
     "cssmin": "^0.4.3",
-    "watchify": "~3.7.0"
+    "watchify": "~3.11.0"
   },
   "scripts": {
     "preversion": "npm run clean && npm run build && npm run package",
